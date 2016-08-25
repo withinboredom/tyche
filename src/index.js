@@ -3,15 +3,10 @@
 import program from 'commander';
 import path from 'path';
 
-import hooks from './lib/git/hook-checker';
-
-program
-    .version('0.0.1');
+program.version('0.0.1');
 
 //todo: read the configuration file
-var config = require(path.join(process.cwd(),'./tyche.json'));
-
-console.log(hooks);
+const config = require(path.join(process.cwd(), './tyche.json'));
 
 //todo: read repo state
 //todo: ensure dev requirements are met
@@ -21,7 +16,7 @@ program.command('init').description('initialize the current repo').action(() => 
     //todo: install git hooks!
 });
 
-program.command('build [project]').description('runs a given project').action((project) => {
+program.command('build [project]').description('runs a given project').action(project => {
     //todo: build a project
     console.log(project);
 });
@@ -31,7 +26,7 @@ program.command('exec <project> <command...>').description('run a command in the
     console.log(project, command);
 });
 
-program.command('start [project]').description('start running a project').action((project) => {
+program.command('start [project]').description('start running a project').action(project => {
     console.log(project);
 });
 
@@ -43,7 +38,7 @@ program.command('status').description('get the current status').action(() => {
     //todo: calculate the current status
 });
 
-program.command('test [project]').description('only run the unit tests for a specific project').action((project) => {
+program.command('test [project]').description('only run the unit tests for a specific project').action(project => {
     console.log(project);
 });
 
