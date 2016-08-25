@@ -1,1 +1,11 @@
 version: '2'
+services:
+  tyche-builder:
+    image: node:6.4.0-slim
+    volumes:
+      - .:/app
+      - project_node_modules:/app/node_modules
+    working_dir: /app
+    command: npm install
+volumes:
+  project_node_modules:
