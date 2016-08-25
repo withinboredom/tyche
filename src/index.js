@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 
-var program = require('commander');
+import program from 'commander';
+import path from 'path';
+
+import hooks from './lib/git/hook-checker';
 
 program
     .version('0.0.1');
 
 //todo: read the configuration file
-var config = require('./tyche.json');
+var config = require(path.join(process.cwd(),'./tyche.json'));
+
+console.log(hooks);
 
 //todo: read repo state
-//todo: install hooks if needed
-//todo: ensure requirements are met
-//todo: ensure constraints are met
+//todo: ensure dev requirements are met
+//todo: ensure dev constraints are met
 
 program.command('init').description('initialize the current repo').action(() => {
     //todo: install git hooks!

@@ -19,11 +19,28 @@
   ],
   "projects": [
     {
-      "name": "tyche_cli",
+      "name": "tyche-prep",
+      "build": {
+        "tool": "docker-compose",
+        "service": "tyche-prep"
+      },
+      "invalidate": [
+        {
+          "files": [
+            "package.json"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tyche-cli",
       "build": {
         "tool": "docker-compose",
         "service": "tyche-builder"
       },
+      "dependencies": [
+        "tyche-prep"
+      ],
       "repo": "."
     }
   ],
@@ -53,7 +70,7 @@
       "ensure": [
         {
           "object": "git.commit.sha",
-          "matches": "projects.tyche_cli.build.commit.sha"
+          "matches": "projects.tyche-cli.build.commit.sha"
         }
       ]
     }
