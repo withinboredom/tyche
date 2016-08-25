@@ -39,7 +39,8 @@ program.command('test [project]').description('only run the unit tests for a spe
 });
 
 program.command('release <version> <target>').alias('deploy').description('release a version into the wild').action(function (version, target) {
-    console.log(version, target);
+    console.log(version);
+    console.log(target);
 });
 
 program.parse(process.argv);
