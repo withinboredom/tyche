@@ -22,7 +22,8 @@
       "name": "tyche-prep",
       "build": {
         "tool": "docker-compose",
-        "service": "tyche-prep"
+        "service": "tyche-prep",
+        "bare": "npm install"
       },
       "invalidate": [
         {
@@ -36,7 +37,8 @@
       "name": "tyche-cli",
       "build": {
         "tool": "docker-compose",
-        "service": "tyche-builder"
+        "service": "tyche-builder",
+        "bare": "npm run build-cli"
       },
       "dependencies": [
         "tyche-prep"
