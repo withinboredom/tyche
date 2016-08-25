@@ -38,6 +38,10 @@ program.command('test [project]').description('only run the unit tests for a spe
     console.log(project);
 });
 
+program.command('release <version> <target>').alias('deploy').description('release a version into the wild').action(function (version, target) {
+    console.log(version, target);
+});
+
 program.parse(process.argv);
 
 //# sourceMappingURL=index-compiled.js.map
