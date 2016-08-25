@@ -1,7 +1,7 @@
 {
   "name": "Tyche",
   "version": "v0.0.0",
-  "description": "omni-builder"
+  "description": "omni-builder",
   "repository": {
     "type": "git",
     "url": "https://github.com/withinboredom/tyche"
