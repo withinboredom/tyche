@@ -8,7 +8,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "commander": "^2.9.0"
+    "cli-spinner": "^0.2.5",
+    "commander": "^2.9.0",
+    "nodegit": "^0.14.1"
   },
   "bin": {
     "tyche": "./index-compiled.js"

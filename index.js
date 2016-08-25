@@ -6,7 +6,12 @@ program
     .version('0.0.1');
 
 //todo: read the configuration file
+var config = require('./tyche.json');
+
 //todo: read repo state
+//todo: install hooks if needed
+//todo: ensure requirements are met
+//todo: ensure constraints are met
 
 program.command('init').description('initialize the current repo').action(() => {
     //todo: install git hooks!
