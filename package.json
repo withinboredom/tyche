@@ -6,5 +6,11 @@
     "type": "git",
     "url": "https://github.com/withinboredom/tyche"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.9.0"
+  },
+  "bin": {
+    "tyche": "./index-compiled.js"
+  }
 }
