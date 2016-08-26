@@ -1,0 +1,26 @@
+{
+  "requires": [
+    {
+      "tool": "dummy",
+      "version": "1"
+    }
+  ],
+  "projects": [
+    {
+      "name": "test1",
+      "build": {
+        "tool": "dummy",
+        "something": "hello",
+        "bare": "echo hello"
+      }
+    },
+    {
+      "name": "test2",
+      "build": {
+        "tool": "dummy",
+        "something": "world",
+        "bare": "echo world"
+      }
+    }
+  ]
+}
