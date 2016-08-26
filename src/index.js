@@ -6,7 +6,6 @@ import path from 'path';
 program.version('0.0.1');
 
 //todo: read the configuration file
-const config = require(path.join(process.cwd(), './tyche.json'));
 
 //todo: read repo state
 //todo: ensure dev requirements are met

@@ -15,6 +15,10 @@
     {
       "tool": "nodejs",
       "version": "v6.4.0"
+    },
+    {
+      "tool": "tyche",
+      "version": "v0.0.1"
     }
   ],
   "projects": [

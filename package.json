@@ -21,6 +21,6 @@
   },
   "scripts": {
     "build-cli": "babel --out-dir bin --presets es2016 --presets stage-3 ./src",
-    "watch": "babel --watch --out-dir bin --presets es2016 --presets state-3 ./src"
+    "watch": "babel --watch --out-dir bin --presets es2016 --presets stage-3 ./src"
   }
 }
