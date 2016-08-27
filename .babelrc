@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    ["module-resolver", {
+      "root": ["./src"],
+      "alias": {
+        "lib": "./src/lib"
+      }
+    }]
+  ],
+  "presets": ["es2017", "es2015"]
+}

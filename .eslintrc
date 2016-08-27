@@ -4,6 +4,11 @@
     "ecmaVersion": 6,
     "sourceType": "module",
   },
+  "settings": {
+    "import/resolver": {
+      "babel-module": {}
+    }
+  },
   "env": {
     "node": true,
     "es6": true

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import program from 'commander';
-import path from 'path';
+import "app-module-path/register";
 
 program.version('0.0.1');
 

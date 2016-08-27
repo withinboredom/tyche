@@ -1,6 +1,6 @@
 import assert from 'assert';
 import path from 'path';
-import configLoader from '../config';
+import configLoader from 'lib/config';
 
 class test {
 
@@ -9,8 +9,7 @@ class test {
      * @returns {Config|undefined} The config object
      */
     static testLoadConfig() {
-        const config = configLoader.loadConfig(path.normalize(`${__dirname}/../../../../assets/tests/configs/simple-config.json`));
-
+        const config = configLoader.loadConfig(path.normalize(`${__dirname}/../../assets/tests/configs/simple-config.json`));
         assert.deepEqual(config.raw, {
                 "requires": [
                     {
@@ -24,19 +23,24 @@ class test {
                         "build": {
                             "tool": "dummy",
                             "something": "hello",
-                            "bare": "echo hello"
-                        }
+                            "native": "echo hello"
+                        },
+                        "dependencies": [
+                            "test2"
+                        ],
+                        "final": true
                     },
                     {
                         "name": "test2",
                         "build": {
                             "tool": "dummy",
                             "something": "world",
-                            "bare": "echo world"
+                            "native": "echo world"
                         }
                     }
                 ]
-            }, 'raw does not match file');
+            }
+            , 'raw does not match file');
 
         return config;
     }
@@ -44,10 +48,15 @@ class test {
     /**
      * Attempt to load an invalid path of a config file
      */
-    static invalidPath() {
+    static testInvalidPath() {
         assert.strictEqual(configLoader.loadConfig('nothin.json'), undefined, 'undefined should be returned for non-existance');
+    }
+
+    static testDeps() {
+        assert.deepEqual(this.testLoadConfig().getProjectsInOrder(), ['test2', 'test1']);
     }
 }
 
 test.testLoadConfig();
-test.invalidPath();
+test.testInvalidPath();
+test.testDeps();
