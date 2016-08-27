@@ -89,6 +89,8 @@ export default class Config {
             console.log(e);
             process.exit(1);
         }
+
+        return undefined;
     }
 
     /**

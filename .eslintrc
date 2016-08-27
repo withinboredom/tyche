@@ -61,7 +61,7 @@
     "curly": [2,"all"],
     "default-case": 1,
     "dot-notation": [2,{"allowKeywords":true}],
-    "dot-location": [2,"object"],
+    "dot-location": [2,"property"],
     "eqeqeq": [2,"smart"],
     "guard-for-in": 2,
     "no-alert": 2,
