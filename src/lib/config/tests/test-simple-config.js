@@ -3,10 +3,15 @@ import path from 'path';
 import configLoader from '../config';
 
 class test {
-    testLoadConfig() {
-        const config = configLoader.loadConfig(path.normalize(`${__dirname}/../../../tests/simple-config.json`));
 
-        assert.equal(config.raw, {
+    /**
+     * Handles basic setup for tests, as well as testing the loader itself
+     * @returns {Config|undefined} The config object
+     */
+    static testLoadConfig() {
+        const config = configLoader.loadConfig(path.normalize(`${__dirname}/../../../../assets/tests/configs/simple-config.json`));
+
+        assert.deepEqual(config.raw, {
                 "requires": [
                     {
                         "tool": "dummy",
@@ -32,13 +37,17 @@ class test {
                     }
                 ]
             }, 'raw does not match file');
+
+        return config;
     }
 
-    invalidPath() {
-        assert.throws(configLoader.loadConfig('nothin.json'), 'breaks');
+    /**
+     * Attempt to load an invalid path of a config file
+     */
+    static invalidPath() {
+        assert.strictEqual(configLoader.loadConfig('nothin.json'), undefined, 'undefined should be returned for non-existance');
     }
 }
 
-const t = new test();
-t.testLoadConfig();
-t.invalidPath();
+test.testLoadConfig();
+test.invalidPath();
