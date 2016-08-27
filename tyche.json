@@ -1,4 +1,7 @@
 {
+  "settings": {
+    "defaultTool": "native"
+  },
   "requires": [
     {
       "tool": "docker-compose",
@@ -49,11 +52,16 @@
   "projects": [
     {
       "name": "tyche-prep",
-      "build": {
-        "tool": "docker-compose",
-        "service": "tyche-prep",
-        "native": "npm install"
-      },
+      "build": [
+        {
+          "tool": "docker-compose",
+          "service": "tyche-prep"
+        },
+        {
+          "tool": "native",
+          "command": ["npm", "install"]
+        }
+      ],
       "invalidate": [
         {
           "files": [
@@ -64,15 +72,21 @@
     },
     {
       "name": "tyche-cli",
-      "build": {
-        "tool": "docker-compose",
-        "service": "tyche-builder",
-        "native": "npm run build-cli"
-      },
+      "build": [
+        {
+          "tool": "docker-compose",
+          "service": "tyche-builder"
+        },
+        {
+          "tool": "native",
+          "command": ["npm", "run", "build-cli"]
+        }
+      ],
       "dependencies": [
         "tyche-prep"
       ],
-      "repo": "."
+      "repo": ".",
+      "final": true
     }
   ],
   "runner": {

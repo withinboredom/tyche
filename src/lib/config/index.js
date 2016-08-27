@@ -86,7 +86,8 @@ export default class Config {
             return new Config(raw);
         } catch(e) {
             console.error(`Unable to load config file: ${file}`);
-            return undefined;
+            console.log(e);
+            process.exit(1);
         }
     }
 
