@@ -24,6 +24,30 @@ if (!fs.existsSync(dbFile)) {
 const db = new loki(dbFile);
 const state = {};
 
+const tyche = async () => {
+    await new Promise((done) => {
+        db.loadDatabase({}, () => {
+            done();
+        });
+    });
+
+    const repo = await Repository.open(process.cwd());
+    const configPath = path.normalize(`${repo.path()}/../`);
+    const config = Config.loadConfig(path.normalize(`${configPath}/./tyche.json`));
+    const repoName = path.basename(configPath);
+
+    const hashes = await config.getListOfValidationHashes();
+
+    console.log(repoName);
+    console.log(hashes);
+
+    process.exit(0);
+};
+
+tyche();
+
+/*
+
 new Promise((done) => {
     db.loadDatabase({}, () => {
         done();
@@ -118,3 +142,4 @@ new Promise((done) => {
         process.exit(exit);
     });
 });
+*/
