@@ -52,6 +52,10 @@ function builder(config, project = '', buildTool) {
             const step = project.build.find(p => p.tool === exec.toolName);
 
             //exec.nativeCommand = project.build.native;
+            if (step === undefined) {
+                return undefined; // skip steps that have no action to perform
+            }
+
             exec.buildFromStep(step);
             spinner.stop(true);
             const exit = exec.execTool();

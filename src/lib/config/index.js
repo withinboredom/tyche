@@ -1,3 +1,6 @@
+import crypto from 'crypto';
+import fs from 'fs';
+
 /**
  * A simple node for dependency walking
  */
@@ -80,7 +83,6 @@ export default class Config {
      * @returns {Config|undefined} The configuration object
      */
     static loadConfig(file) {
-        console.log(`loading ${file}`);
         try {
             const raw = require(file);
             return new Config(raw);
@@ -132,5 +134,51 @@ export default class Config {
         }
 
         return resolved.map(n => n.name);
+    }
+
+    /**
+     * Get's a list of files that require validation
+     * @returns {Array} The list of files that require validation
+     */
+    getValidationFiles() {
+        const list = [];
+        for(const project of this.raw.projects) {
+            if (project.invalidate && project.invalidate.length > 0) {
+                for(const type of project.invalidate) {
+                    if (type.files && type.files.length > 0) {
+                        for(const file of type.files) {
+                            list.push(file);
+                        }
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    getListOfValidationHashes() {
+        const files = this.getValidationFiles();
+        const list = [];
+
+        for(const file of files) {
+            const hash = crypto.createHash('sha256');
+            const input = fs.createReadStream(file);
+
+            input.on('data', (data) => {
+                hash.update(data);
+            });
+
+            list.push(new Promise((done) => {
+                input.on('end', () => {
+                    const digest = hash.digest('hex');
+                    done({
+                        digest,
+                        file
+                    });
+                });
+            }));
+        }
+
+        return Promise.all(list);
     }
 }

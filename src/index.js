@@ -5,17 +5,67 @@ import program from 'commander';
 import { Builder } from 'lib/user';
 import { Spinner } from 'cli-spinner';
 import Config from 'lib/config';
+import loki from 'lokijs';
+import fs from 'fs';
+import os from 'os';
 
 program.version('0.0.1');
 
 Spinner.setDefaultSpinnerString(21);
 const spinner = new Spinner('Loading...');
 spinner.start();
-Repository.open(process.cwd()).then(repo => {
-    const configPath = path.normalize(`${repo.path()}/../`);
-    const config = Config.loadConfig(path.normalize(`${configPath}/./tyche.json`));
+
+const dbFile = path.normalize(`${os.homedir()}/.tyche.json`);
+
+if (!fs.existsSync(dbFile)) {
+    fs.writeFileSync(dbFile, '');
+}
+
+const db = new loki(dbFile);
+const state = {};
+
+new Promise((done) => {
+    db.loadDatabase({}, () => {
+        done();
+    });
+}).then(() => {
+    return Repository.open(process.cwd());
+}).then(repo => {
+    state.configPath = path.normalize(`${repo.path()}/../`);
+    state.config = Config.loadConfig(path.normalize(`${state.configPath}/./tyche.json`));
+    state.repoName = path.basename(state.configPath);
+
+    const repos = db.getCollection('repo') || db.addCollection('repo');
+    const repoDb = repos.find({name: {'$eq': state.repoName}});
+
+    // if this is the first instantiation, ever...
+    if (repoDb.length === 0) {
+        repos.insert([
+            {
+                name: state.repoName,
+                lastConfig: state.config.raw,
+                hooksInstalled: false,
+                vHashes: [],
+                dirtyFiles: [],
+                buildNumber: 0
+            }
+        ]);
+
+        console.log("This looks like this is the first time you've run tyche here. You should run `tyche init` to initialize the repo");
+        throw new Error('no db');
+    }
 
 //todo: read repo state
+    return state.config.getListOfValidationHashes();
+}).then(hashes => {
+    console.log(hashes);
+    const repos = db.getCollection('repo');
+    const repoDb = repos.find({name: state.repoName});
+    if (JSON.stringify(hashes) !== JSON.stringify(repoDb.vHashes)) {
+        //todo: we have dirty files, so we should flag them as such
+        console.log('dirty files detected')
+    }
+
 //todo: ensure dev requirements are met
 //todo: ensure dev constraints are met
 
@@ -27,7 +77,7 @@ Repository.open(process.cwd()).then(repo => {
     .option('-t --tool <tool>', 'Set the default tool')
     .description('runs a given project').action((...options) => {
         console.log(options[1].tool);
-        Builder(config, options[0], options[1].tool);
+        Builder(state.config, options[0], options[1].tool);
     });
 
     program.command('exec <project> <command...>').description('run a command in the context of a project').action((project, command) => {
@@ -58,4 +108,13 @@ Repository.open(process.cwd()).then(repo => {
 
     spinner.stop();
     program.parse(process.argv);
+}).then(() => {
+    console.log('May fortune find you!');
+}, err => {
+    console.log(err);
+    return 1;
+}).then((exit = 0) => {
+    db.saveDatabase(() => {
+        process.exit(exit);
+    });
 });
