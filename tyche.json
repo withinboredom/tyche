@@ -2,131 +2,71 @@
   "settings": {
     "defaultTool": "native"
   },
-  "requires": [
+  "tasks": [
     {
-      "tool": "docker-compose",
-      "supported": [
+      "name": "clean",
+      "tasks": [
         {
-          "platform": "osx",
-          "version": "stable"
-        }
-      ]
-    },
-    {
-      "tool": "docker",
-      "supported": [
-        {
-          "platform": "osx",
-          "version": "stable"
-        }
-      ]
-    },
-    {
-      "tool": "npm",
-      "supported": [
-        {
-          "platform": "osx",
-          "version": "stable"
-        }
-      ]
-    },
-    {
-      "tool": "nodejs",
-      "supported": [
-        {
-          "platform": "osx",
-          "version": "stable"
-        }
-      ]
-    },
-    {
-      "tool": "tyche",
-      "supported": [
-        {
-          "platform": "osx",
-          "version": "stable"
-        }
-      ]
-    }
-  ],
-  "projects": [
-    {
-      "name": "tyche-prep",
-      "build": [
-        {
-          "tool": "docker-compose",
-          "service": "tyche-prep"
+          "name": "remove node_modules",
+          "exec": {
+            "native-nix": {
+              "command": ["rm","-rf","node_modules"]
+            },
+            "docker-compose": {
+              "action": "down"
+            }
+          }
         },
         {
-          "tool": "native",
-          "command": ["npm", "install"]
-        }
-      ],
-      "clean": [
-        {
-          "tool": "docker-compose"
-        },
-        {
-          "tool": "native",
-          "command": ["rm","-rf","node_modules"]
-        }
-      ],
-      "invalidate": [
-        {
-          "files": [
-            "package.json"
+          "name": "remove built files",
+          "exec": {
+            "native-nix": {
+              "command": ["rm","-rf", "bin/*"]
+            }
+          },
+          "always": "native",
+          "dependencies": [
+            "remove node_modules"
           ]
         }
       ]
     },
     {
-      "name": "tyche-cli",
-      "build": [
+      "name": "build",
+      "tasks": [
         {
-          "tool": "docker-compose",
-          "service": "tyche-builder"
+          "name": "install dependencies",
+          "exec": {
+            "native": {
+              "command": ["npm","install"]
+            },
+            "docker-compose": {
+              "service": "tyche-prep"
+            }
+          },
+          "dependencies": [
+            "clean"
+          ],
+          "skips": {
+            "files_not_changed": [
+              "package.json"
+            ],
+            "skip_dependencies_if_skip": true
+          }
         },
         {
-          "tool": "native",
-          "command": ["npm", "run", "build-cli"]
-        }
-      ],
-      "clean": [
-        {
-          "tool": "native",
-          "command": ["rm","-rf","bin/*"]
-        }
-      ],
-      "dependencies": [
-        "tyche-prep"
-      ],
-      "repo": ".",
-      "final": true
-    }
-  ],
-  "actions": [
-    {
-      "name": "version-bump",
-      "parameters": [
-        {
-          "required": true,
-          "name": "version"
-        }
-      ],
-      "run": {
-        "tool": "docker-compose",
-        "service": "bumper"
-      }
-    }
-  ],
-  "constraints": [
-    {
-      "name": "compile-on-push",
-      "on": "git-push",
-      "ensure": [
-        {
-          "object": "git.commit.sha",
-          "matches": "projects.tyche-cli.build.commit.sha"
+          "name": "build-cli",
+          "exec": {
+            "native": {
+              "command": ["npm","run","build-cli"]
+            },
+            "docker-compose": {
+              "service": "tyche-builder"
+            }
+          },
+          "dependencies": [
+            "install dependencies"
+          ]
         }
       ]
     }

@@ -1,68 +1,6 @@
 import crypto from 'crypto';
 import fs from 'fs';
-
-/**
- * A simple node for dependency walking
- */
-class Node {
-    /**
-     * Create a simple Node
-     * @param {string} name The name of the Node
-     */
-    constructor(name) {
-        this.name = name;
-        this.edges = [];
-    }
-
-    /**
-     * Adds an edge to this Node
-     * @param {Node} node The node to add an edge to
-     */
-    addEdge(node) {
-        this.edges.push(node);
-    }
-}
-
-/**
- * Walk from a node
- * @param {Node} node The node to start from
- * @param {Array} resolved a list of all resolved dependencies
- * @param {Array} unresolved a list of all unresolved dependencies
- */
-function depResolve(node, resolved = [], unresolved = []) {
-    unresolved.push(node);
-    for (const edge of node.edges) {
-        if (resolved.find(n => n === edge) === undefined) {
-            if (unresolved.find(n => n === edge) !== undefined) {
-                console.log(resolved);
-                throw Error(`Circular dependencies detected: ${edge.name} and ${node.name}`);
-            }
-            depResolve(edge, resolved, unresolved);
-        }
-    }
-    resolved.push(node);
-    unresolved.splice(unresolved.findIndex(n => n === node), 1);
-}
-
-/**
- * Belongs in a unit test
- let a = new Node('a');
-let b = new Node('b');
-let c = new Node('c');
-let d = new Node('d');
-let e = new Node('e');
-
-a.addEdge(b);
-a.addEdge(d);
-b.addEdge(c);
-b.addEdge(e);
-c.addEdge(d);
-c.addEdge(e);
-//d.addEdge(b);
-
-let resolved = [];
-depResolve(a, resolved);
-console.log(resolved);*/
+import {depResolve, Node} from 'lib/config/deps';
 
 /**
  * Handles app configuration
