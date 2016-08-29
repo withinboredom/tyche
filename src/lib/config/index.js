@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
-import {depResolve, Node} from 'lib/config/deps';
+import BuildTasks from 'lib/config/task';
+import {hashFile, hashFileList} from 'lib/config/hash';
 
 /**
  * Handles app configuration
@@ -12,7 +13,7 @@ export default class Config {
      */
     constructor(config) {
         this.raw = config;
-        this.projectNodes = new Map();
+        this.tasks = BuildTasks(config.tasks);
     }
 
     /**
@@ -80,7 +81,7 @@ export default class Config {
      */
     getValidationFiles() {
         const list = [];
-        for(const project of this.raw.projects) {
+        for(const project of this.raw.tasks) {
             if (project.invalidate && project.invalidate.length > 0) {
                 for(const type of project.invalidate) {
                     if (type.files && type.files.length > 0) {

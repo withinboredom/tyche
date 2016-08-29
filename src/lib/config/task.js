@@ -14,10 +14,12 @@ class Task extends Node {
 
         // wire up dependencies
         this.dependencies = [];
-        for(const babyTask of taskJSON.tasks) {
-            const childTask = new Task(babyTask, taskList);
-            this.addEdge(childTask);
-            this.dependencies.push(childTask);
+        if (taskJSON.tasks && taskJSON.tasks.length >= 0) {
+            for (const babyTask of taskJSON.tasks) {
+                const childTask = new Task(babyTask, taskList);
+                this.addEdge(childTask);
+                this.dependencies.push(childTask);
+            }
         }
 
         this.unresolvedDependencies = taskJSON.dependencies || [];
