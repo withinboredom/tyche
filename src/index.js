@@ -9,7 +9,7 @@ import loki from 'lokijs';
 import fs from 'fs';
 import os from 'os';
 
-program.version('0.0.1');
+program.version(require(path.normalize(`${__dirname}/../package.json`)).version);
 
 Spinner.setDefaultSpinnerString(21);
 const spinner = new Spinner('Loading...');
