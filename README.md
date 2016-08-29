@@ -8,6 +8,6 @@ Current version is 0.0.x ... and will continue to be that way until it's first s
 
 - [ ] allow to init a repo
 - [ ] keep track of repo state
-- [ ] define a config file that makes sense
-- [ ] create the config file to build this tool
+- [x] define a config file that makes sense
+- [x] create the config file to build this tool
 - [ ] use the tool to build the tool!
