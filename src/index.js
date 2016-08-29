@@ -49,10 +49,17 @@ const tyche = async () => {
         program.command(`${name} [subtask]`)
             .description(description)
             .option('-t --tool <tool>', 'use the default tool')
+            .option('-d --dry', 'Show all the commands the tool is about to run')
             .action((subtask, ...options) => {
                 command.execute();
             });
     }
+
+    program.command('init')
+        .description('Initialize the tool in this repository')
+        .action(stuff => {
+            console.log('wooo');
+        });
 
     spinner.stop();
     program.parse(process.argv);
