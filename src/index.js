@@ -69,7 +69,7 @@ async function main() {
     try {
         const program = await tyche();
     } catch(err) {
-        console.log(err);
+        console.error(err);
     }
     db.saveDatabase();
 };
