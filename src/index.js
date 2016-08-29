@@ -22,50 +22,59 @@ if (!fs.existsSync(dbFile)) {
 }
 
 const db = new loki(dbFile);
-const state = {};
 
-const tyche = async () => {
-    await new Promise((done) => {
-        db.loadDatabase({}, () => {
-            done();
-        });
-    });
-
-    const repo = await Repository.open(process.cwd());
-    const configPath = path.normalize(`${repo.path()}/../`);
-    const config = Config.loadConfig(path.normalize(`${configPath}/./tyche.json`));
-    const repoName = path.basename(configPath);
-
-    const hashes = await config.getListOfValidationHashes();
-
-    console.log(config.topLevelTasks);
-    console.log(repoName);
-    console.log(hashes);
-
-    for(const command of config.topLevelTasks) {
-        const name = command.name;
-        const description = command.description || 'run task';
-
-        program.command(`${name} [subtask]`)
-            .description(description)
-            .option('-t --tool <tool>', 'use the default tool')
-            .option('-d --dry', 'Show all the commands the tool is about to run')
-            .action((subtask, ...options) => {
-                command.execute();
+async function tyche() {
+        const loading = await new Promise((done) => {
+            db.loadDatabase({}, () => {
+                return done();
             });
-    }
-
-    program.command('init')
-        .description('Initialize the tool in this repository')
-        .action(stuff => {
-            console.log('wooo');
         });
 
-    spinner.stop();
-    program.parse(process.argv);
+        const repo = await Repository.open(process.cwd());
+        const configPath = path.normalize(`${repo.path()}/../`);
+        const config = Config.loadConfig(path.normalize(`${configPath}/./tyche.json`));
+        const repoName = path.basename(configPath);
+
+        const hashes = await config.getListOfValidationHashes();
+
+        //todo: Read repo state
+
+        for (const command of config.topLevelTasks) {
+            const name = command.name;
+            const description = command.description || 'run task';
+            const subCommands = command.resolve();
+
+            const subCommandString = `${subCommands.filter(e => e !== command).map(e => e.name).join('|')}`;
+
+            program.command(`${name} [${subCommandString}]`)
+                .description(description)
+                .option('-t --tool <tool>', 'use the default tool')
+                .option('-d --dry', 'Show all the commands the tool is about to run')
+                .action((subtask, ...options) => {
+                    command.execute();
+                });
+        }
+
+        program.command('init')
+            .description('Initialize the tool in this repository')
+            .action(stuff => {
+                console.log('wooo');
+            });
+
+        spinner.stop();
+        program.parse(process.argv);
 };
 
-tyche();
+async function main() {
+    try {
+        const program = await tyche();
+    } catch(err) {
+        console.log(err);
+    }
+    db.saveDatabase();
+};
+
+main();
 
 /*
 

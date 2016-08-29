@@ -15,7 +15,10 @@ export default class Config {
         this.raw = config;
         this.tasks = BuildTasks(config.tasks);
         if (this.raw.tasks) {
-            this.topLevelTasks = this.raw.tasks;
+            this.topLevelTasks = [];
+            for(const t of this.raw.tasks) {
+                this.topLevelTasks.push(this.tasks.find(i => i.name === t.name));
+            }
         }
         else {
             this.topLevelTasks = [];
