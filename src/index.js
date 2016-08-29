@@ -38,10 +38,24 @@ const tyche = async () => {
 
     const hashes = await config.getListOfValidationHashes();
 
+    console.log(config.topLevelTasks);
     console.log(repoName);
     console.log(hashes);
 
-    process.exit(0);
+    for(const command of config.topLevelTasks) {
+        const name = command.name;
+        const description = command.description || 'run task';
+
+        program.command(`${name} [subtask]`)
+            .description(description)
+            .option('-t --tool <tool>', 'use the default tool')
+            .action((subtask, ...options) => {
+                command.execute();
+            });
+    }
+
+    spinner.stop();
+    program.parse(process.argv);
 };
 
 tyche();

@@ -51,12 +51,22 @@ class Task extends Node {
 
     /**
      * Get the list of dependencies to execute this task
+     * @param {string} stopAt Stop the task at a specific dependency
      * @returns {Task[]} The list of tasks to execute
      */
-    resolve() {
+    resolve(stopAt) {
         const resolved = [];
         depResolve(this, resolved);
         return resolved; //todo: filter based on deps and constraints
+    }
+
+    /**
+     * Executes the task, given the spcificied tool
+     * @param {Tool} tool The tool to use to execute the task
+     * @returns {*} not really anything
+     */
+    execute(tool) {
+        return true;
     }
 }
 

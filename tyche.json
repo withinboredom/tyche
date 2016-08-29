@@ -5,9 +5,11 @@
   "tasks": [
     {
       "name": "clean",
+      "description": "Removes all build dependencies",
       "tasks": [
         {
-          "name": "remove node_modules",
+          "name": "node_modules",
+          "description": "Clean node_modules",
           "exec": {
             "native-nix": {
               "command": ["rm","-rf","node_modules"]
@@ -18,7 +20,8 @@
           }
         },
         {
-          "name": "remove built files",
+          "name": "build",
+          "description": "Removes all build artifacts",
           "exec": {
             "native-nix": {
               "command": ["rm","-rf", "bin/*"]
@@ -26,16 +29,18 @@
           },
           "always": "native",
           "dependencies": [
-            "remove node_modules"
+            "node_modules"
           ]
         }
       ]
     },
     {
       "name": "build",
+      "description": "Build this nifty little cli tool",
       "tasks": [
         {
-          "name": "install dependencies",
+          "name": "dependencies",
+          "description": "Install build dependencies",
           "exec": {
             "native": {
               "command": ["npm","install"]
@@ -56,6 +61,7 @@
         },
         {
           "name": "build-cli",
+          "description": "Actually build the tool...",
           "exec": {
             "native": {
               "command": ["npm","run","build-cli"]
@@ -65,7 +71,7 @@
             }
           },
           "dependencies": [
-            "install dependencies"
+            "dependencies"
           ]
         }
       ]

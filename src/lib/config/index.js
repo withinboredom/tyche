@@ -14,6 +14,12 @@ export default class Config {
     constructor(config) {
         this.raw = config;
         this.tasks = BuildTasks(config.tasks);
+        if (this.raw.tasks) {
+            this.topLevelTasks = this.raw.tasks;
+        }
+        else {
+            this.topLevelTasks = [];
+        }
     }
 
     /**
