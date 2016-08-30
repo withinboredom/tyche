@@ -40,10 +40,16 @@ async function tyche() {
             });
     }
 
+    async function test() {
+        const repo = await Repository.open(process.cwd());
+        const path = repo.path();
+        console.log(path);
+    }
+
     program.command('init')
         .description('Initialize the tool in this repository')
-        .action(stuff => {
-            console.log('wooo');
+        .action(() => {
+            test();
         });
 
     spinner.stop();

@@ -78,6 +78,58 @@
           ]
         }
       ]
+    },
+    {
+      "name": "watch",
+      "description": "Build as you write code",
+      "exec": {
+        "native": {
+          "command": ["npm","run","watch"]
+        }
+      },
+      "dependencies": [
+        "dependencies"
+      ]
+    }
+  ],
+  "study": [
+    {
+      "on": "commit",
+      "watch": [
+        "tyche.json",
+        "package.json",
+        "src/**/*"
+      ],
+      "message": {
+        "warn": "It looks like you forgot to build this commit, maybe you should do that?"
+      },
+      "reset": [
+        "build",
+        "watch"
+      ]
+    },
+    {
+      "on": "push",
+      "watch": [
+        "tyche.json",
+        "package.json",
+        "src/**/*.js"
+      ],
+      "message": {
+        "error": "It looks like you forgot to build this commit, please do that"
+      },
+      "reset": [
+        "build",
+        "watch"
+      ],
+      "branch": ["master"]
+    },
+    {
+      "on": "commit",
+      "plugin": "no-conflicts",
+      "message": {
+        "error": "You cannot commit conflicts. Please resolve them and try again."
+      }
     }
   ]
 }

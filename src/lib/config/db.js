@@ -46,14 +46,27 @@ async function load() {
 
 /**
  * Get a files collection from the db
- * @param {loki} database
- * @returns {*} Collection
+ * @param {loki} database the database
+ * @returns {Collection} Collection
  */
 export async function getFilesCollection(database) {
     const prefix = await dbPrefix();
 
     return database.getCollection(`${prefix}files`) || database.addCollection(`${prefix}files`, {
         unique: ['file']
+    });
+}
+
+/**
+ * Get the status collection
+ * @param {loki} database The database
+ * @returns {Collection} collection
+ */
+export async function getStatusCollection(database) {
+    const prefix = await dbPrefix();
+
+    return database.getCollection(`${prefix}status`) || database.addCollection(`${prefix}status`, {
+        unique: ['task']
     });
 }
 

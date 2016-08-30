@@ -1,6 +1,6 @@
 import {depResolve, Node} from "lib/config/deps";
 import {hashFileList} from "lib/config/hash";
-import db, {getFilesCollection} from "lib/config/db";
+import db, {getFilesCollection, getStatusCollection} from "lib/config/db";
 import {configPath} from "lib/config/paths";
 import Switcher from "lib/oneWaySwitch";
 import fs from "fs";
@@ -147,6 +147,9 @@ class Task extends Node {
             console.log('#!/bin/sh'); // hard coded linux ... ugh...
             console.log("# Begin generated output");
         }
+
+        const completed = [];
+
         for(const dep of deps) {
             let skip = false;
             let skipThis = false;
@@ -172,10 +175,26 @@ class Task extends Node {
                     console.log("# Real run will skip next command");
                 }
                 await executor.execTool();
+                completed.push(dep.name);
             }
         }
         if (dry) {
             console.log("# End generated output");
+        } else {
+            completed.push(this.name);
+            const database = await db();
+            const collection = await getStatusCollection(database);
+            for(const complete of completed) {
+                const data = collection.by('task', complete);
+
+                if (!data) {
+                    // insert commit sha into db
+                    continue;
+                }
+
+                data.commit = true; // todo: update with real sha
+            }
+            database.saveDatabase();
         }
 
         return true;
