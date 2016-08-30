@@ -34,11 +34,13 @@ export default class Tool {
 
     /**
      * Builds a command from a step
-     * @param {Object} step The step to build from
+     * @param {Object} task The task to build from
+     * @return {boolean} Returns true if this tool can be built from this task
      */
-    buildFromStep(step) {
-        this.nativeCommand = step;
+    buildFromStep(task) {
+        this.nativeCommand = task;
         throw new Error('buildFromStep not override');
+        return false; //eslint-disable-line
     }
 
     /**

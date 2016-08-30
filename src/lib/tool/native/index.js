@@ -30,6 +30,19 @@ export default class Native extends Tool {
                 universal = 'native-win';
                 break;
         }
-        this.nativeCommand = (step.exec[`native-${os.platform()}`] || step.exec[universal] || step.exec.native).command;
+
+        const native = step.exec[`native-${os.platform()}`];
+        const psuedo = step.exec[universal];
+        const notNativeButNative = step.exec.native;
+
+        if (step.exec) {
+            if (!(native || psuedo || notNativeButNative)) {
+                return false;
+            }
+        }
+
+        this.nativeCommand = (native || psuedo || notNativeButNative).command;
+
+        return true;
     }
 }

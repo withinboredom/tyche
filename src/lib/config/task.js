@@ -3,6 +3,7 @@ import {hashFileList} from "lib/config/hash";
 import db, {getFilesCollection, getStatusCollection} from "lib/config/db";
 import {configPath} from "lib/config/paths";
 import Switcher from "lib/oneWaySwitch";
+import ToolMachine from "lib/tool";
 import fs from "fs";
 
 /**
@@ -119,13 +120,13 @@ class Task extends Node {
 
     /**
      * Executes the task, given the spcificied tool
-     * @param {Tool} tool The tool to use to execute the task
+     * @param {string} tool The tool to use to execute the task
      * @param {string} stopAt Stop running at a certain point
      * @param {boolean} dry Dry run if true
      * @returns {*} not really anythingb
      * @todo: Make this function simpler!!
      */
-    async execute(tool, stopAt, dry) {
+    async execute(tool, stopAt, dry, config) {
         const deps = this.resolve(stopAt);
 
         let skipDeps = null;
@@ -164,12 +165,29 @@ class Task extends Node {
                 continue;
             }
 
+            const tools = [ tool, config.defaultTool, 'native' ];
+
             if (Object.keys(dep.exec).length !== 0) {
-                const executor = new tool();
+                let executor = null;
+                for(const preferredTool of tools) {
+                    if (preferredTool === null || preferredTool === undefined) {
+                        continue;
+                    }
+                    const tooling = ToolMachine(preferredTool);
+                    executor = new tooling();
+                    if(executor.buildFromStep(dep)) {
+                        break;
+                    }
+                }
+
+                if (executor === null) {
+                    console.error(`Unable to find a tool to run task ${dep.name}`)
+                    throw new Error(`Unable to find a tool to run task ${dep.name}`);
+                }
+
                 if (!dry) {
                     console.log(`Running task ${dep.name} with ${executor.toolName} executor`);
                 }
-                executor.buildFromStep(dep);
                 executor.dryRun = dry;
                 if (dry && (skip || skipThis)) {
                     console.log("# Real run will skip next command");

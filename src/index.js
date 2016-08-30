@@ -4,7 +4,6 @@ import { Repository } from 'nodegit';
 import program from 'commander';
 import { Spinner } from 'cli-spinner';
 import Config from 'lib/config';
-import toolMachine from 'lib/tool';
 import database from 'lib/config/db';
 import {configPath} from 'lib/config/paths';
 
@@ -33,9 +32,7 @@ async function tyche() {
             .option('-t --tool <tool>', 'use the default tool')
             .option('-d --dry', 'Show all the commands the tool is about to run')
             .action((subcommand, ...options) => {
-                const toolString = options.tool || config.defaultTool || 'native'; // perhaps the config object should decide the default tool??
-                const tool = toolMachine(toolString);
-                command.execute(tool, subcommand, options[0].dry);
+                command.execute(options[0].tool, subcommand, options[0].dry, config);
                 db.saveDatabase();
             });
     }
