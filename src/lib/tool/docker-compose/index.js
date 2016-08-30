@@ -14,7 +14,11 @@ export default class DockerCompose extends Tool {
         this.native.push(command.action);
 
         if (command.service) {
-            this.native.push(command.service);
+            if (Array.isArray(command.service)) {
+                this.native.push(...command.service);
+            } else {
+                this.native.push(command.service);
+            }
         }
 
         if (command.command) {

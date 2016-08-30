@@ -32,8 +32,12 @@ async function tyche() {
             .option('-t --tool <tool>', 'use the default tool')
             .option('-d --dry', 'Show all the commands the tool is about to run')
             .option('-f --force', 'Run all tasks, even skipped ones')
-            .action((subcommand, ...options) => {
-                command.execute(options[0].tool, subcommand, options[0].dry, config, options[0].force || false);
+            .action((subcommand, options) => {
+                if (typeof subcommand === 'object') {
+                    options = subcommand;
+                    subcommand = null;
+                }
+                command.execute(options.tool, subcommand, options.dry, config, options.force || false);
                 db.saveDatabase();
             });
     }
