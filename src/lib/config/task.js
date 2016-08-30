@@ -120,7 +120,10 @@ class Task extends Node {
     /**
      * Executes the task, given the spcificied tool
      * @param {Tool} tool The tool to use to execute the task
+     * @param {string} stopAt Stop running at a certain point
+     * @param {boolean} dry Dry run if true
      * @returns {*} not really anythingb
+     * @todo: Make this function simpler!!
      */
     async execute(tool, stopAt, dry) {
         const deps = this.resolve(stopAt);
@@ -139,7 +142,7 @@ class Task extends Node {
         }
 
         if (dry) {
-            console.log("Now generating a script for you")
+            console.log("Now generating a script for you");
             console.log("-------------------------------");
             console.log('#!/bin/sh'); // hard coded linux ... ugh...
             console.log("# Begin generated output");
