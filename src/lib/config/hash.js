@@ -14,13 +14,17 @@ async function hashFile(path) {
         hash.update(data);
     });
 
-    return await new Promise(done => {
+    return await new Promise((done, reject) => {
         input.on('end', () => {
-            const complete = hash.digest('hex');
-            done({
-                digest: complete,
-                file: path
-            });
+            try {
+                const complete = hash.digest('hex');
+                done({
+                    digest: complete,
+                    file: path
+                });
+            } catch(err) {
+                reject(err);
+            }
         });
     });
 }

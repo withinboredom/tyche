@@ -64,8 +64,12 @@ export default class Tool {
 
         const cmd = spawn(this.command, this.native, config);
 
-        return new Promise(done => {
+        return new Promise((done, reject) => {
             cmd.on('close', code => {
+                if (code !== 0) {
+                    console.error('Task failed');
+                    reject(code);
+                }
                 done({
                     code,
                 });

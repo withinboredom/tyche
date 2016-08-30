@@ -6,15 +6,29 @@ import Loki, {Collection} from 'lokijs';
  * Initialize the db, uses side effects
  */
 async function init() {
-    const dbExists = await new Promise(done => {
-        fs.exists(dbFile, exists => {
-            done(exists);
+    const dbExists = await new Promise((done, reject) => {
+        fs.stat(dbFile, (err, stats) => {
+            if (err) {
+                if (err.code === 'ENOENT') {
+                    done(false);
+                }
+                console.error(err);
+                reject(err);
+            }
+            if (stats) {
+                done(true);
+            }
+
+            done(false);
         });
     });
 
     if (!dbExists) {
-        await new Promise(done => {
-            fs.writeFile(dbFile, '', () => {
+        await new Promise((done, reject) => {
+            fs.writeFile(dbFile, '', err => {
+                if (err){
+                    reject(err);
+                }
                 done();
             });
         });
@@ -36,8 +50,11 @@ async function dbCreate() {
  */
 async function load() {
     const db = await dbCreate();
-    await new Promise(done => {
-        db.loadDatabase({}, () => {
+    await new Promise((done, reject) => {
+        db.loadDatabase({}, (err) => {
+            if (err) {
+                reject(err);
+            }
             done();
         });
     });

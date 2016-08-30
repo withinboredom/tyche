@@ -160,7 +160,7 @@ class Task extends Node {
                 skip = false;
                 skipThis = true;
             }
-            if (skip && !dry) {
+            if ((skip || skipThis) && !dry) {
                 continue;
             }
 
