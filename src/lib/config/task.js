@@ -1,13 +1,9 @@
-import {depResolve, Node} from 'lib/config/deps';
-import {hashFileList} from 'lib/config/hash';
-import db, {getFilesCollection} from 'lib/config/db';
-import {configPath} from 'lib/config/paths';
-import Switcher from 'lib/oneWaySwitch';
-import fs from 'fs';
-
-const skipMe = Symbol("Skip just this task");
-const skipAfter = Symbol("Skip everything past this task");
-const skipBefore = Symbol("Skip everything before this task");
+import {depResolve, Node} from "lib/config/deps";
+import {hashFileList} from "lib/config/hash";
+import db, {getFilesCollection} from "lib/config/db";
+import {configPath} from "lib/config/paths";
+import Switcher from "lib/oneWaySwitch";
+import fs from "fs";
 
 /**
  * Represents a task that has dependencies, executors, skip rules, and constraints
