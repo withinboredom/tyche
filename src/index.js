@@ -2,12 +2,12 @@
 import path from 'path';
 import { Repository } from 'nodegit';
 import program from 'commander';
-import { Builder } from 'lib/user';
 import { Spinner } from 'cli-spinner';
 import Config from 'lib/config';
-import loki from 'lokijs';
+import Loki from 'lokijs';
 import fs from 'fs';
 import os from 'os';
+import toolMachine from 'lib/tool';
 
 program.version(require(path.normalize(`${__dirname}/../package.json`)).version);
 
@@ -17,52 +17,65 @@ spinner.start();
 
 const dbFile = path.normalize(`${os.homedir()}/.tyche.json`);
 
-if (!fs.existsSync(dbFile)) {
-    fs.writeFileSync(dbFile, '');
-}
-
-const db = new loki(dbFile);
-
 async function tyche() {
-        const loading = await new Promise((done) => {
-            db.loadDatabase({}, () => {
-                return done();
+    const dbExists = await new Promise((done) => {
+        fs.exists(dbFile, (exists) => {
+            done(exists);
+        });
+    });
+
+    if (!dbExists) {
+        await new Promise(done => {
+            fs.writeFile(dbFile, '', () => {
+                done();
             });
         });
+    }
 
-        const repo = await Repository.open(process.cwd());
-        const configPath = path.normalize(`${repo.path()}/../`);
-        const config = Config.loadConfig(path.normalize(`${configPath}/./tyche.json`));
-        const repoName = path.basename(configPath);
+    const db = new Loki(dbFile);
 
-        const hashes = await config.getListOfValidationHashes();
+    await new Promise((done) => {
+        db.loadDatabase({}, () => {
+            return done();
+        });
+    });
 
-        //todo: Read repo state
+    const repo = await Repository.open(process.cwd());
+    const configPath = path.normalize(`${repo.path()}/../`);
+    const config = Config.loadConfig(path.normalize(`${configPath}/./tyche.json`));
+    const repoName = path.basename(configPath);
 
-        for (const command of config.topLevelTasks) {
-            const name = command.name;
-            const description = command.description || 'run task';
-            const subCommands = command.resolve();
+    const hashes = await config.getListOfValidationHashes();
 
-            const subCommandString = `${subCommands.filter(e => e !== command).map(e => e.name).join('|')}`;
+    //todo: Read repo state
 
-            program.command(`${name} [${subCommandString}]`)
-                .description(description)
-                .option('-t --tool <tool>', 'use the default tool')
-                .option('-d --dry', 'Show all the commands the tool is about to run')
-                .action((subtask, ...options) => {
-                    command.execute();
-                });
-        }
+    for (const command of config.topLevelTasks) {
+        const name = command.name;
+        const description = command.description || 'run task';
+        const subCommands = command.resolve();
 
-        program.command('init')
-            .description('Initialize the tool in this repository')
-            .action(stuff => {
-                console.log('wooo');
+        const subCommandString = `${subCommands.filter(e => e !== command).map(e => e.name).join('|')}`;
+
+        program.command(`${name} [${subCommandString}]`)
+            .description(description)
+            .option('-t --tool <tool>', 'use the default tool')
+            .option('-d --dry', 'Show all the commands the tool is about to run')
+            .action((subcommand, ...options) => {
+                const toolString = options.tool || config.defaultTool || 'native';
+                const tool = new toolMachine(toolString);
+                command.execute(tool, subcommand);
+                db.saveDatabase();
             });
+    }
 
-        spinner.stop();
-        program.parse(process.argv);
+    program.command('init')
+        .description('Initialize the tool in this repository')
+        .action(stuff => {
+            console.log('wooo');
+        });
+
+    spinner.stop();
+    program.parse(process.argv);
 };
 
 async function main() {
@@ -71,7 +84,6 @@ async function main() {
     } catch(err) {
         console.error(err);
     }
-    db.saveDatabase();
 };
 
 main();

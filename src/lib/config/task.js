@@ -1,4 +1,10 @@
 import {depResolve, Node} from 'lib/config/deps';
+import {hashFileList} from 'lib/config/hash';
+import db from 'lib/config/db';
+
+const skipMe = new Symbol("Skip just this task");
+const skipAfter = new Symbol("Skip everything past this task");
+const skipBefore = new Symbol("Skip everything before this task");
 
 /**
  * Represents a task that has dependencies, executors, skip rules, and constraints
@@ -23,7 +29,7 @@ class Task extends Node {
         }
 
         this.unresolvedDependencies = taskJSON.dependencies || [];
-        this.skips = taskJSON.skips || [];
+        this.skips = taskJSON.skips || {};
         this.exec = taskJSON.exec || {};
         this.always = taskJSON.always || false;
         this.constraints = taskJSON.constraints || [];
@@ -36,7 +42,6 @@ class Task extends Node {
      * @returns {boolean} True if the task should be skipped
      */
     shouldSkip() {
-        //todo: implement this
         return false;
     }
 
@@ -57,15 +62,23 @@ class Task extends Node {
     resolve(stopAt) {
         const resolved = [];
         depResolve(this, resolved);
-        return resolved; //todo: filter based on deps and constraints
+        let keepGoing = true;
+        return resolved.filter(e => {
+            if (e.name === stopAt) {
+                keepGoing = false;
+                return true;
+            }
+            return keepGoing;
+        });
     }
 
     /**
      * Executes the task, given the spcificied tool
      * @param {Tool} tool The tool to use to execute the task
-     * @returns {*} not really anything
+     * @returns {*} not really anythingb
      */
-    execute(tool) {
+    async execute(tool, stopAt) {
+        const deps = this.resolve(stopAt);
         return true;
     }
 }
@@ -86,7 +99,15 @@ function BuildTasks(taskJSON) {
         new Task(babyTask, taskList);
     }
 
+    const namesSeen = [];
+
     for(const task of taskList) {
+        if (namesSeen.find(e => e === task.name) !== undefined) {
+            throw new Error(`Duplicate task name found: ${task.name}`);
+        }
+
+        namesSeen.push(task.name);
+
         if (task.unresolvedDependencies.length > 0) {
             for(const taskToFind of task.unresolvedDependencies) {
                 const dep = taskList.find(el => el.name === taskToFind);

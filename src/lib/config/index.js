@@ -23,6 +23,7 @@ export default class Config {
         else {
             this.topLevelTasks = [];
         }
+        this.defaultTool = this.raw.settings.defaultTool || 'native';
     }
 
     /**
