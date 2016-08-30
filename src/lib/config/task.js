@@ -150,10 +150,11 @@ class Task extends Node {
      * @param {string} stopAt Stop running at a certain point
      * @param {boolean} dry Dry run if true
      * @param {Config} config The configuration object
+     * @param {boolean} force force build
      * @returns {*} not really anythingb
      * @todo: Make this function simpler!!
      */
-    async execute(tool, stopAt, dry, config) {
+    async execute(tool, stopAt, dry, config, force) {
         const deps = this.resolve(stopAt);
         const database = await db();
         const runDb = await getHasRunCollection(database);
@@ -185,15 +186,17 @@ class Task extends Node {
             let skip = false;
             let skipThis = false;
             let requestSkip = false;
-            if (skipDeps !== null && skipDeps !== dep) {
-                skip = true;
-            } else if (skipDeps && skipDeps === dep) {
-                skipDeps = null;
-                skip = false;
-                skipThis = true;
-            }
-            if ((skip || skipThis) && !dry) {
-                requestSkip = true;
+            if (!force) {
+                if (skipDeps !== null && skipDeps !== dep) {
+                    skip = true;
+                } else if (skipDeps && skipDeps === dep) {
+                    skipDeps = null;
+                    skip = false;
+                    skipThis = true;
+                }
+                if ((skip || skipThis) && !dry) {
+                    requestSkip = true;
+                }
             }
 
             const tools = [ tool, config.defaultTool, 'native' ];
