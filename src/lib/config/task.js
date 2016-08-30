@@ -1,9 +1,9 @@
 import {depResolve, Node} from "lib/config/deps";
 import {hashFileList} from "lib/config/hash";
-import db, {getFilesCollection, getStatusCollection} from "lib/config/db";
+import db, {getFilesCollection, getStatusCollection, getHasRunCollection} from "lib/config/db";
 import {configPath} from "lib/config/paths";
-import Switcher from "lib/oneWaySwitch";
 import ToolMachine from "lib/tool";
+import {Repository} from 'nodegit';
 import fs from "fs";
 
 /**
@@ -39,11 +39,21 @@ class Task extends Node {
 
     /**
      * Should this task be skipped?
-     * @returns {boolean} True if the task should be skipped
+     * @returns {object} .skip == True, also has .tool if the task should be skipped
      */
     async shouldSkip() {
-        const shouldSkip = new Switcher();
-        const shouldRun = new Switcher();
+        let skippers = 0;
+        let totalSkippers = 0;
+
+        function skip() {
+            skippers++;
+            totalSkippers++;
+        }
+
+        function noSkip() {
+            totalSkippers++;
+        }
+
         if (this.skips.files_not_changed) {
             const database = await db();
             const collection = await getFilesCollection(database);
@@ -56,19 +66,16 @@ class Task extends Node {
                 if (!data) {
                     // add this file to the collection
                     collection.insertOne(file);
-                    shouldSkip.isActive = false;
-                    shouldRun.isActive = true;
+                    noSkip();
                     continue;
                 }
 
                 if (data.digest === file.digest) {
-                    shouldSkip.isActive = true;
-                    shouldRun.isActive = false;
+                    skip();
                     continue;
                 }
 
-                shouldSkip.isActive = false;
-                shouldRun.isActive = true;
+                noSkip();
                 data.digest = file.digest;
                 collection.update(data);
             }
@@ -78,17 +85,36 @@ class Task extends Node {
 
         if (this.skips.path_exists) {
             for(const path of this.skips.path_exists) {
-                if (fs.exists(path)) {
-                    shouldRun.isActive = true;
-                    shouldSkip.isActive = false;
+                if (await new Promise(done => { // if path exists
+                    fs.stat(path, err => {
+                        if (err) {
+                            done(false);
+                        }
+                        done(true);
+                    });
+                })) {
+                    skip();
                     continue;
                 }
-                shouldSkip.isActive = true;
-                shouldRun.isActive = false;
+
+                noSkip();
             }
         }
 
-        return !shouldRun.isActive || shouldSkip.isActive; //todo: refactor to all or nothing...
+        let willSkip = (skippers === totalSkippers) && totalSkippers > 0;
+
+        const database = await db();
+        const skipDb = await getHasRunCollection(database);
+
+        const hasRun = skipDb.by('task', this.name);
+        if (hasRun === undefined) {
+            // we've never run this before ... so we can't skip it...
+            willSkip = false;
+        }
+
+        return {
+            skip: willSkip
+        };
     }
 
     /**
@@ -123,15 +149,19 @@ class Task extends Node {
      * @param {string} tool The tool to use to execute the task
      * @param {string} stopAt Stop running at a certain point
      * @param {boolean} dry Dry run if true
+     * @param {Config} config The configuration object
      * @returns {*} not really anythingb
      * @todo: Make this function simpler!!
      */
     async execute(tool, stopAt, dry, config) {
         const deps = this.resolve(stopAt);
+        const database = await db();
+        const runDb = await getHasRunCollection(database);
+        const repo = await Repository.open(process.cwd());
 
         let skipDeps = null;
         for(const dep of deps) {
-            if (await dep.shouldSkip()) {
+            if (await (await dep.shouldSkip()).skip) {
                 if (dep.skips.skip_dependencies_if_skip) {
                     skipDeps = dep;
                 }
@@ -154,6 +184,7 @@ class Task extends Node {
         for(const dep of deps) {
             let skip = false;
             let skipThis = false;
+            let requestSkip = false;
             if (skipDeps !== null && skipDeps !== dep) {
                 skip = true;
             } else if (skipDeps && skipDeps === dep) {
@@ -162,7 +193,7 @@ class Task extends Node {
                 skipThis = true;
             }
             if ((skip || skipThis) && !dry) {
-                continue;
+                requestSkip = true;
             }
 
             const tools = [ tool, config.defaultTool, 'native' ];
@@ -180,19 +211,63 @@ class Task extends Node {
                     }
                 }
 
+                const run = runDb.by('task', dep.name);
+
                 if (executor === null) {
-                    console.error(`Unable to find a tool to run task ${dep.name}`)
+                    console.error(`Unable to find a tool to run task ${dep.name}`);
                     throw new Error(`Unable to find a tool to run task ${dep.name}`);
+                }
+
+                if (requestSkip === true) {
+                    if (run !== undefined) {
+                        requestSkip = run.tools.reduce((prev, usedTool) => (usedTool === executor.toolName) || prev, requestSkip);
+                    } else {
+                        requestSkip = false;
+                    }
                 }
 
                 if (!dry) {
                     console.log(`Running task ${dep.name} with ${executor.toolName} executor`);
                 }
                 executor.dryRun = dry;
-                if (dry && (skip || skipThis)) {
-                    console.log("# Real run will skip next command");
+                if (dry || !requestSkip) {
+                    if (dry) {
+                        console.log("# Real run will skip next command");
+                    }
+                    try {
+                        await executor.execTool();
+                    } catch (err) {
+                        console.error('failed to exec tool', err);
+                    }
                 }
-                await executor.execTool();
+                else {
+                    console.log("skipped");
+                }
+                if (!dry) {
+                    if (run === undefined) {
+                        try {
+                            runDb.insert({
+                                task: dep.name,
+                                tools: [
+                                    executor.toolName
+                                ],
+                                lastCommit: (await repo.getHeadCommit()).id().tostrS(),
+                                lastTool: executor.toolName
+                            });
+                        } catch (err) {
+                            console.error(err);
+                        }
+                        continue;
+                    }
+
+                    const seen = new Map();
+                    run.tools.push(executor.toolName);
+                    run.tools = run.tools.filter(item => seen.get(item) ? false : seen.set(item, true) || true);
+                    run.lastCommit = (await repo.getHeadCommit()).id().tostrS();
+                    run.lastTool = executor.toolName;
+                    runDb.update(run);
+                    database.saveDatabase();
+                }
                 completed.push(dep.name);
             }
         }
@@ -200,7 +275,6 @@ class Task extends Node {
             console.log("# End generated output");
         } else {
             completed.push(this.name);
-            const database = await db();
             const collection = await getStatusCollection(database);
             for(const complete of completed) {
                 const data = collection.by('task', complete);

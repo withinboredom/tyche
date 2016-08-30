@@ -87,4 +87,11 @@ export async function getStatusCollection(database) {
     });
 }
 
+export async function getHasRunCollection(database) {
+    const prefix = await dbPrefix();
+    return database.getCollection(`${prefix}hasRun`) || database.addCollection(`${prefix}hasRun`, {
+        unique: ['task']
+    });
+}
+
 export default load;

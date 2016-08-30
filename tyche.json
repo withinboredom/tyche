@@ -18,19 +18,6 @@
               "action": "down"
             }
           }
-        },
-        {
-          "name": "build-artifacts",
-          "description": "Removes all build artifacts",
-          "exec": {
-            "native-nix": {
-              "command": ["rm","-rf", "bin/*"]
-            }
-          },
-          "always": "native",
-          "dependencies": [
-            "node_modules"
-          ]
         }
       ]
     },
