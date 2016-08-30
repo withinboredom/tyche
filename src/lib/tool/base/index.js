@@ -18,6 +18,10 @@ export default class Tool {
         return `echo ${this.native.join(' ')}`;
     }
 
+    set dryRun(doDry) {
+        this.dry = doDry;
+    }
+
     //noinspection JSAnnotator
     /**
      * Set the native command
@@ -53,7 +57,10 @@ export default class Tool {
             config.stdio = 'inherit';
         }
 
-        console.log('command:', this.command, this.native.join(' '));
+        if (this.dry) {
+            console.log(this.command, this.native.join(' '));
+            return Promise.resolve();
+        }
 
         const cmd = spawn(this.command, this.native, config);
 
@@ -70,5 +77,6 @@ export default class Tool {
         this.native = [];
         this.command = 'echo';
         this.initialized = false;
+        this.dry = false;
     }
 }

@@ -1,7 +1,4 @@
-import crypto from 'crypto';
-import fs from 'fs';
 import BuildTasks from 'lib/config/task';
-import {hashFile, hashFileList} from 'lib/config/hash';
 
 /**
  * Handles app configuration
@@ -19,8 +16,7 @@ export default class Config {
             for(const t of this.raw.tasks) {
                 this.topLevelTasks.push(this.tasks.find(i => i.name === t.name));
             }
-        }
-        else {
+        } else {
             this.topLevelTasks = [];
         }
         this.defaultTool = this.raw.settings.defaultTool || 'native';
@@ -42,92 +38,5 @@ export default class Config {
         }
 
         return undefined;
-    }
-
-    /**
-     * Returns an array of project names in the order they can be built in
-     * @returns {Array} The array of projects
-     */
-    getProjectsInOrder() {
-        for (const project of this.raw.projects) {
-            if (!this.projectNodes.has(project)) {
-                this.projectNodes.set(project.name, new Node(project.name));
-            }
-
-            if (project.final) {
-                this.projectNodes.set('root', this.projectNodes.get(project.name));
-            }
-
-            if (Array.isArray(project.dependencies)) {
-                for (const dep of project.dependencies) {
-                    if (!this.projectNodes.has(dep)) {
-                        this.projectNodes.set(dep, new Node(dep));
-                    }
-
-                    this.projectNodes.get(project.name).addEdge(this.projectNodes.get(dep));
-                }
-            }
-        }
-
-        if (!this.projectNodes.has('root')) {
-            throw new Error("No project specified as final=true");
-        }
-
-        const resolved = [];
-        const unresolved = [];
-
-        depResolve(this.projectNodes.get('root'), resolved, unresolved);
-
-        if (unresolved.length > 0) {
-            throw new Error(`No dependency set for ${unresolved[0].name}`);
-        }
-
-        return resolved.map(n => n.name);
-    }
-
-    /**
-     * Get's a list of files that require validation
-     * @returns {Array} The list of files that require validation
-     */
-    getValidationFiles() {
-        const list = [];
-        for(const project of this.raw.tasks) {
-            if (project.invalidate && project.invalidate.length > 0) {
-                for(const type of project.invalidate) {
-                    if (type.files && type.files.length > 0) {
-                        for(const file of type.files) {
-                            list.push(file);
-                        }
-                    }
-                }
-            }
-        }
-        return list;
-    }
-
-    getListOfValidationHashes() {
-        const files = this.getValidationFiles();
-        const list = [];
-
-        for(const file of files) {
-            const hash = crypto.createHash('sha256');
-            const input = fs.createReadStream(file);
-
-            input.on('data', (data) => {
-                hash.update(data);
-            });
-
-            list.push(new Promise((done) => {
-                input.on('end', () => {
-                    const digest = hash.digest('hex');
-                    done({
-                        digest,
-                        file
-                    });
-                });
-            }));
-        }
-
-        return Promise.all(list);
     }
 }

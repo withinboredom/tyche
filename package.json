@@ -2,6 +2,10 @@
   "name": "tyche",
   "version": "v0.0.1",
   "description": "omni-builder",
+  "bugs": {
+    "url" : "https://github.com/owner/project/issues",
+    "email" : "project@hostname.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/withinboredom/tyche"

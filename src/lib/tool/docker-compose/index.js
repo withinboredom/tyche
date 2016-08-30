@@ -3,7 +3,6 @@ import Tool from 'lib/tool/base';
 export default class DockerCompose extends Tool {
     constructor() {
         super();
-        console.log('created tool');
         this.command = 'docker-compose';
     }
 

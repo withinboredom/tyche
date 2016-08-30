@@ -14,7 +14,7 @@ async function hashFile(path) {
         hash.update(data);
     });
 
-    const digest = await new Promise(done => {
+    return await new Promise(done => {
         input.on('end', () => {
             const complete = hash.digest('hex');
             done({
@@ -23,8 +23,6 @@ async function hashFile(path) {
             });
         });
     });
-
-    return digest;
 }
 
 /**

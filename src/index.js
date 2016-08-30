@@ -4,10 +4,9 @@ import { Repository } from 'nodegit';
 import program from 'commander';
 import { Spinner } from 'cli-spinner';
 import Config from 'lib/config';
-import Loki from 'lokijs';
-import fs from 'fs';
-import os from 'os';
 import toolMachine from 'lib/tool';
+import database from 'lib/config/db';
+import {configPath} from 'lib/config/paths';
 
 program.version(require(path.normalize(`${__dirname}/../package.json`)).version);
 
@@ -15,37 +14,10 @@ Spinner.setDefaultSpinnerString(21);
 const spinner = new Spinner('Loading...');
 spinner.start();
 
-const dbFile = path.normalize(`${os.homedir()}/.tyche.json`);
-
 async function tyche() {
-    const dbExists = await new Promise((done) => {
-        fs.exists(dbFile, (exists) => {
-            done(exists);
-        });
-    });
+    const db = (await database());
 
-    if (!dbExists) {
-        await new Promise(done => {
-            fs.writeFile(dbFile, '', () => {
-                done();
-            });
-        });
-    }
-
-    const db = new Loki(dbFile);
-
-    await new Promise((done) => {
-        db.loadDatabase({}, () => {
-            return done();
-        });
-    });
-
-    const repo = await Repository.open(process.cwd());
-    const configPath = path.normalize(`${repo.path()}/../`);
-    const config = Config.loadConfig(path.normalize(`${configPath}/./tyche.json`));
-    const repoName = path.basename(configPath);
-
-    const hashes = await config.getListOfValidationHashes();
+    const config = Config.loadConfig(path.normalize(`${await configPath()}/./tyche.json`));
 
     //todo: Read repo state
 
@@ -62,8 +34,8 @@ async function tyche() {
             .option('-d --dry', 'Show all the commands the tool is about to run')
             .action((subcommand, ...options) => {
                 const toolString = options.tool || config.defaultTool || 'native';
-                const tool = new toolMachine(toolString);
-                command.execute(tool, subcommand);
+                const tool = toolMachine(toolString);
+                command.execute(tool, subcommand, options[0].dry);
                 db.saveDatabase();
             });
     }
@@ -80,9 +52,10 @@ async function tyche() {
 
 async function main() {
     try {
-        const program = await tyche();
+        await tyche();
     } catch(err) {
         console.error(err);
+        process.exit(1);
     }
 };
 

@@ -1,20 +1,13 @@
-import path from 'path';
-import os from 'os';
+import {dbFile, dbPrefix} from 'lib/config/paths';
 import fs from 'fs';
-import loki from 'lokijs';
-
-/**
- * The path to the global database file
- * @type {string}
- */
-const dbFile = path.normalize(`${os.homedir()}/.tyche.json`);
+import Loki, {Collection} from 'lokijs';
 
 /**
  * Initialize the db, uses side effects
  */
 async function init() {
-    const dbExists = await new Promise((done) => {
-        fs.exists(dbFile, (exists) => {
+    const dbExists = await new Promise(done => {
+        fs.exists(dbFile, exists => {
             done(exists);
         });
     });
@@ -34,7 +27,7 @@ async function init() {
  */
 async function dbCreate() {
     await init();
-    return new loki(dbFile);
+    return new Loki(dbFile);
 }
 
 /**
@@ -51,4 +44,17 @@ async function load() {
     return db;
 }
 
-export default load();
+/**
+ * Get a files collection from the db
+ * @param {loki} database
+ * @returns {*} Collection
+ */
+export async function getFilesCollection(database) {
+    const prefix = await dbPrefix();
+
+    return database.getCollection(`${prefix}files`) || database.addCollection(`${prefix}files`, {
+        unique: ['file']
+    });
+}
+
+export default load;
