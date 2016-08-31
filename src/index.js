@@ -1,11 +1,11 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --harmony
 import path from 'path';
 import { Repository } from 'nodegit';
 import program from 'commander';
 import { Spinner } from 'cli-spinner';
 import Config from 'lib/config';
-import database from 'lib/config/db';
 import {configPath} from 'lib/config/paths';
+import chalk from 'chalk';
 
 program.version(require(path.normalize(`${__dirname}/../package.json`)).version);
 
@@ -14,11 +14,17 @@ const spinner = new Spinner('Loading...');
 spinner.start();
 
 async function tyche() {
-    const db = (await database());
-
     const config = Config.loadConfig(path.normalize(`${await configPath()}/./tyche.json`));
 
     //todo: Read repo state
+
+    const vars = {
+        command: null,
+        tool: null,
+        subcommand: null,
+        dry: false,
+        force: false
+    };
 
     for (const command of config.topLevelTasks) {
         const name = command.name;
@@ -37,30 +43,29 @@ async function tyche() {
                     options = subcommand;
                     subcommand = null;
                 }
-                command.execute(options.tool, subcommand, options.dry, config, options.force || false);
-                db.saveDatabase();
+                vars.command = command;
+                vars.tool = options.tool;
+                vars.subcommand = subcommand;
+                vars.dry = options.dry;
+                vars.force = options.force || false;
             });
-    }
-
-    async function test() {
-        const repo = await Repository.open(process.cwd());
-        const path = repo.path();
-        console.log(path);
     }
 
     program.command('init')
         .description('Initialize the tool in this repository')
         .action(() => {
-            test();
+            // broken
         });
 
     spinner.stop();
     program.parse(process.argv);
+    await vars.command.execute(vars.tool, vars.subcommand, vars.dry, config, vars.force);
 };
 
 async function main() {
     try {
         await tyche();
+        console.log(chalk.bold.dim("May fortune find you!"));
     } catch(err) {
         console.error(err);
         process.exit(1);

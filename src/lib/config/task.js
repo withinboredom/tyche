@@ -5,6 +5,7 @@ import {configPath} from "lib/config/paths";
 import ToolMachine from "lib/tool";
 import {Repository} from 'nodegit';
 import fs from "fs";
+import chalk from 'chalk';
 
 /**
  * Represents a task that has dependencies, executors, skip rules, and constraints
@@ -238,7 +239,12 @@ class Task extends Node {
                         console.log("# Real run will skip next command");
                     }
                     try {
+                        function nodie() {
+                            console.error('waiting for task to end...');
+                        };
+                        process.on('SIGINT', nodie);
                         await executor.execTool();
+                        process.removeListener('SIGINT', nodie);
                     } catch (err) {
                         console.error('failed to exec tool', err);
                     }
