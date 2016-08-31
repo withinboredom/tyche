@@ -23,3 +23,11 @@ I seem to spend several hours or more putting together a build process.
 
 This isn't ideal, so I've taken many hours building a general purpose tool
 that can handle many of the things that I've seen and built into other tools.
+
+### Running tyche
+
+clone this repo, then
+
+1. `npm install -g tyche`
+2. `tyche build`
+3. `tyche test`
