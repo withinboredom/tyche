@@ -5,7 +5,6 @@ import {configPath} from "lib/config/paths";
 import ToolMachine from "lib/tool";
 import {Repository} from 'nodegit';
 import fs from "fs";
-import chalk from 'chalk';
 
 /**
  * Represents a task that has dependencies, executors, skip rules, and constraints
@@ -34,6 +33,7 @@ class Task extends Node {
         this.exec = taskJSON.exec || {};
         this.always = taskJSON.always || false;
         this.constraints = taskJSON.constraints || [];
+        this.description = taskJSON.description || 'run a task';
 
         taskList.push(this);
     }
@@ -282,20 +282,6 @@ class Task extends Node {
         }
         if (dry) {
             console.log("# End generated output");
-        } else {
-            completed.push(this.name);
-            const collection = await getStatusCollection(database);
-            for(const complete of completed) {
-                const data = collection.by('task', complete);
-
-                if (!data) {
-                    // insert commit sha into db
-                    continue;
-                }
-
-                data.commit = true; // todo: update with real sha
-            }
-            database.saveDatabase();
         }
 
         return true;
@@ -314,8 +300,10 @@ function BuildTasks(taskJSON) {
      * @type {[Task]}
      */
     const taskList = [];
-    for(const babyTask of taskJSON) {
-        new Task(babyTask, taskList);
+    if(taskJSON !== undefined) {
+        for (const babyTask of taskJSON) {
+            new Task(babyTask, taskList);
+        }
     }
 
     const namesSeen = [];

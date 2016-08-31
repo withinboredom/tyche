@@ -77,6 +77,21 @@
       "dependencies": [
         "dependencies"
       ]
+    },
+    {
+      "name": "test",
+      "description": "Run unit tests",
+      "exec": {
+        "native": {
+          "command": ["npm","run","test"]
+        },
+        "docker-compose": {
+          "service": "tyche-tests"
+        },
+        "dependencies": [
+          "build"
+        ]
+      }
     }
   ],
   "study": [

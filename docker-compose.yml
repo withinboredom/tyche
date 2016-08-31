@@ -7,6 +7,10 @@ services:
       - project_node_modules:/app/node_modules
     working_dir: /app
     command: npm install
+  tyche-tests:
+    extends:
+      service: tyche-prep
+    command: npm run test
   tyche-builder:
     extends:
       service: tyche-prep

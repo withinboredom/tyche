@@ -1,4 +1,4 @@
-import BuildTasks from 'lib/config/task';
+import BuildTasks from './task';
 
 /**
  * Handles app configuration
@@ -19,7 +19,7 @@ export default class Config {
         } else {
             this.topLevelTasks = [];
         }
-        this.defaultTool = this.raw.settings.defaultTool || 'native';
+        this.defaultTool = (this.raw.settings && this.raw.settings.defaultTool) || 'native';
     }
 
     /**
@@ -33,10 +33,7 @@ export default class Config {
             return new Config(raw);
         } catch(e) {
             console.error(`Unable to load config file: ${file}`);
-            console.log(e);
-            process.exit(1);
+            throw e;
         }
-
-        return undefined;
     }
 }
