@@ -1,13 +1,25 @@
-#Tyche
+# May the god of fortune bring your project fortune
 
-*Warning*: This tool is currently under heavy development and may break many things you depend on. Continue at your own risk!
+Tyche is a build tool, for use in places like TeamCity, Jenkins, TravisCI
+and most importantly, on your very own development machine.
 
-Current version is 0.0.x ... and will continue to be that way until it's first stable release at 0.1.0
+*No more* will you be trying to replicate a build failure that you witness
+in a log output. You will be able to run the exact same build process that
+you run locally ... anywhere, on any machine or platform.
 
-### Current list of things to do
+### How Tyche works
 
-- [ ] allow to init a repo
-- [ ] keep track of repo state
-- [x] define a config file that makes sense
-- [x] create the config file to build this tool
-- [x] use the tool to build the tool!
+Tyche works through a concept of tasks and studies (studies are not implemented
+yet). Tasks are defined in a [tyche.json](./tyche.json) file. They can be
+related to one another by setting dependencies on other tasks.
+
+The API is rapidly changing (just take a look at the history of the one
+in this repo). As it matures, more time can be taken to discuss it.
+
+### Why Tyche exists
+
+Everywhere I've worked, every project I've worked on (for pleasure, or profit),
+I seem to spend several hours or more putting together a build process.
+
+This isn't ideal, so I've taken many hours building a general purpose tool
+that can handle many of the things that I've seen and built into other tools.
