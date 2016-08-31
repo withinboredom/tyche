@@ -69,7 +69,8 @@ describe('tasks', () => {
     it('can actually execute', async () => {
         const config = await getConfig();
         await config.tasks[0].execute('native', 5, false, config, true);
-    })
+    });
+    /* What remains: mocking out the db to fully test the execute and should skip functions */
 });
 
 describe('config', () => {
