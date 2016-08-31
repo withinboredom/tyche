@@ -26,19 +26,17 @@ class Node {
  * @param {Array} resolved a list of all resolved dependencies
  * @param {Array} unresolved a list of all unresolved dependencies
  */
-function depResolve(node, resolved = [], unresolved = [], up, down) {
+function depResolve(node, resolved = [], unresolved = []) {
     unresolved.push(node);
     for (const edge of node.edges) {
         if (resolved.find(n => n === edge) === undefined) {
             if (unresolved.find(n => n === edge) !== undefined) {
                 throw Error(`Circular dependencies detected: ${edge.name} and ${node.name}`);
             }
-            down && down(edge);
-            depResolve(edge, resolved, unresolved, up, down);
+            depResolve(edge, resolved, unresolved);
         }
     }
     resolved.push(node);
-    up && up(node); //eslint-disable-line callback-return
     unresolved.splice(unresolved.findIndex(n => n === node), 1);
 }
 

@@ -33,6 +33,7 @@
     "babel-preset-stage-3": "^6.11.0",
     "eslint-import-resolver-babel-module": "^2.0.1",
     "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-jasmine": "^1.8.1",
     "jest-cli": "^14.1.0"
   },
   "bin": {
@@ -41,6 +42,13 @@
   "scripts": {
     "build-cli": "babel --out-dir bin ./src",
     "watch": "babel --watch --out-dir bin ./src",
-    "test": "npm run build-cli && node bin/tests"
+    "test": "jest --coverage"
+  },
+  "jest": {
+    "unmockedModulePathPatterns": [
+      "node_modules/babel-plugin-transform-runtime",
+      "node_modules/core-js",
+      "node_modules/babel-plugin-transform-*"
+    ]
   }
 }

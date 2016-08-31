@@ -6,15 +6,24 @@ import fs from 'fs';
  * @param {string} path The path of the file to hash
  * @returns {Promise} A promise that resolves to an object {file, hash}
  */
-async function hashFile(path) {
-    const hash = crypto.createHash('sha256');
-    const input = fs.createReadStream(path);
+function hashFile(path) {
+    return new Promise((done, reject) => {
+        const hash = crypto.createHash('sha256');
+        const input = fs.createReadStream(path);
 
-    input.on('data', data => {
-        hash.update(data);
-    });
+        input.on('error', (err) => {
+            reject(err);
+        });
 
-    return await new Promise((done, reject) => {
+        input.on('data', data => {
+            try {
+                hash.update(data);
+            }
+            catch(err) {
+                reject(err);
+            }
+        });
+
         input.on('end', () => {
             try {
                 const complete = hash.digest('hex');
@@ -22,11 +31,11 @@ async function hashFile(path) {
                     digest: complete,
                     file: path
                 });
-            } catch(err) {
+            } catch (err) {
                 reject(err);
             }
         });
-    });
+    })
 }
 
 /**
@@ -37,7 +46,9 @@ async function hashFile(path) {
 async function hashFileList(listOfFiles) {
     const list = [];
     for(const file of listOfFiles) {
-        list.push(hashFile(file));
+        list.push(hashFile(file).catch((err) => {
+            console.error(`${err}`);
+        }));
     }
 
     return await Promise.all(list);
