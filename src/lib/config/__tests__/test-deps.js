@@ -1,6 +1,6 @@
 jest.disableAutomock();
 
-import {depResolve,Node} from 'lib/config/deps';
+import {depResolve,Node} from '../deps';
 
 describe('deps can be resolved', () => {
     it('can resolve dependencies', () => {

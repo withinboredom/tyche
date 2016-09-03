@@ -1,6 +1,6 @@
 jest.disableAutomock();
 
-import load, {getFilesCollection} from '../src/lib/config/db';
+import load, {getFilesCollection} from '../db';
 
 describe('can get dbs and stuff', () => {
     it('can do things', async () => {

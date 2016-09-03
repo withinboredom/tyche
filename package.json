@@ -34,7 +34,7 @@
     "eslint-import-resolver-babel-module": "^2.0.1",
     "eslint-plugin-import": "^1.14.0",
     "eslint-plugin-jasmine": "^1.8.1",
-    "jest-cli": "^14.1.0"
+    "jest-cli": "^15.1.1"
   },
   "bin": {
     "tyche": "./bin/index.js"
@@ -42,13 +42,14 @@
   "scripts": {
     "build-cli": "babel --out-dir bin ./src",
     "watch": "babel --watch --out-dir bin ./src",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "jest": {
     "unmockedModulePathPatterns": [
       "node_modules/babel-plugin-transform-runtime",
       "node_modules/core-js",
       "node_modules/babel-plugin-transform-*"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

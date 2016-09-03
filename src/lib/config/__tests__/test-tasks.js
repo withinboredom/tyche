@@ -1,7 +1,7 @@
 jest.disableAutomock();
 
-import createTasks from '../src/lib/config/task';
-import Config from '../src/lib/config';
+import createTasks from '../task';
+import Config from '../';
 
 const taskList = [{
     name: "test",
