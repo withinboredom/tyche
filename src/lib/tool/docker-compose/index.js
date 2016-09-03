@@ -13,6 +13,14 @@ export default class DockerCompose extends Tool {
 
         this.native.push(command.action);
 
+        switch (command.action) {
+            case 'down':
+                if (command.volumes) {
+                    this.native.push('-v');
+                }
+                break;
+        }
+
         if (command.service) {
             if (Array.isArray(command.service)) {
                 this.native.push(...command.service);
@@ -42,7 +50,8 @@ export default class DockerCompose extends Tool {
             action: exec.action || 'up',
             service: exec.service,
             file: exec.file || 'docker-compose.yml',
-            command: exec.command || ''
+            command: exec.command || '',
+            volumes: exec.volumes || false
         };
 
         return true;
