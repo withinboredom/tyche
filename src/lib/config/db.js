@@ -1,4 +1,4 @@
-import {dbFile, dbPrefix} from 'lib/config/paths';
+import {dbFile, dbPrefix, pathExists} from 'lib/config/paths';
 import fs from 'fs';
 import Loki, {Collection} from 'lokijs';
 
@@ -6,22 +6,7 @@ import Loki, {Collection} from 'lokijs';
  * Initialize the db, uses side effects
  */
 async function init() {
-    const dbExists = await new Promise((done, reject) => {
-        fs.stat(dbFile, (err, stats) => {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    done(false);
-                }
-                console.error(err);
-                reject(err);
-            }
-            if (stats) {
-                done(true);
-            }
-
-            done(false);
-        });
-    });
+    const dbExists = await pathExists(dbFile);
 
     if (!dbExists) {
         await new Promise((done, reject) => {

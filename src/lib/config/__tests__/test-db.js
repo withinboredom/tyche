@@ -1,5 +1,3 @@
-jest.disableAutomock();
-
 import load, {getFilesCollection} from '../db';
 
 describe('can get dbs and stuff', () => {

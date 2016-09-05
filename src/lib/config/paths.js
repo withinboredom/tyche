@@ -1,4 +1,5 @@
 import os from 'os';
+import fs from 'fs';
 import path from 'path';
 import { Repository } from 'nodegit';
 
@@ -21,4 +22,23 @@ async function dbPrefix() {
     return `${await repoName()}_`;
 }
 
-export {dbFile, configPath, repoName, dbPrefix};
+function pathExists(path) {
+    return new Promise((done, reject) => {
+        fs.stat(path, (err, stats) => {
+            if (err) {
+                if (err.code === 'ENOENT') {
+                    done(false);
+                }
+                console.error(err);
+                reject(err);
+            }
+            if (stats) {
+                done(true);
+            }
+
+            done(false);
+        });
+    });
+}
+
+export {dbFile, configPath, repoName, dbPrefix, pathExists};

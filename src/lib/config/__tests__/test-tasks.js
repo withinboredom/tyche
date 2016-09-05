@@ -1,4 +1,5 @@
-jest.disableAutomock();
+jest.mock('nodegit');
+jest.mock('lokijs');
 
 import createTasks from '../task';
 import Config from '../';
@@ -41,7 +42,33 @@ const getConfig = async () => {
     };
     const config = new Config(configJson);
     return config;
-}
+};
+
+const getSkipableConfig = async () => {
+    const configJson = {
+        tasks: [{
+            name: "test-skip",
+            description: "skips",
+            skips: {
+                skip_dependencies_if_skip: true,
+                path_exists: ['node_modules']
+            },
+            tasks: [{
+                name: 'no-run',
+                exec: {
+                    native: {
+                        command: ['echo','nothing']
+                    }
+                }
+            }]
+        }],
+        settings: {
+            defaultTool: 'native'
+        }
+    };
+    const config = new Config(configJson);
+    return config;
+};
 
 describe('tasks', () => {
     it('can give tasks from sane json', async () => {
@@ -70,7 +97,13 @@ describe('tasks', () => {
         const config = await getConfig();
         await config.tasks[0].execute('native', 5, false, config, true);
     });
-    /* What remains: mocking out the db to fully test the execute and should skip functions */
+    it('knows when to skip itself', async () => {
+        const config = await getSkipableConfig();
+        const task = config.tasks.filter(e => e.name == 'test-skip')[0];
+        const skip = task.shouldSkip().skip;
+
+        expect(skip).toBe(true);
+    })
 });
 
 describe('config', () => {

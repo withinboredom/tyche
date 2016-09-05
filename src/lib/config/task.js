@@ -1,7 +1,7 @@
 import {depResolve, Node} from "lib/config/deps";
 import {hashFileList} from "lib/config/hash";
 import db, {getFilesCollection, getStatusCollection, getHasRunCollection} from "lib/config/db";
-import {configPath} from "lib/config/paths";
+import {configPath, pathExists} from "lib/config/paths";
 import ToolMachine from "lib/tool";
 import {Repository} from 'nodegit';
 import fs from "fs";
@@ -86,14 +86,10 @@ class Task extends Node {
 
         if (this.skips.path_exists) {
             for(const path of this.skips.path_exists) {
-                if (await new Promise(done => { // if path exists
-                    fs.stat(path, err => {
-                        if (err) {
-                            done(false);
-                        }
-                        done(true);
-                    });
-                })) {
+                const checkPath = `${await configPath()}/${path}}`;
+                console.log(checkPath);
+                if (await pathExists(checkPath)) {
+                    console.log('skipping');
                     skip();
                     continue;
                 }
@@ -101,6 +97,8 @@ class Task extends Node {
                 noSkip();
             }
         }
+
+        console.log(this.skips);
 
         let willSkip = (skippers === totalSkippers) && totalSkippers > 0;
 
@@ -146,13 +144,13 @@ class Task extends Node {
     }
 
     /**
-     * Executes the task, given the spcificied tool
+     * Executes the task, given the specified tool
      * @param {string} tool The tool to use to execute the task
      * @param {string} stopAt Stop running at a certain point
      * @param {boolean} dry Dry run if true
      * @param {Config} config The configuration object
      * @param {boolean} force force build
-     * @returns {*} not really anythingb
+     * @returns {*} not really anything
      * @todo: Make this function simpler!!
      */
     async execute(tool, stopAt, dry, config, force) {
