@@ -22,7 +22,7 @@ const skipsAlways = {
     name: 'skips-always',
     description: 'should always skip',
     skips: {
-        path_exists: './node_modules'
+        path_exists: ['./node_modules']
     }
 };
 
@@ -30,7 +30,7 @@ const sometimesSkips = {
     name: 'sometimes-skips',
     description: 'will skip if test file has not changed',
     skips: {
-        files_not_changed: './test-file.json'
+        files_not_changed: ['./test-file.json']
     }
 };
 
@@ -39,7 +39,7 @@ const skipDeps = {
     description: 'always skip dependencies',
     skips: {
         skip_dependencies_if_skip: true,
-        path_exists: './node_modules'
+        path_exists: ['./node_modules']
     }
 };
 
@@ -71,14 +71,14 @@ describe('tasks', () => {
         ]);
     });
 
-    it('can know whether or not to skip itself', () => {
+    it('can know whether or not to skip itself', async () => {
         const test = new Task(database, skipsAlways);
         expect(test).toBeDefined();
-        expect(test.shouldSkip(preferredTool)).toBe(true);
+        expect(await test.shouldSkip(preferredTool)).toBe(true);
 
         const never = new Task(database, doNothingTask);
         expect(never).toBeDefined();
-        expect(never.shouldSkip(preferredTool)).toBe(false);
+        expect(await never.shouldSkip(preferredTool)).toBe(false);
     });
 
     it('can skip its dependencies', async () => {
@@ -89,7 +89,7 @@ describe('tasks', () => {
 
         const test = new Task(database, tasks);
         expect(test).toBeDefined();
-        expect(test.shouldSkip(preferredTool)).toBe(true);
+        expect(await test.shouldSkip(preferredTool)).toBe(true);
         expect(await test.dry(preferredTool)).toEqual([
             {
                 name: 'does-something',
@@ -137,19 +137,19 @@ describe('tasks', () => {
         expect(test.tasks[1].tasks[0]).toBe(test.tasks[0]);
     });
 
-    it('will skip if there is no exec for that tool', () => {
+    it('will skip if there is no exec for that tool', async () => {
         const test = new Task(database, doSomethingTask);
         expect(test).toBeDefined();
-        expect(test.shouldSkip(dockerCompose)).toBe(true);
+        expect(await test.shouldSkip(dockerCompose)).toBe(true);
     });
 
-    it('will not skip if there is a constraint to always use a specific tool and it is told to ignore the preferred tool', () => {
+    it('will not skip if there is a constraint to always use a specific tool and it is told to ignore the preferred tool', async () => {
         doSomethingTask.constraints = {};
         doSomethingTask.constraints.always_use_tool = 'native';
         doSomethingTask.constraints.ignore_preferred_tool = true;
         const constraint = new Task(database, doSomethingTask);
         expect(constraint).toBeDefined();
-        expect(constraint.shouldSkip(dockerCompose)).toBe(false);
+        expect(await constraint.shouldSkip(dockerCompose)).toBe(false);
     });
 
     it('will exec the defined tool instead of the prefered tool when told to', async () => {
@@ -158,7 +158,7 @@ describe('tasks', () => {
         doSomethingTask.constraints.ignore_preferred_tool = true;
         const constraint = new Task(database, doSomethingTask);
         expect(constraint).toBeDefined();
-        expect(constraint.shouldSkip(dockerCompose)).toBe(false);
+        expect(await constraint.shouldSkip(dockerCompose)).toBe(false);
         expect(await constraint.dry(dockerCompose)).toEqual([
             {
                 name: 'does-something',
@@ -169,12 +169,29 @@ describe('tasks', () => {
         ])
     })
 
-    it('will skip if there is a constraint to always use a specific tool but not to ignore the preferred tool', () => {
+    it('will skip if there is a constraint to always use a specific tool but not to ignore the preferred tool', async () => {
         doSomethingTask.constraints = {};
         doSomethingTask.constraints.always_use_tool = 'native';
         doSomethingTask.constraints.ignore_preferred_tool = false;
         const constraint2 = new Task(database, doSomethingTask);
         expect(constraint2).toBeDefined();
-        expect(constraint2.shouldSkip(dockerCompose)).toBe(true);
+        expect(await constraint2.shouldSkip(dockerCompose)).toBe(true);
+    });
+
+    it('will skip if a file has not changed', async () => {
+        database.fileChanged = jest.fn((file) => false);
+
+        const task = new Task(database, sometimesSkips);
+        expect(task).toBeDefined();
+        expect(await task.shouldSkip(preferredTool)).toBe(true);
+    });
+
+    it('will not skip if a file has changed', async () => {
+        database.fileChanged = jest.fn((file) => true);
+
+        const task = new Task(database, sometimesSkips);
+        expect(task).toBeDefined();
+        expect(await task.shouldSkip(preferredTool)).toBe(false);
+        expect(database.fileChanged.mock.calls.length).toBe(1);
     });
 });

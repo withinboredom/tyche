@@ -5,6 +5,7 @@
 import {pathExists, dbPrefix} from '../config/paths';
 import promisify from 'promisify-node';
 import Loki from 'lokijs';
+import {hashFile} from '../config/hash';
 
 /**
  * A pleasant wrapper around the loki database
@@ -14,6 +15,7 @@ export default class TycheDb {
         this.dbFile = dbFile;
         this.__db = null;
         this.__prefix = null;
+        this._fileCache = {};
     }
 
     /**
@@ -95,6 +97,45 @@ export default class TycheDb {
                 if (err) {
                     return reject(err);
                 }
+                done();
+            });
+        });
+    }
+
+    async fileChanged(filename) {
+        const hash = await hashFile(filename);
+        const files = this._getCollection('files');
+        const results = files.find({path: hash.file});
+
+        if (this._fileCache[filename] !== undefined) {
+            return this._fileCache[filename];
+        }
+
+        if (results.length === 0) {
+            files.insert({path: hash.file, digest: hash.digest});
+            this._fileCache[filename] = true;
+            return true;
+        }
+
+        if (results[0].digest != hash.digest) {
+            this._fileCache[filename] = true;
+            results[0].digest = hash.digest;
+            files.update(results[0]);
+            return true;
+        }
+
+        this._fileCache[filename] = false;
+        return false;
+    }
+
+    /**
+     * Close the db
+     */
+    finish() {
+        const db = this.__db;
+        this.__db = undefined;
+        return new Promise((done) => {
+            db.saveDatabase(() => {
                 done();
             });
         });

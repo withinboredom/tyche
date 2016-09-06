@@ -35,5 +35,40 @@ describe('database interface', () => {
         expect(test.buildNumber).toBe(0);
         test.buildNumber = 3;
         expect(test.buildNumber).toBe(3);
+    });
+
+    it('always thinks the first discovery of a file is a change', async () => {
+        const test = new db(testDbFile);
+        expect(test).toBeDefined();
+        await test.initializeDb();
+        expect(await test.fileChanged('./package.json')).toBe(true);
+    });
+
+    it('is consistent, per run, whether a file has changed', async () => {
+        const test = new db(testDbFile);
+        expect(test).toBeDefined();
+        await test.initializeDb();
+        expect(await test.fileChanged('./package.json')).toBe(true);
+        expect(await test.fileChanged('./package.json')).toBe(true);
+    });
+
+    it('knows when its a different run', async () => {
+        const first = new db(testDbFile);
+        await first.initializeDb();
+        expect(await first.fileChanged('./package.json')).toBe(true);
+        await first.finish();
+        const second = new db(testDbFile);
+        await second.initializeDb();
+        expect(await second.fileChanged('./package.json')).toBe(false);
+    });
+
+    it('detects file changes', async () => {
+        const first = new db(testDbFile);
+        await first.initializeDb();
+        expect(await first.fileChanged(testDbFile)).toBe(true);
+        await first.finish();
+        const second = new db(testDbFile);
+        await second.initializeDb();
+        expect(await second.fileChanged(testDbFile)).toBe(true);
     })
 });

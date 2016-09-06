@@ -78,7 +78,7 @@ export default class Task {
      * @param {Tool} preferredTool The preferred execution tool
      * @return {boolean} False: do not skip, True: skip
      */
-    shouldSkip(preferredTool) {
+    async shouldSkip(preferredTool) {
         let skipCount = 0;
         let noSkipCount = 0;
 
@@ -93,17 +93,26 @@ export default class Task {
 
         if(this.skips) {
             if(this.skips.path_exists) {
-                try {
-                    fs.accessSync(this.skips.path_exists, fs.F_OK);
-                    skip();
-                }
-                catch (e) {
-                    noSkip();
+                for(const file of this.skips.path_exists) {
+                    try {
+                        fs.accessSync(file, fs.F_OK);
+                        skip();
+                    }
+                    catch (e) {
+                        noSkip();
+                    }
                 }
             }
 
             if (this.skips.files_not_changed) {
-                throw new Error('not implemented yet');
+                for(const file of this.skips.files_not_changed) {
+                    if((await this.database.fileChanged(file))) {
+                        noSkip();
+                    }
+                    else {
+                        skip();
+                    }
+                }
             }
         }
 
@@ -196,7 +205,7 @@ export default class Task {
             exec: result,
             name: this.name,
             result: false,
-            skipped: this.shouldSkip(preferredTool)
+            skipped: await this.shouldSkip(preferredTool)
         };
 
         complete.push(action);
@@ -214,7 +223,7 @@ export default class Task {
         let dry = false;
         if (this.exec) {
             const executor = this._getExecutor(preferredTool);
-            if (!this.shouldSkip(preferredTool)) {
+            if (!(await this.shouldSkip(preferredTool))) {
                 result = await executor.execTool();
             }
             dry = executor.getDryRun();
@@ -224,7 +233,7 @@ export default class Task {
             exec: dry,
             name: this.name,
             result: result.code,
-            skipped: this.shouldSkip(preferredTool)
+            skipped: await this.shouldSkip(preferredTool)
         };
 
         complete.push(action);
