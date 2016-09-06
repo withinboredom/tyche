@@ -19,29 +19,31 @@ export default class Native extends Tool {
 
     buildFromStep(step) {
         let universal = 'native';
-        switch(os.platform()) {
-            case "darwin":
-            case "freebsd":
-            case "linux":
-            case "openbsd":
-                universal = 'native-nix';
-                break;
-            case 'win32':
-                universal = 'native-win';
-                break;
-        }
-
-        const native = step.exec[`native-${os.platform()}`];
-        const psuedo = step.exec[universal];
-        const notNativeButNative = step.exec.native;
 
         if (step.exec) {
+
+            switch (os.platform()) {
+                case "darwin":
+                case "freebsd":
+                case "linux":
+                case "openbsd":
+                    universal = 'native-nix';
+                    break;
+                case 'win32':
+                    universal = 'native-win';
+                    break;
+            }
+
+            const native = step.exec[`native-${os.platform()}`];
+            const psuedo = step.exec[universal];
+            const notNativeButNative = step.exec.native;
+
             if (!(native || psuedo || notNativeButNative)) {
                 return false;
             }
-        }
 
-        this.nativeCommand = (native || psuedo || notNativeButNative).command;
+            this.nativeCommand = (native || psuedo || notNativeButNative).command;
+        }
 
         return true;
     }

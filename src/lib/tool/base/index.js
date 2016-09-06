@@ -15,7 +15,11 @@ export default class Tool {
      * @returns {string} The full native command
      */
     get nativeCommand() {
-        return `echo ${this.native.join(' ')}`;
+        return `${this.command} ${this.native.join(' ')}`;
+    }
+
+    getDryRun() {
+        return `${this.command} ${this.native.join(' ')}`;
     }
 
     set dryRun(doDry) {
@@ -81,7 +85,7 @@ export default class Tool {
 
     constructor() {
         this.native = [];
-        this.command = 'echo';
+        this.command = '';
         this.initialized = false;
         this.dry = false;
     }
