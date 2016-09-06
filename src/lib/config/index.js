@@ -1,4 +1,4 @@
-import BuildTasks from './task';
+import BuildTasks from '../task';
 
 /**
  * Handles app configuration
