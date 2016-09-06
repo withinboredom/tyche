@@ -6,6 +6,10 @@ export default class DockerCompose extends Tool {
         this.command = 'docker-compose';
     }
 
+    static get knows() {
+        return ['docker-compose'];
+    }
+
     set nativeCommand(command) {
         if (command.file) {
             this.native.push('-f', command.file);

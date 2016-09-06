@@ -17,6 +17,37 @@ export default class Native extends Tool {
         return 'native';
     }
 
+    static get specialized() {
+        let universal = 'native';
+
+        switch (os.platform()) {
+            case "darwin":
+            case "freebsd":
+            case "linux":
+            case "openbsd":
+                universal = 'native-nix';
+                break;
+            case 'win32':
+                universal = 'native-win';
+                break;
+        }
+
+        return {
+            universal: universal,
+            specific: `native-${os.platform()}`
+        };
+    }
+
+    static get knows() {
+        const completely = [];
+        const special = this.specialized;
+        completely.push(special.universal);
+        completely.push(special.specific);
+        if (special.universal !== 'native') completely.push('native');
+
+        return completely;
+    }
+
     buildFromStep(step) {
         let universal = 'native';
 

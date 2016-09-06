@@ -1,4 +1,5 @@
 import fs from 'fs';
+import toolMachine from '../tool';
 
 export default class Task {
     constructor(database, definition) {
@@ -10,6 +11,7 @@ export default class Task {
 
         this.definition.tasks = this.definition.tasks || [];
         this.skips = this.definition.skips || {};
+        this.constraints = this.definition.constraints || {};
 
         this.tasks = [];
         this.unresolved = definition.dependencies || [];
@@ -75,8 +77,6 @@ export default class Task {
      * @return {boolean} False: do not skip, True: skip
      */
     shouldSkip(preferredTool) {
-        if (this.skips.forced) return true;
-
         let skipCount = 0;
         let noSkipCount = 0;
 
@@ -105,7 +105,21 @@ export default class Task {
             }
         }
 
-        if(skipCount == noSkipCount && noSkipCount > 0) {
+        // now we check constraints that may affect skipping
+        if (this.exec) {
+            if (this.constraints && this.constraints.always_use_tool && this.constraints.ignore_preferred_tool) {
+                preferredTool = toolMachine(this.constraints.always_use_tool);
+            }
+
+            for (const tool of Object.keys(this.exec)) {
+                if (preferredTool.knows.find(e => e === tool) === undefined) {
+                    // check constraints
+                    this.markSkip(true, false);
+                }
+            }
+        }
+
+        if((skipCount == noSkipCount && noSkipCount > 0) || this.skips.forced) {
             // we need to mark all deps as being skipable?
             if (this.skips.skip_dependencies_if_skip) {
                 this.markSkip(true, true);

@@ -133,5 +133,26 @@ describe('tasks', () => {
         const test = new Task(database, siblings);
         expect(test).toBeDefined();
         expect(test.tasks[1].tasks[0]).toBe(test.tasks[0]);
+    });
+
+    it('will skip if there is no exec for that tool', () => {
+        const test = new Task(database, doSomethingTask);
+        expect(test).toBeDefined();
+        const tool = toolMachine('docker-compose');
+        expect(test.shouldSkip(tool)).toBe(true);
+
+        doSomethingTask.constraints = {};
+        doSomethingTask.constraints.always_use_tool = 'native';
+        doSomethingTask.constraints.ignore_preferred_tool = true;
+        const constraint = new Task(database, doSomethingTask);
+        expect(constraint).toBeDefined();
+        expect(constraint.shouldSkip(tool)).toBe(false);
+
+        doSomethingTask.constraints = {};
+        doSomethingTask.constraints.always_use_tool = 'native';
+        doSomethingTask.constraints.ignore_preferred_tool = false;
+        const constraint2 = new Task(database, doSomethingTask);
+        expect(constraint2).toBeDefined();
+        expect(constraint2.shouldSkip(tool)).toBe(true);
     })
 });

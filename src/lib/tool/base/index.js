@@ -26,6 +26,10 @@ export default class Tool {
         this.dry = doDry;
     }
 
+    static get knows() {
+        return [];
+    }
+
     //noinspection JSAnnotator
     /**
      * Set the native command
