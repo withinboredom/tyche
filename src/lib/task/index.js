@@ -148,6 +148,34 @@ export default class Task {
     }
 
     /**
+     * Determines which tool should be used in executing
+     * @param {Tool} preferredTool The preferred Tool
+     * @return {Tool} The tool to use
+     * @private
+     */
+    _getConstrainedTool(preferredTool) {
+        let tool = preferredTool;
+        if (this.constraints && this.constraints.always_use_tool && this.constraints.ignore_preferred_tool) {
+            tool = toolMachine(this.constraints.always_use_tool);
+        }
+        return tool;
+    }
+
+    /**
+     * Captures an executor
+     * @param {Tool} preferredTool The preferred tool
+     * @return {Tool} The executor for the tool
+     * @private
+     */
+    _getExecutor(preferredTool) {
+        const tool = this._getConstrainedTool(preferredTool);
+        const executor = new tool();
+        executor.buildFromStep(this);
+        executor.meta = {BUILD_NUMBER: this.database.buildNumber};
+        return executor;
+    }
+
+    /**
      * Just like execute, except it doesn't actually execute
      * @param {Tool} preferredTool The tool that does the executing, maybe... it depends
      * @return {Array}
@@ -160,9 +188,7 @@ export default class Task {
 
         let result = false;
         if (this.exec) {
-            const executor = new preferredTool();
-            executor.buildFromStep(this);
-            executor.meta = {BUILD_NUMBER: this.database.buildNumber};
+            const executor = this._getExecutor(preferredTool);
             result = executor.getDryRun();
         }
 
@@ -187,10 +213,10 @@ export default class Task {
         let result = false;
         let dry = false;
         if (this.exec) {
-            const executor = new preferredTool();
-            executor.buildFromStep(this);
-            executor.meta = {BUILD_NUMBER: this.database.buildNumber};
-            result = await executor.execTool();
+            const executor = this._getExecutor(preferredTool);
+            if (!this.shouldSkip(preferredTool)) {
+                result = await executor.execTool();
+            }
             dry = executor.getDryRun();
         }
 

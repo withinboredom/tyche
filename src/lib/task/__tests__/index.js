@@ -152,6 +152,23 @@ describe('tasks', () => {
         expect(constraint.shouldSkip(dockerCompose)).toBe(false);
     });
 
+    it('will exec the defined tool instead of the prefered tool when told to', async () => {
+        doSomethingTask.constraints = {};
+        doSomethingTask.constraints.always_use_tool = 'native';
+        doSomethingTask.constraints.ignore_preferred_tool = true;
+        const constraint = new Task(database, doSomethingTask);
+        expect(constraint).toBeDefined();
+        expect(constraint.shouldSkip(dockerCompose)).toBe(false);
+        expect(await constraint.dry(dockerCompose)).toEqual([
+            {
+                name: 'does-something',
+                exec: 'BUILD_NUMBER=0 echo hi',
+                result: false,
+                skipped: false
+            }
+        ])
+    })
+
     it('will skip if there is a constraint to always use a specific tool but not to ignore the preferred tool', () => {
         doSomethingTask.constraints = {};
         doSomethingTask.constraints.always_use_tool = 'native';
