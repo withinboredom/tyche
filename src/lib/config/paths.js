@@ -29,7 +29,7 @@ function pathExists(path) {
                 if (err.code === 'ENOENT') {
                     done(false);
                 }
-                console.error(err);
+                //console.error(err);
                 reject(err);
             }
             if (stats) {
