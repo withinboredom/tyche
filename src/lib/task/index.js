@@ -16,6 +16,8 @@ export default class Task {
         this.tasks = [];
         this.unresolved = definition.dependencies || [];
 
+        this.buildNumber = database.buildNumber;
+
         /**
          * We particularly care about the dependencies key, as we'll need to prepend them to the tasks list, however...
          * we have to find them and keep track of them in our children until they are all resolved...
@@ -160,6 +162,7 @@ export default class Task {
         if (this.exec) {
             const executor = new preferredTool();
             executor.buildFromStep(this);
+            executor.meta = {BUILD_NUMBER: this.database.buildNumber};
             result = executor.getDryRun();
         }
 
@@ -186,6 +189,7 @@ export default class Task {
         if (this.exec) {
             const executor = new preferredTool();
             executor.buildFromStep(this);
+            executor.meta = {BUILD_NUMBER: this.database.buildNumber};
             result = await executor.execTool();
             dry = executor.getDryRun();
         }

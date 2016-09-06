@@ -43,7 +43,7 @@ export default class DockerCompose extends Tool {
         return 'docker-compose';
     }
 
-    buildFromStep(step) {
+    buildFromStep(step, meta) {
         if (!(step.exec['docker-compose'])) {
             return false;
         }

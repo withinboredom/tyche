@@ -28,6 +28,32 @@ export default class TycheDb {
         return this.__db;
     }
 
+    get buildNumber() {
+        const collection = this._getCollection('builds');
+        let current = collection.max('build_number');
+        if (current === -Infinity) { // seriously?
+            current = 0;
+        }
+
+        return current;
+    }
+
+    set buildNumber(number) {
+        const collection = this._getCollection('builds');
+        collection.insert({build_number: number});
+    }
+
+
+    /**
+     * Get's a named collection from loki
+     * @param {string} name The name of the collection to get
+     * @return {Collection} The collection
+     * @private
+     */
+    _getCollection(name) {
+        return this.__db.getCollection(`${this.__prefix}_${name}`) || this.__db.addCollection(`${this.__prefix}_${name}`);
+    }
+
     /**
      * Get the prefix for this repo
      * @return {string} The prefix
@@ -38,6 +64,14 @@ export default class TycheDb {
         }
 
         return this.__prefix;
+    }
+
+    /**
+     * Just creates a db object
+     * @private
+     */
+    _createDb() {
+        this.__db = new Loki(this.dbFile);
     }
 
     /**
@@ -54,10 +88,10 @@ export default class TycheDb {
             }
         }
 
-        this.__db = new Loki();
+        this._createDb();
 
         await new Promise((done, reject) => {
-            this.db.loadDatabase({}, err => {
+            this.__db.loadDatabase({}, err => {
                 if (err) {
                     return reject(err);
                 }

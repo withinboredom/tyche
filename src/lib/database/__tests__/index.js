@@ -1,8 +1,6 @@
 import db from '../';
 import fs from 'fs';
 
-jest.mock('lokijs');
-
 const testDbFile = './test.json';
 
 function cleanupTestDb() {
@@ -24,10 +22,18 @@ describe('database interface', () => {
     });
 
     it('can be initialized', async () => {
-        cleanupTestDb();
         const test = new db(testDbFile);
         expect(test).toBeDefined();
         await test.initializeDb();
         expect(() => test.db).not.toThrow();
+    });
+
+    it('keeps track of the current build number', async () => {
+        const test = new db(testDbFile);
+        expect(test).toBeDefined();
+        await test.initializeDb();
+        expect(test.buildNumber).toBe(0);
+        test.buildNumber = 3;
+        expect(test.buildNumber).toBe(3);
     })
 });

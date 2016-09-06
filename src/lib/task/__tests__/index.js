@@ -1,5 +1,4 @@
 import Task from '../';
-import Database from '../../database';
 import toolMachine from '../../tool';
 
 jest.mock('../../database');
@@ -45,11 +44,14 @@ const skipDeps = {
 };
 
 const preferredTool = toolMachine('native');
+const dockerCompose = toolMachine('docker-compose');
 
 describe('tasks', () => {
     let database = null;
     beforeEach(() => {
-        database = new Database('./test-task.json');
+        database = {
+            buildNumber: 0
+        };
     });
 
     it('can be described', () => {
@@ -62,7 +64,7 @@ describe('tasks', () => {
         expect(await test.execute(preferredTool)).toEqual([
             {
                 name: 'does-something',
-                exec: 'echo hi',
+                exec: 'BUILD_NUMBER=0 echo hi',
                 result: 0,
                 skipped: false
             }
@@ -91,7 +93,7 @@ describe('tasks', () => {
         expect(await test.dry(preferredTool)).toEqual([
             {
                 name: 'does-something',
-                exec: 'echo hi',
+                exec: 'BUILD_NUMBER=0 echo hi',
                 result: false,
                 skipped: true
             },
@@ -110,7 +112,7 @@ describe('tasks', () => {
         expect(await test.dry(preferredTool)).toEqual([
             {
                 name: 'does-something',
-                exec: 'echo hi',
+                exec: 'BUILD_NUMBER=0 echo hi',
                 result: false,
                 skipped: false
             }
@@ -138,21 +140,24 @@ describe('tasks', () => {
     it('will skip if there is no exec for that tool', () => {
         const test = new Task(database, doSomethingTask);
         expect(test).toBeDefined();
-        const tool = toolMachine('docker-compose');
-        expect(test.shouldSkip(tool)).toBe(true);
+        expect(test.shouldSkip(dockerCompose)).toBe(true);
+    });
 
+    it('will not skip if there is a constraint to always use a specific tool and it is told to ignore the preferred tool', () => {
         doSomethingTask.constraints = {};
         doSomethingTask.constraints.always_use_tool = 'native';
         doSomethingTask.constraints.ignore_preferred_tool = true;
         const constraint = new Task(database, doSomethingTask);
         expect(constraint).toBeDefined();
-        expect(constraint.shouldSkip(tool)).toBe(false);
+        expect(constraint.shouldSkip(dockerCompose)).toBe(false);
+    });
 
+    it('will skip if there is a constraint to always use a specific tool but not to ignore the preferred tool', () => {
         doSomethingTask.constraints = {};
         doSomethingTask.constraints.always_use_tool = 'native';
         doSomethingTask.constraints.ignore_preferred_tool = false;
         const constraint2 = new Task(database, doSomethingTask);
         expect(constraint2).toBeDefined();
-        expect(constraint2.shouldSkip(tool)).toBe(true);
-    })
+        expect(constraint2.shouldSkip(dockerCompose)).toBe(true);
+    });
 });

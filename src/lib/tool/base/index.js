@@ -19,7 +19,21 @@ export default class Tool {
     }
 
     getDryRun() {
-        return `${this.command} ${this.native.join(' ')}`;
+        const env = [];
+        for(const e of Object.keys(this.env)) {
+            let requiresQuotes = true;
+            if (!Number.isNaN(e)) {
+                requiresQuotes = false;
+            }
+
+            let quotes = '';
+            if (requiresQuotes) {
+                quotes = '"';
+            }
+
+            env.push(`${e}=${quotes}${this.env[e]}${quotes}`);
+        }
+        return `${env.join(' ')}${env.length > 0 ? ' ' : ''}${this.command} ${this.native.join(' ')}`;
     }
 
     set dryRun(doDry) {
@@ -38,6 +52,10 @@ export default class Tool {
     set nativeCommand(command) {
         this.native = command;
         this.initialized = true;
+    }
+
+    set meta(meta) {
+        this.env = meta;
     }
 
     /**
@@ -65,6 +83,7 @@ export default class Tool {
         if (showOutput) {
             config.shell = true;
             config.stdio = 'inherit';
+            config.env = this.env;
         }
 
         if (this.dry) {
@@ -92,5 +111,6 @@ export default class Tool {
         this.command = '';
         this.initialized = false;
         this.dry = false;
+        this.env = {};
     }
 }
