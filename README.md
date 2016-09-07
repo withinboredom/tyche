@@ -1,3 +1,5 @@
+[![API Doc](https://doclets.io/withinboredom/tyche/master.svg)](https://doclets.io/withinboredom/tyche/master)
+
 # May the god of fortune bring your project fortune
 
 Tyche is a build tool, for use in places like TeamCity, Jenkins, TravisCI
