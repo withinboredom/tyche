@@ -45,18 +45,11 @@ function hashFile(path) {
 
 /**
  * Get's an array of sha256 hashes given an array of files
- * @param {string[]} listOfFiles The files to hash
+ * @param {array} listOfFiles The files to hash
  * @returns {object[]} The array of hashes
  */
-async function hashFileList(listOfFiles) {
-    const list = [];
-    for(const file of listOfFiles) {
-        list.push(hashFile(file).catch((err) => {
-            console.error(`${err}`);
-        }));
-    }
-
-    return await Promise.all(list);
+function hashFileList(listOfFiles) {
+    return Promise.all(listOfFiles.map((file) => hashFile(file).catch((err) => console.error(`${err}`))));
 }
 
 export {
