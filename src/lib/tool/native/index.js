@@ -1,23 +1,45 @@
+/**
+ * @module
+ */
 import Tool from 'lib/tool/base';
 import os from 'os';
 
-export default class Native extends Tool {
+/**
+ * @class
+ */
+class Native extends Tool {
+    /**
+     * Creates a native tool
+     */
     constructor() {
         super();
         this.command = 'echo';
     }
 
+    /**
+     * Generates a native command given a string array
+     * @param {string[]} command
+     */
     set nativeCommand(command) {
         this.command = command[0];
         this.native = command.slice(1);
         this.initialized = true;
     }
 
+    /**
+     * Get the tool name
+     * @return {string}
+     */
     get toolName() {
         return 'native';
     }
 
-    static get specialized() {
+    /**
+     * Get the specialized strings
+     * @return {{universal: string, specific: string}}
+     * @private
+     */
+    static get _specialized() {
         let universal = 'native';
 
         switch (os.platform()) {
@@ -38,9 +60,13 @@ export default class Native extends Tool {
         };
     }
 
+    /**
+     * Describes what this tool knows
+     * @return {string[]}
+     */
     static get knows() {
         const completely = [];
-        const special = this.specialized;
+        const special = this._specialized;
         completely.push(special.universal);
         completely.push(special.specific);
         if (special.universal !== 'native') completely.push('native');
@@ -48,6 +74,11 @@ export default class Native extends Tool {
         return completely;
     }
 
+    /**
+     * Builds from a task
+     * @param {Task} step
+     * @return {boolean}
+     */
     buildFromStep(step) {
         let universal = 'native';
 
@@ -79,3 +110,5 @@ export default class Native extends Tool {
         return true;
     }
 }
+
+export default Native;

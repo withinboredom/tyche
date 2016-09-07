@@ -1,15 +1,32 @@
+/**
+ * @module
+ */
 import Tool from 'lib/tool/base';
 
-export default class DockerCompose extends Tool {
+/**
+ * @class
+ */
+class DockerCompose extends Tool {
+    /**
+     * Creates a tool that understands docker-compose
+     */
     constructor() {
         super();
         this.command = 'docker-compose';
     }
 
+    /**
+     * Inform the system that it knows Docker Compose
+     * @return {string[]}
+     */
     static get knows() {
         return ['docker-compose'];
     }
 
+    /**
+     * Generates the native command to execute for docker-compose
+     * @param {{file: {string}, action: {string}, volumes: {boolean}, service: {string}, command: {string}}} command
+     */
     set nativeCommand(command) {
         if (command.file) {
             this.native.push('-f', command.file);
@@ -39,10 +56,20 @@ export default class DockerCompose extends Tool {
         this.initialized = true;
     }
 
+    /**
+     * Gets the tool's name
+     * @return {string}
+     */
     get toolName() {
         return 'docker-compose';
     }
 
+    /**
+     * Build from a task definition
+     * @param {Task} step
+     * @param {object} meta
+     * @return {boolean}
+     */
     buildFromStep(step, meta) {
         if (!(step.exec['docker-compose'])) {
             return false;
@@ -61,3 +88,5 @@ export default class DockerCompose extends Tool {
         return true;
     }
 }
+
+export default DockerCompose;

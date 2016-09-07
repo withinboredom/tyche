@@ -1,9 +1,17 @@
+/**
+ * @module
+ */
 import { spawn } from 'child_process';
 
+/**
+ * The base tool
+ * @class
+ */
 export default class Tool {
     /**
      * The name of the tool
      * @returns {string} The name
+     * @abstract
      */
     get toolName() {
         throw new Error('name not overriden');
@@ -18,6 +26,10 @@ export default class Tool {
         return `${this.command} ${this.native.join(' ')}`;
     }
 
+    /**
+     * Get dry run output
+     * @return {string}
+     */
     getDryRun() {
         const env = [];
         for(const e of Object.keys(this.env)) {
@@ -40,20 +52,29 @@ export default class Tool {
         this.dry = doDry;
     }
 
+    /**
+     * Describes what tools this tool knows how to process
+     * @abstract
+     * @return {Array}
+     */
     static get knows() {
         return [];
     }
 
-    //noinspection JSAnnotator
     /**
      * Set the native command
-     * @param {[string]} command The command parameters for the tool
+     * @param {string} command The command parameters for the tool
+     * @abstract
      */
     set nativeCommand(command) {
         this.native = command;
         this.initialized = true;
     }
 
+    /**
+     * Set meta-data (environment variables) for this tool
+     * @param meta
+     */
     set meta(meta) {
         this.env = meta;
     }
@@ -62,6 +83,7 @@ export default class Tool {
      * Builds a command from a step
      * @param {Object} task The task to build from
      * @return {boolean} Returns true if this tool can be built from this task
+     * @abstract
      */
     buildFromStep(task) {
         this.nativeCommand = task;
