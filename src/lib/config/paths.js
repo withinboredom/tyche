@@ -1,7 +1,6 @@
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import { Repository } from 'nodegit';
 
 /**
  * Get's the path to the db
@@ -9,13 +8,22 @@ import { Repository } from 'nodegit';
  */
 const dbFile = path.normalize(`${os.homedir()}/.tyche.json`);
 
-async function configPath() {
-    const repo = await Repository.open(process.cwd());
-    return path.normalize(`${repo.path()}/../`);
+function walkToPackage(dir = path.normalize(`${process.cwd()}/package.json`)) {
+    try {
+        fs.accessSync(dir, fs.F_OK)
+        return path.dirname(dir);
+    }
+    catch (e) {
+        return walkToPackage(path.normalize(`../${dir}`));
+    }
+}
+
+function configPath() {
+    return path.normalize(walkToPackage());
 }
 
 async function repoName() {
-    return path.basename(await configPath());
+    return path.basename(configPath());
 }
 
 async function dbPrefix() {

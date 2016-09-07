@@ -48,6 +48,45 @@ const skipDeps = {
     }
 };
 
+const realLife = [
+    {
+        "name": "dependencies",
+        "description": "Install build dependencies",
+        "exec": {
+            "native": {
+                "command": ["npm","install"]
+            },
+            "docker-compose": {
+                "service": "tyche-prep"
+            }
+        },
+        "dependencies": [
+            "clean"
+        ],
+        "skips": {
+            "files_not_changed": [
+                "package.json"
+            ],
+            "path_exists": [
+                "node_modules"
+            ],
+            "skip_dependencies_if_skip": true
+        }
+    },
+    {
+        "name": "build-cli",
+        "description": "Actually build the tool...",
+        "exec": {
+            "native": {
+                "command": ["npm","run","build-cli"]
+            },
+            "docker-compose": {
+                "service": "tyche-builder"
+            }
+        }
+    }
+];
+
 const preferredTool = toolMachine('native');
 const dockerCompose = toolMachine('docker-compose');
 
@@ -241,5 +280,55 @@ describe('tasks', () => {
             }
         ]);
         expect(emittedEvent.mock.calls.length).toBe(1);
+    });
+
+    it('gives a list of children', () => {
+        const siblings = {
+            name: 'root',
+            tasks: [
+                {
+                    name: 'sibling'
+                },
+                {
+                    name: 'other',
+                    dependencies: ['sibling']
+                }
+            ]
+        };
+        const task = new Task(database, siblings);
+        expect(task.children()).toEqual([
+            'sibling',
+            'other'
+        ])
+    });
+
+    it('wont skip important things', async () => {
+        const root = {
+            name: 'root',
+            tasks: realLife
+        };
+        database.fileChanged = jest.fn(() => false);
+
+        const task = new Task(database, root);
+        expect(await task.dry(preferredTool)).toEqual([
+            {
+                exec: 'BUILD_NUMBER=0 npm install',
+                name: 'dependencies',
+                result: false,
+                skipped: true
+            },
+            {
+                exec: 'BUILD_NUMBER=0 npm run build-cli',
+                name: 'build-cli',
+                result: false,
+                skipped: false
+            },
+            {
+                exec: false,
+                name: 'root',
+                result: false,
+                skipped: false
+            }
+        ]);
     })
 });

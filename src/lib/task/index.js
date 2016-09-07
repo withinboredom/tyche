@@ -111,6 +111,7 @@ class Task {
                 for(const file of this.skips.path_exists) {
                     try {
                         fs.accessSync(file, fs.F_OK);
+                        console.log(`skipped ${this.name} for ${file}`)
                         skip();
                     }
                     catch (e) {
@@ -123,9 +124,11 @@ class Task {
                 for(const file of this.skips.files_not_changed) {
                     if((await this.database.fileChanged(file))) {
                         noSkip();
+                        console.log("nope");
                     }
                     else {
                         skip();
+                        console.log(`skipped ${this.name} for ${file} not changed`)
                     }
                 }
             }
@@ -137,24 +140,43 @@ class Task {
                 preferredTool = toolMachine(this.constraints.always_use_tool);
             }
 
+            let foundTool = false;
             for (const tool of Object.keys(this.exec)) {
-                if (preferredTool.knows.find(e => e === tool) === undefined) {
-                    // check constraints
-                    this.markSkip(true, false);
+                if (preferredTool.knows.find(e => e === tool) !== undefined) {
+                    foundTool = true;
                 }
+            }
+            if (!foundTool) {
+                console.log(`skipping ${this.name} because no tool`)
+                skip();
             }
         }
 
-        if((skipCount == noSkipCount && noSkipCount > 0) || this.skips.forced) {
+        console.log(`skip? ${this.name}: ${skipCount} ${noSkipCount} ${this.skips.forced}`);
+        if((skipCount === noSkipCount && noSkipCount > 0) || this.skips.forced) {
             // we need to mark all deps as being skipable?
+            console.log(this.skips);
             if (this.skips.skip_dependencies_if_skip) {
+                console.log(`triggering force skip from ${this.name}`);
                 this.markSkip(true, true);
+                skip();
             }
+
+            console.log(`skipped ${this.name}: ${skipCount} ${noSkipCount} ${this.skips.forced}`);
 
             return true;
         }
 
         return false;
+    }
+
+    children() {
+        const kids = [];
+        for(const child of this.tasks) {
+            kids.push(child.name);
+        }
+
+        return kids;
     }
 
     /**
@@ -163,9 +185,11 @@ class Task {
      * @param {boolean} recursive Should this be set recursively?
      */
     markSkip(yesno, recursive) {
+        console.log(`forced ${this.name}`)
         this.skips.forced = yesno;
         if (recursive) {
             for(const task of this.tasks) {
+                console.log(this.tasks.map(e => e.name));
                 task.markSkip(yesno, recursive);
             }
         }
@@ -236,11 +260,12 @@ class Task {
     async execute(preferredTool) {
         let complete = [];
         for(const task of this.tasks) {
-            complete = complete.concat(await task.dry(preferredTool));
+            complete = complete.concat(await task.execute(preferredTool));
         }
 
         let result = false;
         let dry = false;
+
         if (this.exec) {
             const executor = this._getExecutor(preferredTool);
             if (!(await this.shouldSkip(preferredTool))) {

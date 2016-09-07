@@ -77,7 +77,9 @@ export default class Tool {
      * @param meta
      */
     set meta(meta) {
-        this.env = meta;
+        for(const key of Object.keys(meta)) {
+            this.env[key] = meta[key];
+        }
     }
 
     /**
@@ -134,6 +136,6 @@ export default class Tool {
         this.command = '';
         this.initialized = false;
         this.dry = false;
-        this.env = {};
+        this.env = process.env;
     }
 }

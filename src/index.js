@@ -1,11 +1,11 @@
 #!/usr/bin/env node --harmony
 import path from 'path';
-import { Repository } from 'nodegit';
 import program from 'commander';
 import { Spinner } from 'cli-spinner';
 import Config from 'lib/config';
-import {configPath} from 'lib/config/paths';
-import chalk from 'chalk';
+import {dbFile, configPath} from 'lib/config/paths';
+import TycheDb from 'lib/database';
+import ToolMachine from 'lib/tool';
 
 program.version(require(path.normalize(`${__dirname}/../package.json`)).version);
 
@@ -14,7 +14,9 @@ const spinner = new Spinner('Loading...');
 spinner.start();
 
 async function tyche() {
-    const config = Config.loadConfig(path.normalize(`${await configPath()}/./tyche.json`));
+    const database = new TycheDb(dbFile);
+    await database.initializeDb();
+    const config = Config.loadConfig(path.normalize(`${configPath()}/./tyche.json`), database);
 
     //todo: Read repo state
 
@@ -26,14 +28,12 @@ async function tyche() {
         force: false
     };
 
-    for (const command of config.topLevelTasks) {
+    for (const command of config.tasks.tasks) {
         const name = command.name;
         const description = command.description || 'run task';
-        const subCommands = command.resolve();
+        const subCommands = command.children().join('|');
 
-        const subCommandString = `${subCommands.filter(e => e !== command).map(e => e.name).join('|')}`;
-
-        program.command(`${name} [${subCommandString}]`)
+        program.command(`${name} [${subCommands}]`)
             .description(description)
             .option('-t --tool <tool>', 'use the default tool')
             .option('-d --dry', 'Show all the commands the tool is about to run')
@@ -59,13 +59,30 @@ async function tyche() {
 
     spinner.stop();
     program.parse(process.argv);
-    await vars.command.execute(vars.tool, vars.subcommand, vars.dry, config, vars.force);
+    let doit = 'execute';
+    if (vars.dry) {
+        doit = 'dry';
+    }
+
+    let preferredToolString = config.defaultTool;
+    if (vars.tool) {
+        preferredToolString = vars.tool;
+    }
+
+    let command = vars.command;
+    if (vars.subcommand) {
+        command = command.tasks.find((e) => e.name === vars.subcommand);
+    }
+
+    console.log(await command[doit](ToolMachine(preferredToolString)));
+
+    database.finish();
 };
 
 async function main() {
     try {
         await tyche();
-        console.log(chalk.bold.dim("May fortune find you!"));
+        console.log("May fortune find you!");
     } catch(err) {
         console.error(err);
         process.exit(1);

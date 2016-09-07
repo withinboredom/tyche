@@ -37,9 +37,6 @@
               "service": "tyche-prep"
             }
           },
-          "dependencies": [
-            "clean"
-          ],
           "skips": {
             "files_not_changed": [
               "package.json"
@@ -60,10 +57,7 @@
             "docker-compose": {
               "service": "tyche-builder"
             }
-          },
-          "dependencies": [
-            "dependencies"
-          ]
+          }
         }
       ]
     },
