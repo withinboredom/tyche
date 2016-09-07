@@ -56,17 +56,32 @@ describe('database interface', () => {
         const first = new db(testDbFile);
         await first.initializeDb();
         expect(await first.fileChanged('./package.json')).toBe(true);
+        await first.updateFileSnapshot('./package.json');
         await first.finish();
+
         const second = new db(testDbFile);
         await second.initializeDb();
         expect(await second.fileChanged('./package.json')).toBe(false);
+    });
+
+    it('does not save the file state unless told to', async () => {
+        const first = new db(testDbFile);
+        await first.initializeDb();
+        expect(await first.fileChanged('./package.json')).toBe(true);
+        await first.finish();
+
+        const second = new db(testDbFile);
+        await second.initializeDb();
+        expect(await second.fileChanged('./package.json')).toBe(true);
     });
 
     it('detects file changes', async () => {
         const first = new db(testDbFile);
         await first.initializeDb();
         expect(await first.fileChanged(testDbFile)).toBe(true);
+        await first.updateFileSnapshot(testDbFile);
         await first.finish();
+
         const second = new db(testDbFile);
         await second.initializeDb();
         expect(await second.fileChanged(testDbFile)).toBe(true);

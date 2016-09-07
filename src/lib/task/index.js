@@ -244,6 +244,11 @@ class Task {
             const executor = this._getExecutor(preferredTool);
             if (!(await this.shouldSkip(preferredTool))) {
                 result = await executor.execTool();
+                if (this.skips.files_not_changed) {
+                    for (const file of this.skips.files_not_changed) {
+                        await this.database.updateFileSnapshot(file);
+                    }
+                }
             }
             dry = executor.getDryRun();
         }

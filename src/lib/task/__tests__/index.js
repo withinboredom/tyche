@@ -29,6 +29,11 @@ const skipsAlways = {
 const sometimesSkips = {
     name: 'sometimes-skips',
     description: 'will skip if test file has not changed',
+    exec: {
+        native: {
+            command: ['echo','hello','world']
+        }
+    },
     skips: {
         files_not_changed: ['./test-file.json']
     }
@@ -194,4 +199,23 @@ describe('tasks', () => {
         expect(await task.shouldSkip(preferredTool)).toBe(false);
         expect(database.fileChanged.mock.calls.length).toBe(1);
     });
+
+    it('will update the changed file list when executed', async () => {
+        database.fileChanged = jest.fn(async () => true);
+        database.updateFileSnapshot = jest.fn(async () => true);
+
+        const task = new Task(database, sometimesSkips);
+        expect(task).toBeDefined();
+        expect(await task.shouldSkip(preferredTool)).toBe(false);
+        expect(await task.execute(preferredTool)).toEqual([
+            {
+                exec: 'BUILD_NUMBER=0 echo hello world',
+                name: 'sometimes-skips',
+                result: 0,
+                skipped: false
+            }
+        ]);
+        expect(database.fileChanged.mock.calls.length).toBe(3);
+        expect(database.updateFileSnapshot.mock.calls.length).toBe(1);
+    })
 });

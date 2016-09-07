@@ -1,5 +1,6 @@
 /**
  * This is a wrapper around loki.
+ * @module
  */
 
 import {pathExists, dbPrefix} from '../config/paths';
@@ -9,8 +10,13 @@ import {hashFile} from '../config/hash';
 
 /**
  * A pleasant wrapper around the loki database
+ * @class
  */
-export default class TycheDb {
+class TycheDb {
+    /**
+     * Create a database wrapper
+     * @param {string} dbFile
+     */
     constructor(dbFile) {
         this.dbFile = dbFile;
         this.__db = null;
@@ -23,13 +29,16 @@ export default class TycheDb {
      * @return {null|Loki} This is null if this class hasn't been initialized yet
      */
     get db() {
-        if (this.__db === null) {
+        if (this.__db === null || this.__db === undefined) {
             throw new Error('Database has not been initialized!');
         }
 
         return this.__db;
     }
 
+    /**
+     * Get the current build number
+     */
     get buildNumber() {
         const collection = this._getCollection('builds');
         let current = collection.max('build_number');
@@ -40,6 +49,9 @@ export default class TycheDb {
         return current;
     }
 
+    /**
+     * Set the current build number
+     */
     set buildNumber(number) {
         const collection = this._getCollection('builds');
         collection.insert({build_number: number});
@@ -53,7 +65,7 @@ export default class TycheDb {
      * @private
      */
     _getCollection(name) {
-        return this.__db.getCollection(`${this.__prefix}_${name}`) || this.__db.addCollection(`${this.__prefix}_${name}`);
+        return this.db.getCollection(`${this.__prefix}_${name}`) || this.db.addCollection(`${this.__prefix}_${name}`);
     }
 
     /**
@@ -136,6 +148,7 @@ export default class TycheDb {
     async _getHashAndCollectionFor(filename) {
         const hash = await hashFile(filename);
         const files = this._getCollection('files');
+        //noinspection JSValidateTypes
         return {hash, files};
     }
 
@@ -179,3 +192,5 @@ export default class TycheDb {
         });
     }
 }
+
+export default TycheDb;
