@@ -57,6 +57,13 @@ async function tyche() {
             // broken
         });
 
+    program.command('bump')
+        .description('Bump the build number +1')
+        .option('--set <number>', 'set the build number to a specific value')
+        .action((options) => {
+            // todo: increase the version number
+        });
+
     spinner.stop();
     program.parse(process.argv);
     let doit = 'execute';
