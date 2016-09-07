@@ -7,8 +7,8 @@ import fs from 'fs';
 import toolMachine from '../tool';
 
 /**
+ * A task can execute tools based off a definition
  * @class
- * @classdesc This is the definition of a task
  */
 class Task {
     /**
