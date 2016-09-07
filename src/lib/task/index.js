@@ -1,7 +1,24 @@
 import fs from 'fs';
 import toolMachine from '../tool';
 
-export default class Task {
+/**
+ * @class
+ * @classdesc This is the definition of a task
+ */
+class Task {
+    /**
+     * Define a task
+     * @param {TycheDb} database
+     * @param {{
+     *  name: {string},
+     *  description: {string},
+     *  exec: {object}
+     *  tasks: {Task[]}
+     *  skips: {object},
+     *  constraints: {object},
+     *  dependencies: {string[]}
+     * }} definition
+     */
     constructor(database, definition) {
         this.database = database;
         this.definition = definition;
@@ -213,6 +230,11 @@ export default class Task {
         return complete;
     }
 
+    /**
+     * Executes a task with a preferred tool
+     * @param {Tool} preferredTool
+     * @return {Array}
+     */
     async execute(preferredTool) {
         let complete = [];
         for(const task of this.tasks) {
@@ -241,3 +263,5 @@ export default class Task {
         return complete;
     }
 }
+
+export default Task;

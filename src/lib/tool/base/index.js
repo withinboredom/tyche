@@ -1,4 +1,5 @@
 /**
+ * This is the base tooling module. All tools are inherited from this base class
  * @module
  */
 import { spawn } from 'child_process';
