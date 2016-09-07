@@ -1,3 +1,8 @@
+/**
+ * The task module. It makes the world go 'round
+ * @module
+ */
+
 import fs from 'fs';
 import toolMachine from '../tool';
 
