@@ -1,6 +1,13 @@
+/**
+ * @module lib/student
+ */
+
 import glob from 'glob';
 
-export default class Student {
+/**
+ * Describe how to study
+ */
+class Student {
 
     /**
      * Creates a student to study this repo
@@ -103,3 +110,5 @@ export default class Student {
         };
     }
 }
+
+export default Student;

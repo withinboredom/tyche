@@ -1,6 +1,6 @@
 /**
  * This is the base tooling module. All tools are inherited from this base class
- * @module
+ * @module lib/tool/base
  */
 import { spawn } from 'child_process';
 

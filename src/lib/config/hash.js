@@ -1,3 +1,7 @@
+/**
+ * Hash files and list of files
+ * @module lib/config/hash
+ */
 import crypto from 'crypto';
 import fs from 'fs';
 
@@ -5,6 +9,7 @@ import fs from 'fs';
  * Get's a hash from a file
  * @param {string} path The path of the file to hash
  * @returns {Promise} A promise that resolves to an object {file, hash}
+ * @async
  */
 function hashFile(path) {
     return new Promise((done, reject) => {
@@ -54,4 +59,7 @@ async function hashFileList(listOfFiles) {
     return await Promise.all(list);
 }
 
-export {hashFile, hashFileList};
+export {
+    hashFile,
+    hashFileList
+};

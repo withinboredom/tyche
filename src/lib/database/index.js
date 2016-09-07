@@ -1,6 +1,6 @@
 /**
  * This is a wrapper around loki.
- * @module
+ * @module lib/database
  */
 
 import {pathExists, dbPrefix} from '../config/paths';

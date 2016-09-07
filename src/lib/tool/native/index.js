@@ -1,11 +1,12 @@
 /**
- * @module
+ * @module lib/tool/native
  */
 import Tool from 'lib/tool/base';
 import os from 'os';
 
 /**
  * @class
+ * @extends Tool
  */
 class Native extends Tool {
     /**

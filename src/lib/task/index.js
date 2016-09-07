@@ -1,6 +1,6 @@
 /**
  * The task module. It makes the world go 'round
- * @module
+ * @module lib/task
  */
 
 import fs from 'fs';

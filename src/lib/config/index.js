@@ -1,25 +1,33 @@
-import BuildTasks from '../task';
+/**
+ * @module
+ */
+import Task from '../task';
 
 /**
  * Handles app configuration
+ * @class
  */
-export default class Config {
+class Config {
     /**
      * Create a new config object
-     * @param {Object} config The raw configuration object
+     * @param {{tasks: {object}, settings: {object}}} config The raw configuration object
+     * @param {TycheDb} database The database to use
      */
-    constructor(config) {
-        this.raw = config;
-        this.tasks = BuildTasks(config.tasks);
-        if (this.raw.tasks) {
+    constructor(config, database) {
+        if (config.tasks) {
+            const root = {
+                name: 'rootTaskABCD',
+                tasks: config.tasks
+            };
+            this.tasks = new Task(database, root);
             this.topLevelTasks = [];
-            for(const t of this.raw.tasks) {
+            for(const t of config.tasks) {
                 this.topLevelTasks.push(this.tasks.find(i => i.name === t.name));
             }
         } else {
             this.topLevelTasks = [];
         }
-        this.defaultTool = (this.raw.settings && this.raw.settings.defaultTool) || 'native';
+        this.defaultTool = (config.settings && config.settings.defaultTool) || 'native';
     }
 
     /**
@@ -37,3 +45,5 @@ export default class Config {
         }
     }
 }
+
+export default Config;

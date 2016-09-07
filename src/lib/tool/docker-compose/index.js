@@ -1,10 +1,11 @@
 /**
- * @module
+ * @module lib/tool/docker-compose
  */
 import Tool from 'lib/tool/base';
 
 /**
  * @class
+ * @extends Tool
  */
 class DockerCompose extends Tool {
     /**
