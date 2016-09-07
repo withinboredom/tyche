@@ -167,7 +167,7 @@ describe('tasks', () => {
                 skipped: false
             }
         ])
-    })
+    });
 
     it('will skip if there is a constraint to always use a specific tool but not to ignore the preferred tool', async () => {
         doSomethingTask.constraints = {};
@@ -179,7 +179,7 @@ describe('tasks', () => {
     });
 
     it('will skip if a file has not changed', async () => {
-        database.fileChanged = jest.fn((file) => false);
+        database.fileChanged = jest.fn(async () => false);
 
         const task = new Task(database, sometimesSkips);
         expect(task).toBeDefined();
@@ -187,7 +187,7 @@ describe('tasks', () => {
     });
 
     it('will not skip if a file has changed', async () => {
-        database.fileChanged = jest.fn((file) => true);
+        database.fileChanged = jest.fn(async () => true);
 
         const task = new Task(database, sometimesSkips);
         expect(task).toBeDefined();

@@ -102,25 +102,63 @@ export default class TycheDb {
         });
     }
 
-    async fileChanged(filename) {
+    /**
+     * Updates the snapshot (digest) of a file in the db
+     * @param {string} filename
+     * @async
+     */
+    async updateFileSnapshot(filename) {
+        if (await this.fileChanged(filename)) {
+            // don't update it if it hasn't changed?
+            const {hash, files} = await this._getHashAndCollectionFor(filename);
+
+            const results = files.find({path: hash.file});
+
+            if (results.length === 0) {
+                files.insert({
+                    path: hash.file,
+                    digest: hash.digest
+                });
+            }
+            else {
+                results[0].digest = hash.digest;
+                files.update(results[0]);
+            }
+        }
+    }
+
+    /**
+     * Gets a collection and a hash
+     * @param {string} filename
+     * @return {{hash: {path: {string}, digest: {string}}, files: Collection}}
+     * @private
+     */
+    async _getHashAndCollectionFor(filename) {
         const hash = await hashFile(filename);
         const files = this._getCollection('files');
-        const results = files.find({path: hash.file});
+        return {hash, files};
+    }
 
+    /**
+     * Determines if a file changed or not
+     * @param {string} filename
+     * @return {boolean}
+     */
+    async fileChanged(filename) {
         if (this._fileCache[filename] !== undefined) {
             return this._fileCache[filename];
         }
 
+        const {hash, files} = await this._getHashAndCollectionFor(filename);
+        const results = files.find({path: hash.file});
+
         if (results.length === 0) {
-            files.insert({path: hash.file, digest: hash.digest});
             this._fileCache[filename] = true;
             return true;
         }
 
         if (results[0].digest != hash.digest) {
             this._fileCache[filename] = true;
-            results[0].digest = hash.digest;
-            files.update(results[0]);
             return true;
         }
 
