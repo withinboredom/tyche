@@ -33,3 +33,15 @@ clone this repo, then
 1. `npm install -g tyche`
 2. `tyche build`
 3. `tyche test`
+
+### Contributing
+
+1. fork the repo
+1. clone the fork
+
+- `npm test -- --watch` to run unit tests while you work
+- `npm run build-cli` to build the cli
+- `npm link` to install the cli to your system
+- `tyche --help` to see how to have tyche build itself
+
+Open a Pull Request back to this repo
