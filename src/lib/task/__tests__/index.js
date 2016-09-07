@@ -217,5 +217,29 @@ describe('tasks', () => {
         ]);
         expect(database.fileChanged.mock.calls.length).toBe(3);
         expect(database.updateFileSnapshot.mock.calls.length).toBe(1);
+    });
+
+    it('emits a build event', async () => {
+        database.fileChanged = jest.fn(async () => true);
+        database.updateFileSnapshot = jest.fn(async () => true);
+        const emittedEvent = jest.fn();
+
+        const bus = require('lib/bus').default;
+        bus.on('task', (name) => {
+            emittedEvent(name);
+        });
+
+        const task = new Task(database, sometimesSkips);
+        expect(task).toBeDefined();
+        expect(await task.shouldSkip(preferredTool)).toBe(false);
+        expect(await task.execute(preferredTool)).toEqual([
+            {
+                exec: 'BUILD_NUMBER=0 echo hello world',
+                name: 'sometimes-skips',
+                result: 0,
+                skipped: false
+            }
+        ]);
+        expect(emittedEvent.mock.calls.length).toBe(1);
     })
 });

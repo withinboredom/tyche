@@ -3,6 +3,7 @@
  */
 
 import glob from 'glob';
+import EventBus from 'lib/bus';
 
 /**
  * Describe how to study
@@ -11,7 +12,7 @@ class Student {
 
     /**
      * Creates a student to study this repo
-     * @param {database} database A reference to a database
+     * @param {TycheDb} database A reference to a database
      * @param {object} definition The definition of the studies
      */
     constructor(database, definition) {
@@ -47,7 +48,38 @@ class Student {
                     }
                 }
 
+                if (study.reset) {
+                    for(const reset of study.reset) {
+                        EventBus.on('task', async (name, result) => {
+                            if (name === reset && result === 0) {
+                                try {
+                                    await this._updateFiles(trigger);
+                                }
+                                catch(e) {
+                                    throw e;
+                                }
+                            }
+                        });
+                    }
+                }
+
                 this.triggers.push(trigger);
+            }
+        }
+    }
+
+    /**
+     * Updates all files relative to a trigger
+     * @param {{on: {string}, message: {Array}, actions: {string}, armed: {boolean}, watches: {array}}} trigger
+     * @private
+     */
+    async _updateFiles(trigger) {
+        for(const watch of trigger.watches) {
+            if (!watch.files) {
+                throw new Error('Must scan before update');
+            }
+            for(const file of watch.files) {
+                this._database.updateFileSnapshot(file.path);
             }
         }
     }
@@ -64,7 +96,7 @@ class Student {
                         }
 
                         done(files);
-                    })
+                    });
                 });
                 for(const file of files) {
                     path.files.push({

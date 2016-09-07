@@ -39,5 +39,21 @@ describe('studies', () => {
             changes: 0,
             totalFilesScanned: await student.countFiles()
         });
+        expect(await student.scan()).toEqual({
+            changes: 0,
+            totalFilesScanned: await student.countFiles()
+        });
     });
+
+    it('responds to task completions', async () => {
+        const bus = require('lib/bus').default;
+        commit[0].reset.push('test');
+        const student = new Student(database, commit);
+        database.fileChanged = jest.fn(async () => true);
+        database.updateFileSnapshot = jest.fn();
+        await student.scan();
+        bus.emit('task', 'test', 0);
+        expect(database.updateFileSnapshot.mock.calls.length).toBeGreaterThan(0);
+    })
+
 });

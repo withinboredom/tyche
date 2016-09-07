@@ -5,6 +5,7 @@
 
 import fs from 'fs';
 import toolMachine from '../tool';
+import EventBus from '../bus';
 
 /**
  * A task can execute tools based off a definition
@@ -244,11 +245,16 @@ class Task {
             const executor = this._getExecutor(preferredTool);
             if (!(await this.shouldSkip(preferredTool))) {
                 result = await executor.execTool();
+
+                // update files this task watches
                 if (this.skips.files_not_changed) {
                     for (const file of this.skips.files_not_changed) {
-                        await this.database.updateFileSnapshot(file);
+                        this.database.updateFileSnapshot(file); // we don't actually need to wait for this to complete?
                     }
                 }
+
+                // let any listeners know the task is complete
+                EventBus.emit('task', this.name, result.code);
             }
             dry = executor.getDryRun();
         }
