@@ -14,15 +14,7 @@ class Task {
     /**
      * Define a task
      * @param {TycheDb} database
-     * @param {{
-     *  name: {string},
-     *  description: {string},
-     *  exec: {object}
-     *  tasks: {Task[]}
-     *  skips: {object},
-     *  constraints: {object},
-     *  dependencies: {string[]}
-     * }} definition
+     * @param {{ name: {string}, description: {string}, exec: {object}, tasks: {Task[]}, skips: {object}, constraints: {object}, dependencies: {string[]}}} definition
      */
     constructor(database, definition) {
         this.database = database;
