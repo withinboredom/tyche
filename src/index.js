@@ -97,6 +97,9 @@ async function tyche() {
             console.log(`Version set ${prevVersion} --> ${newVersion}`);
             const bump_task = config.tasks.search('bump');
             if (bump_task) {
+                // we have to reload the config (this is ugly)
+                const config = Config.loadConfig(path.normalize(`${configPath()}/./tyche.json`), database);
+                const bump_task = config.tasks.search('bump');
                 await bump_task.execute(ToolMachine(config.defaultTool));
             }
         });
