@@ -87,6 +87,15 @@
           "build"
         ]
       }
+    },
+    {
+      "name": "bump",
+      "description": "bumps the current version",
+      "exec": {
+        "native": {
+          "command": ["npm","version","$BUILD_NUMBER"]
+        }
+      }
     }
   ],
   "study": [

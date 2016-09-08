@@ -40,6 +40,9 @@ async function tyche() {
 
     for (const command of config.tasks.tasks) {
         const name = command.name;
+        if (name === 'bump') {
+            continue; // bump is reserved
+        }
         const description = command.description || 'run task';
         const subCommands = command.children().join('|');
 
