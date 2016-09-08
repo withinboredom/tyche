@@ -59,6 +59,9 @@
             }
           }
         }
+      ],
+      "dependencies": [
+        "doc-build"
       ]
     },
     {
@@ -96,6 +99,43 @@
           "command": ["npm","version","$BUILD_NUMBER"]
         }
       }
+    },
+    {
+      "name": "docs",
+      "description": "operate on the documentation",
+      "tasks": [
+        {
+          "name": "dev",
+          "description": "Watch and build the docs in realtime",
+          "exec": {
+            "native": {
+              "command": ["hugo","serve"],
+              "working": "./docs"
+            }
+          }
+        },
+        {
+          "name": "doc-build",
+          "description": "Turn the docs into static pages for github",
+          "exec": {
+            "native": {
+              "command": ["hugo","-d","."],
+              "working": "./docs"
+            }
+          }
+        },
+        {
+          "name": "new-page",
+          "description": "Create a new page for the docs",
+          "exec": {
+            "native": {
+              "command": ["hugo","new","--kind","chapter"],
+              "acceptsArgs": true,
+              "working": "./docs"
+            }
+          }
+        }
+      ]
     }
   ],
   "study": [

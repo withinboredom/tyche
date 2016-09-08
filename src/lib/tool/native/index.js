@@ -75,6 +75,10 @@ class Native extends Tool {
         return completely;
     }
 
+    getConfig() {
+        return this.config;
+    }
+
     /**
      * Builds from a task
      * @param {Task} step
@@ -105,7 +109,23 @@ class Native extends Tool {
                 return false;
             }
 
-            this.nativeCommand = (native || psuedo || notNativeButNative).command;
+            const runStep = (native || psuedo || notNativeButNative);
+
+            let working = process.cwd();
+
+            if (runStep.working) {
+                working = runStep.working;
+            }
+
+            if (runStep.acceptsArgs) {
+                runStep.command.push(...process.argv);
+            }
+
+            this.nativeCommand = runStep.command;
+
+            this.config = {
+                cwd: working
+            };
         }
 
         return true;

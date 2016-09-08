@@ -100,6 +100,14 @@ export default class Tool {
     }
 
     /**
+     * Get the native configuration
+     * @return {{shell: boolean, stdio: string}}
+     */
+    getConfig() {
+        return {shell: false, stdio: 'pipe'};
+    }
+
+    /**
      * Executes the tool natively and returns a promise
      * @param {boolean} showOutput Should show output?
      * @returns {Promise} A promise for the tool
@@ -109,7 +117,8 @@ export default class Tool {
             throw new Error('Command not initialized!');
         }
 
-        const config = {shell: false, stdio: 'pipe'};
+        Log.trace('Getting configuration');
+        const config = this.getConfig();
 
         // these next three lines could be moved out to a utility function ...
         const env = this.env;

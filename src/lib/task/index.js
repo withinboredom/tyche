@@ -50,6 +50,11 @@ class Task {
         for(const child of definition.tasks) {
             // we create a new task and try to find any matching unresolved dependencies
             const task = new Task(database, child);
+            this.tasks.push(task);
+        }
+
+        // after creating children, look for resolving external deps
+        for(const task of this.tasks) {
             for(const unresolved of task.unresolved) {
                 const found = this.search(unresolved.name);
                 if (found) {
@@ -59,7 +64,6 @@ class Task {
                     this.unresolved.push(unresolved);
                 }
             }
-            this.tasks.push(task);
         }
 
         const toResolve = [];

@@ -55,6 +55,14 @@ async function tyche() {
                     options = subcommand;
                     subcommand = null;
                 }
+
+                while(process.argv[0].indexOf('tyche') < 0) {
+                    process.argv.shift();
+                }
+                process.argv.shift(); // remove the tyche command
+                process.argv.shift(); // remove the command
+                if (subcommand) process.argv.shift(); // remove the subcommand
+
                 vars.command = command;
                 vars.tool = options.tool;
                 vars.subcommand = subcommand;

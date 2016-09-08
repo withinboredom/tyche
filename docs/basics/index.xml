@@ -6,8 +6,24 @@
     <description>Recent content in Basics on Tyche | Bring your project fortune</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 Sep 2016 08:44:32 -0400</lastBuildDate>
+    <lastBuildDate>Thu, 08 Sep 2016 10:08:59 -0400</lastBuildDate>
     <atom:link href="https://withinboredom.github.io/tyche/basics/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>json</title>
+      <link>https://withinboredom.github.io/tyche/basics/json/</link>
+      <pubDate>Thu, 08 Sep 2016 10:08:59 -0400</pubDate>
+      
+      <guid>https://withinboredom.github.io/tyche/basics/json/</guid>
+      <description>
+
+&lt;h3 id=&#34;chapter-x&#34;&gt;Chapter X&lt;/h3&gt;
+
+&lt;h1 id=&#34;some-chapter-title&#34;&gt;Some Chapter title&lt;/h1&gt;
+
+&lt;p&gt;Lorem ipsum&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>index</title>
