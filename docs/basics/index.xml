@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Basics on Tyche | Bring your project fortune</title>
+    <link>https://withinboredom.github.io/tyche/basics/</link>
+    <description>Recent content in Basics on Tyche | Bring your project fortune</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 08 Sep 2016 08:44:32 -0400</lastBuildDate>
+    <atom:link href="https://withinboredom.github.io/tyche/basics/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>index</title>
+      <link>https://withinboredom.github.io/tyche/basics/</link>
+      <pubDate>Thu, 08 Sep 2016 08:44:32 -0400</pubDate>
+      
+      <guid>https://withinboredom.github.io/tyche/basics/</guid>
+      <description>
+
+&lt;h3 id=&#34;chapter-1&#34;&gt;Chapter 1&lt;/h3&gt;
+
+&lt;h1 id=&#34;installing-tyche&#34;&gt;Installing Tyche&lt;/h1&gt;
+
+&lt;p&gt;Installing tyche is pretty easy.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

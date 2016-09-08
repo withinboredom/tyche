@@ -1,0 +1,4 @@
+baseurl = "https://withinboredom.github.io/tyche/"
+theme = "hugo-theme-learn"
+languageCode = "en-us"
+title = "Tyche | Bring your project fortune"
