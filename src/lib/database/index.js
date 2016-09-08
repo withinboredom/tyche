@@ -48,8 +48,8 @@ class TycheDb {
      */
     get buildNumber() {
         const collection = this._getCollection('builds');
-        let current = collection.max('build_number');
-        if (current === -Infinity) { // seriously?
+        let current = collection.maxRecord('build_number').value;
+        if (current === -Infinity || current === null || current === undefined) { // seriously?
             current = 0;
         }
 
@@ -64,8 +64,17 @@ class TycheDb {
      */
     set buildNumber(number) {
         const collection = this._getCollection('builds');
+        const current = collection.get(collection.maxRecord('build_number').index);
         Log.trace(`Updating build number to #${number}`);
-        collection.insert({build_number: number});
+        if (current === null || current === undefined) {
+            Log.trace('Inserting new build number record');
+            collection.insert({build_number: number});
+            return;
+        }
+        Log.trace('Updating existing build number');
+        current.build_number = number;
+        collection.update(current);
+        Log.trace('done updating build number');
     }
 
 
