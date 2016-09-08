@@ -136,6 +136,8 @@ async function tyche() {
             command = command.tasks.find((e) => e.name === vars.subcommand);
         }
 
+        command.reduce();
+
         //todo: A proper output
         console.log(await command[doit](ToolMachine(preferredToolString)));
     }
