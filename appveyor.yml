@@ -3,9 +3,9 @@ environment:
   matrix:
     - nodejs_version: "4.5.0"
     - nodejs_version: "6.5.0"
-  platform:
-    - x86
-    - x64
+platform:
+  - x86
+  - x64
 pull_requests:
   do_not_increment_build_number: true
 skip_branch_with_pr: true
