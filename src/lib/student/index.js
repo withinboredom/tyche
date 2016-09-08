@@ -4,6 +4,11 @@
 
 import glob from 'glob';
 import EventBus from 'lib/bus';
+import Logger from 'lib/logger';
+
+const Log = Logger.child({
+    component: 'Student'
+});
 
 /**
  * Describe how to study
@@ -51,7 +56,8 @@ class Student {
                 if (study.reset) {
                     for(const reset of study.reset) {
                         EventBus.on('task', async (name, result) => {
-                            if (name === reset && result === 0) {
+                            Log.trace(`A reset might have been triggered by ${name} for ${reset}`);
+                            if (name === reset && (result === 0 || result === undefined)) {
                                 try {
                                     await this._updateFiles(trigger);
                                 }
@@ -74,6 +80,7 @@ class Student {
      * @private
      */
     async _updateFiles(trigger) {
+        Log.trace(`Updating all watched files`);
         for(const watch of trigger.watches) {
             if (!watch.files) {
                 throw new Error('Must scan before update');

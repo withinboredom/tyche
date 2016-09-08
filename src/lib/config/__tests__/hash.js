@@ -1,6 +1,5 @@
-jest.disableAutomock();
-
 import {hashFile, hashFileList} from '../hash';
+import Log from 'lib/logger';
 
 describe('hash file tests', () => {
     it('can hash a single file', async () => {
@@ -36,7 +35,8 @@ describe('hash list tests', () => {
     it('can contain non-existent files', async () => {
         const files = [`${__dirname}/../../../../assets/tests/configs/simple-config.json`, 'none'];
         const hashes = await hashFileList(files);
-        console.log(hashes);
+        Log.info(hashes);
         expect(hashes.length).toBe(2);
+        expect(hashes[1]).toBe(true);
     });
 })

@@ -3,6 +3,11 @@
  * @module lib/tool/base
  */
 import { spawn } from 'child_process';
+import Logger from 'lib/logger';
+
+const Log = Logger.child({
+    component: 'Tool'
+});
 
 /**
  * The base tool
@@ -105,6 +110,12 @@ export default class Tool {
         }
 
         const config = {shell: false, stdio: 'pipe'};
+
+        // these next three lines could be moved out to a utility function ...
+        const env = this.env;
+        this.env = process.env;
+        this.meta = env;
+
         if (showOutput) {
             config.shell = true;
             config.stdio = 'inherit';
@@ -116,12 +127,14 @@ export default class Tool {
             return Promise.resolve();
         }
 
+        Log.trace(`About to execute $(${this.command} ${this.native.join(' ')})`);
         const cmd = spawn(this.command, this.native, config);
 
         return new Promise((done, reject) => {
             cmd.on('close', code => {
+                Log.trace(`Execution completed with exit code ${code}`);
                 if (code !== 0) {
-                    console.error('Task failed');
+                    Log.error(`Task failed`);
                     reject(code);
                 }
                 done({
@@ -136,6 +149,6 @@ export default class Tool {
         this.command = '';
         this.initialized = false;
         this.dry = false;
-        this.env = process.env;
+        this.env = {};
     }
 }

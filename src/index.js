@@ -83,7 +83,8 @@ async function tyche() {
 
     console.log(await command[doit](ToolMachine(preferredToolString)));
 
-    database.finish();
+    let exiting = false;
+    process.on('beforeExit', () => !exiting ? exiting = true && database.finish() : null);
 };
 
 async function main() {

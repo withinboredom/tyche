@@ -6,6 +6,11 @@
 import fs from 'fs';
 import toolMachine from '../tool';
 import EventBus from '../bus';
+import Logger from 'lib/logger';
+
+const Log = Logger.child({
+    component: 'Task'
+});
 
 /**
  * A task can execute tools based off a definition
@@ -32,6 +37,8 @@ class Task {
         this.unresolved = definition.dependencies || [];
 
         this.buildNumber = database.buildNumber;
+
+        Log.trace(`Creating task with name: ${this.name}`);
 
         /**
          * We particularly care about the dependencies key, as we'll need to prepend them to the tasks list, however...
@@ -78,6 +85,7 @@ class Task {
      * @return {null|Task} The task, if found
      */
     search(name) {
+        Log.trace(`Searching dependency tree for ${name}`);
         if(this.name === name) return this;
 
         for(const task of this.tasks) {
@@ -111,11 +119,12 @@ class Task {
                 for(const file of this.skips.path_exists) {
                     try {
                         fs.accessSync(file, fs.F_OK);
-                        console.log(`skipped ${this.name} for ${file}`)
+                        Log.trace(`skipping ${this.name} because ${file} exists`);
                         skip();
                     }
                     catch (e) {
                         noSkip();
+                        Log.trace(`Path ${file} does not exist, so not skipping ${this.name}`);
                     }
                 }
             }
@@ -124,11 +133,11 @@ class Task {
                 for(const file of this.skips.files_not_changed) {
                     if((await this.database.fileChanged(file))) {
                         noSkip();
-                        console.log("nope");
+                        Log.trace(`File ${file} changed, so not skipping ${this.name}`)
                     }
                     else {
                         skip();
-                        console.log(`skipped ${this.name} for ${file} not changed`)
+                        Log.trace(`Skipping ${this.name} because ${file} hasn't changed`);
                     }
                 }
             }
@@ -138,6 +147,7 @@ class Task {
         if (this.exec) {
             if (this.constraints && this.constraints.always_use_tool && this.constraints.ignore_preferred_tool) {
                 preferredTool = toolMachine(this.constraints.always_use_tool);
+                Log.warn(`Changing default tool to ${this.constraints.always_use_tool} due to constraints`);
             }
 
             let foundTool = false;
@@ -147,29 +157,32 @@ class Task {
                 }
             }
             if (!foundTool) {
-                console.log(`skipping ${this.name} because no tool`)
+                Log.warn(`Couldn't find a tool for ${this.name} so we are skipping it`);
                 skip();
             }
         }
 
-        console.log(`skip? ${this.name}: ${skipCount} ${noSkipCount} ${this.skips.forced}`);
+        Log.trace(`skip? ${this.name}: ${skipCount}==${noSkipCount} (but not 0) or ${this.skips.forced}`);
         if((skipCount === noSkipCount && noSkipCount > 0) || this.skips.forced) {
             // we need to mark all deps as being skipable?
-            console.log(this.skips);
+            Log.debug(`decided to skip ${this.name}`);
             if (this.skips.skip_dependencies_if_skip) {
-                console.log(`triggering force skip from ${this.name}`);
+                Log.debug(`Triggering force skip of dependencies of ${this.name}`);
                 this.markSkip(true, true);
                 skip();
             }
 
-            console.log(`skipped ${this.name}: ${skipCount} ${noSkipCount} ${this.skips.forced}`);
-
             return true;
         }
 
+        Log.debug(`decided not to skip ${this.name}`);
         return false;
     }
 
+    /**
+     * Gets all the dependencies of this task
+     * @return {Array}
+     */
     children() {
         const kids = [];
         for(const child of this.tasks) {
@@ -185,11 +198,11 @@ class Task {
      * @param {boolean} recursive Should this be set recursively?
      */
     markSkip(yesno, recursive) {
-        console.log(`forced ${this.name}`)
+        Log.trace(`Setting ${this.name} to be force-skipped`);
         this.skips.forced = yesno;
         if (recursive) {
             for(const task of this.tasks) {
-                console.log(this.tasks.map(e => e.name));
+                Log.trace(this.tasks.map(e => e.name));
                 task.markSkip(yesno, recursive);
             }
         }
@@ -237,6 +250,7 @@ class Task {
         let result = false;
         if (this.exec) {
             const executor = this._getExecutor(preferredTool);
+            Log.trace(`${this.name} is running a dry run using ${executor.toolName}`);
             result = executor.getDryRun();
         }
 
@@ -258,6 +272,7 @@ class Task {
      * @return {Array}
      */
     async execute(preferredTool) {
+        Log.trace(`Starting execution of task ${this.name}`);
         let complete = [];
         for(const task of this.tasks) {
             complete = complete.concat(await task.execute(preferredTool));
@@ -268,7 +283,9 @@ class Task {
 
         if (this.exec) {
             const executor = this._getExecutor(preferredTool);
+            dry = executor.getDryRun(); // order is important here ...
             if (!(await this.shouldSkip(preferredTool))) {
+                Log.trace(`${this.name} executing with tool: ${executor.toolName}`);
                 result = await executor.execTool();
 
                 // update files this task watches
@@ -277,12 +294,13 @@ class Task {
                         this.database.updateFileSnapshot(file); // we don't actually need to wait for this to complete?
                     }
                 }
-
-                // let any listeners know the task is complete
-                EventBus.emit('task', this.name, result.code);
             }
-            dry = executor.getDryRun();
         }
+
+        Log.trace(`Completing execution of task ${this.name}`);
+
+        // let any listeners know the task is complete
+        EventBus.emit('task', this.name, result.code);
 
         const action = {
             exec: dry,

@@ -4,6 +4,11 @@
  */
 import crypto from 'crypto';
 import fs from 'fs';
+import Logger from 'lib/logger';
+
+const Log = Logger.child({
+    component: 'Hash'
+});
 
 /**
  * Get's a hash from a file
@@ -46,10 +51,10 @@ function hashFile(path) {
 /**
  * Get's an array of sha256 hashes given an array of files
  * @param {array} listOfFiles The files to hash
- * @returns {object[]} The array of hashes
+ * @returns {Promise} The array of hashes
  */
 function hashFileList(listOfFiles) {
-    return Promise.all(listOfFiles.map((file) => hashFile(file).catch((err) => console.error(`${err}`))));
+    return Promise.all(listOfFiles.map((file) => hashFile(file).catch((err) => Log.error(`${err}`))));
 }
 
 export {
