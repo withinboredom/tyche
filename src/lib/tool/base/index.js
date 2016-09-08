@@ -150,7 +150,7 @@ export default class Tool {
                 Log.trace(`Execution completed with exit code ${code}`);
                 if (code !== 0) {
                     Log.error(`Task failed`);
-                    reject(code);
+                    done(code);
                 }
                 done({
                     code,
