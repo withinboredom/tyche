@@ -1,0 +1,19 @@
+version: 1.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
+skip_branch_with_pr: true
+build_script:
+- cmd: >-
+    npm install
+
+    npm run build-cli
+
+    npm link
+
+    tyche build
+test_script:
+- cmd: >-
+    tyche test
+
+    bash <(curl -s https://codecov.io/bash)
+deploy: off
