@@ -330,5 +330,48 @@ describe('tasks', () => {
                 skipped: false
             }
         ]);
+    });
+
+    it('properly does a transitive reduction', () => {
+        // this example tree taken from https://en.wikipedia.org/wiki/Transitive_reduction
+        const example = {
+            name: 'a',
+            tasks: [
+                {
+                    name: 'b',
+                    tasks: [],
+                    dependencies: [
+                        'd'
+                    ]
+                },
+                {
+                    name: 'c',
+                    tasks: [],
+                    dependencies: [
+                        'd',
+                        'e'
+                    ]
+                },
+                {
+                    name: 'd',
+                    tasks: [
+                        {
+                            name: 'e'
+                        }
+                    ]
+                }
+            ],
+            dependencies: [
+                'e'
+            ]
+        };
+
+        const task = new Task(database, example);
+        task.reduce();
+
+        expect(task.tasks.map(a => a.name)).toEqual(['b','c']);
+        expect(task.search('b').tasks.map(a => a.name)).toEqual(['d']);
+        expect(task.search('c').tasks.map(a => a.name)).toEqual(['d']);
+        expect(task.search('d').tasks.map(a => a.name)).toEqual(['e']);
     })
 });

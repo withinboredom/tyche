@@ -50,6 +50,9 @@
         {
           "name": "build-cli",
           "description": "Actually build the tool...",
+          "dependencies": [
+            "dependencies"
+          ],
           "exec": {
             "native": {
               "command": ["npm","run","build-cli"]

@@ -51,6 +51,12 @@
     "preprocessorIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/bin/"
+    ],
+    "collectCoverage": false,
+    "coverageReporters": [
+      "text",
+      "json",
+      "html"
     ]
   }
 }

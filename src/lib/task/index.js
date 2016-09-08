@@ -66,6 +66,7 @@ class Task {
             }
         }
 
+        // resolve explain to parent tasks how to resolve any unresolved dependencies
         const toResolve = [];
         for(const unresolved of this.unresolved) {
             if (typeof unresolved === 'string') {
@@ -84,6 +85,38 @@ class Task {
     }
 
     /**
+     * Perform a transitive reduction on the task tree
+     * @see https://en.wikipedia.org/wiki/Transitive_reduction
+     * @param {undefined|Task} parent The starting point of the reduction
+     * @param {undefined|string[]} children A snapshot of the direct descendants of the parent
+     */
+    reduce(parent, children) {
+        // for each vertex 'v', such that 'v' is a direct descendant of 'this'
+        if (parent === undefined) {
+            if (this.tasks) {
+                Log.trace(`Reducing, starting from ${this.name}`);
+                const children = this.tasks.map(e => e.name);
+                Log.trace(children);
+                this.tasks.map(vertex => vertex.reduce(this, children));
+                this.tasks.map(vertex => vertex.reduce());
+            }
+        }
+        else {
+            if (this.tasks) {
+                Log.trace(`Reducing ${this.name}`);
+                this.tasks.map(vertex => {
+                    if (children.filter(e => vertex.name === e).length > 0) {
+                        Log.trace(`Found long dep to ${vertex.name}`);
+                        Log.trace(`Removing ${vertex.name} from ${parent.name}`);
+                        parent.tasks = parent.tasks.filter(e => e.name !== vertex.name);
+                        vertex.reduce(parent, children);
+                    }
+                });
+            }
+        }
+    }
+
+    /**
      * Searches the entire dependency tree
      * @param {string} name The name of the task to find
      * @return {null|Task} The task, if found
@@ -94,7 +127,10 @@ class Task {
 
         for(const task of this.tasks) {
             const result = task.search(name);
-            if (result) return result;
+            if (result) {
+                Log.trace(`Found ${result.name}`);
+                return result;
+            }
         }
 
         return null;
