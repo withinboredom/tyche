@@ -140,6 +140,12 @@ export default class Tool {
         const cmd = spawn(this.command, this.native, config);
 
         return new Promise((done, reject) => {
+            cmd.on('error', err => {
+                Log.trace(`Error running command!`);
+                Log.error(`Task failed`);
+                Log.error(err);
+                done(1);
+            });
             cmd.on('close', code => {
                 Log.trace(`Execution completed with exit code ${code}`);
                 if (code !== 0) {
