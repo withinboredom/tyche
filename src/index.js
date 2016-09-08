@@ -76,8 +76,15 @@ async function tyche() {
         .action(async (options) => {
             const prevVersion = database.buildNumber;
             let newVersion = prevVersion;
+            console.log(options);
             if (semver.valid(prevVersion)) {
-                newVersion = semver.inc(prevVersion, options.level || 'patch', options.preid || null);
+                const level = options.level || 'patch';
+                const preid = options.preid || null;
+                console.log(level, preid);
+                newVersion = semver.inc(prevVersion, level, preid);
+                if (prevVersion[0] == 'v') {
+                    newVersion = `v${newVersion}`;
+                }
             }
             else if (Number.parseInt(newVersion)) {
                 newVersion = prevVersion + 1;
