@@ -2,18 +2,19 @@
 <html lang="en" class="js csstransforms3d">
   <head>
     <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0; url=/tyche/basics"/>
     {{ partial "meta.html" . }}
     {{ partial "favicon.html" . }}
 {{ .Scratch.Add "title" "" }}{{ if isset .Site.Data.titles .Title }}{{ .Scratch.Set "title" (index .Site.Data.titles .Title).title }}{{ else }}{{ .Scratch.Set "title" .Title}}{{end}}
     <title>{{ .Scratch.Get "title" }}</title>
     {{ partial "style.html" . }}
-    <link href="/css/nucleus.css" rel="stylesheet">
-    <link href="/css/font-awesome.min.css" rel="stylesheet">
-    <link href="/css/hybrid.css" rel="stylesheet">
-    <link href="/css/featherlight.min.css" rel="stylesheet">
-    <link href="/css/perfect-scrollbar.min.css" rel="stylesheet">
-    <link href="/css/theme.css" rel="stylesheet">
-    <link href="/css/hugo-theme.css" rel="stylesheet">
+    <link href="/tyche/css/nucleus.css" rel="stylesheet">
+    <link href="/tyche/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/tyche/css/hybrid.css" rel="stylesheet">
+    <link href="/tyche/css/featherlight.min.css" rel="stylesheet">
+    <link href="/tyche/css/perfect-scrollbar.min.css" rel="stylesheet">
+    <link href="/tyche/css/theme.css" rel="stylesheet">
+    <link href="/tyche/css/hugo-theme.css" rel="stylesheet">
     <style type="text/css">
     :root #header + #content > #left > #rlblock_left {
       display:none !important;
