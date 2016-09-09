@@ -8,7 +8,7 @@ os:
 install:
   - npm install
   - npm run build-cli
-  - ln -s /usr/bin/nodejs /usr/local/bin/node
+  - nvm alias default node
   - npm link
 script:
   - tyche build
