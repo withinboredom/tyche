@@ -26,6 +26,14 @@ I seem to spend several hours or more putting together a build process.
 This isn't ideal, so I've taken many hours building a general purpose tool
 that can handle many of the things that I've seen and built into other tools.
 
+### Requirements
+
+Windows:
+ - node 6.x+
+
+Linux/OSX:
+ - node 5.x+
+
 ### Running tyche
 
 clone this repo, then
