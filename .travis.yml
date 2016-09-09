@@ -1,6 +1,15 @@
 language: node_js
 node_js:
   - "6.5.0"
+  - "5"
+  - "node"
+  - "iojs"
 os:
   - linux
   - osx
+install:
+  - npm install
+  - npm link
+script:
+  - tyche build
+  - tyche test
