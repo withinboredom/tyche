@@ -14,6 +14,9 @@ const doSomethingTask = {
     exec: {
         native: {
             command: ['echo', 'hi']
+        },
+        'docker-compose': {
+            action: 'up'
         }
     }
 };
@@ -32,6 +35,9 @@ const sometimesSkips = {
     exec: {
         native: {
             command: ['echo','hello','world']
+        },
+        'docker-compose': {
+            action: 'down'
         }
     },
     skips: {
@@ -88,6 +94,12 @@ const realLife = [
 ];
 
 const preferredTool = toolMachine('native');
+class fakeDocker extends toolMachine('docker-compose') {
+    constructor() {
+        super();
+        this.command = 'echo';
+    }
+}
 const dockerCompose = toolMachine('docker-compose');
 
 describe('tasks', () => {
@@ -96,13 +108,14 @@ describe('tasks', () => {
         database = {
             buildNumber: 0
         };
+        dockerCompose.command = 'echo';
     });
 
     it('can be described', () => {
         expect(() => new Task(database, doNothingTask)).not.toThrow();
     });
 
-    it('can execute a task', async () => {
+    it('can execute a task -- native', async () => {
         const test = new Task(database, doSomethingTask);
         expect(test).toBeDefined();
         expect(await test.execute(preferredTool)).toEqual([
@@ -113,6 +126,12 @@ describe('tasks', () => {
                 skipped: false
             }
         ]);
+    });
+
+    it('can execute a task -- docker-compose', async () => {
+        const test = new Task(database, doSomethingTask);
+        expect(test).toBeDefined();
+        expect(await test.execute(fakeDocker)).toEqual([{"exec":"BUILD_NUMBER=0 echo -f docker-compose.yml up","name":"does-something","result":0,"skipped":false}]);
     });
 
     it('can know whether or not to skip itself', async () => {
@@ -182,6 +201,7 @@ describe('tasks', () => {
     });
 
     it('will skip if there is no exec for that tool', async () => {
+        delete doSomethingTask.exec['docker-compose'];
         const test = new Task(database, doSomethingTask);
         expect(test).toBeDefined();
         expect(await test.shouldSkip(dockerCompose)).toBe(true);
@@ -373,5 +393,21 @@ describe('tasks', () => {
         expect(task.search('b').tasks.map(a => a.name)).toEqual(['d']);
         expect(task.search('c').tasks.map(a => a.name)).toEqual(['d']);
         expect(task.search('d').tasks.map(a => a.name)).toEqual(['e']);
-    })
+    });
+
+    //todo: In the future, we could store the output and check that this test actually does something ...
+    it('can set the working directory', async () => {
+        doSomethingTask.exec.native.command = ['ls'];
+        doSomethingTask.exec.native.working = 'assets';
+        const test = new Task(database, doSomethingTask);
+        expect(await test.execute(preferredTool)).toEqual([{"exec":"BUILD_NUMBER=0 ls ","name":"does-something","result":0,"skipped":false}]);
+    });
+
+    it('can set pass arguments', async () => {
+        doSomethingTask.exec.native.command = ['ls'];
+        doSomethingTask.exec.native.working = 'assets';
+        doSomethingTask.exec.acceptsArgs = true;
+        const test = new Task(database, doSomethingTask);
+        expect(await test.execute(preferredTool)).toEqual([{"exec":"BUILD_NUMBER=0 ls ","name":"does-something","result":0,"skipped":false}]);
+    });
 });
