@@ -8,10 +8,9 @@ os:
 install:
   - npm install
   - npm run build-cli
-  - nvm alias default node
   - npm link
 script:
-  - tyche build
-  - tyche test
+  - node --harmony node_modules/.bin/tyche build
+  - node --harmony node_modules/.bin/tyche test
 after_success:
   - bash <(curl -s https://codecov.io/bash)
