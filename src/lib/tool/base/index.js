@@ -140,7 +140,7 @@ export default class Tool {
                 Log.trace(`Error running command!`);
                 Log.error(`Task failed`);
                 Log.error(err);
-                done(err);
+                done(127);
             });
             cmd.on('close', code => {
                 Log.trace(`Execution completed with exit code ${code}`);
