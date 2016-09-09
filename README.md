@@ -1,4 +1,4 @@
-[![API Doc](https://doclets.io/withinboredom/tyche/master.svg)](https://doclets.io/withinboredom/tyche/master)
+[![API Doc](https://doclets.io/withinboredom/tyche/master.svg)](https://doclets.io/withinboredom/tyche/master) [![Build status](https://ci.appveyor.com/api/projects/status/g6g599g61onplq17/branch/master?svg=true)](https://ci.appveyor.com/project/withinboredom/tyche/branch/master)
 
 # May the god of fortune bring your project fortune
 
