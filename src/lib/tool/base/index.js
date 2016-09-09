@@ -54,10 +54,6 @@ export default class Tool {
         return `${env.join(' ')}${env.length > 0 ? ' ' : ''}${this.command} ${this.native.join(' ')}`;
     }
 
-    set dryRun(doDry) {
-        this.dry = doDry;
-    }
-
     /**
      * Describes what tools this tool knows how to process
      * @abstract
@@ -144,7 +140,7 @@ export default class Tool {
                 Log.trace(`Error running command!`);
                 Log.error(`Task failed`);
                 Log.error(err);
-                done(1);
+                done(err);
             });
             cmd.on('close', code => {
                 Log.trace(`Execution completed with exit code ${code}`);
