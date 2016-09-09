@@ -6,27 +6,11 @@
     <description>Recent content on Tyche | Bring your project fortune</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 08 Sep 2016 10:08:59 -0400</lastBuildDate>
+    <lastBuildDate>Thu, 08 Sep 2016 08:44:32 -0400</lastBuildDate>
     <atom:link href="https://withinboredom.github.io/tyche/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>json</title>
-      <link>https://withinboredom.github.io/tyche/basics/json/</link>
-      <pubDate>Thu, 08 Sep 2016 10:08:59 -0400</pubDate>
-      
-      <guid>https://withinboredom.github.io/tyche/basics/json/</guid>
-      <description>
-
-&lt;h3 id=&#34;chapter-x&#34;&gt;Chapter X&lt;/h3&gt;
-
-&lt;h1 id=&#34;some-chapter-title&#34;&gt;Some Chapter title&lt;/h1&gt;
-
-&lt;p&gt;Lorem ipsum&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>index</title>
+      <title>Getting Started</title>
       <link>https://withinboredom.github.io/tyche/basics/</link>
       <pubDate>Thu, 08 Sep 2016 08:44:32 -0400</pubDate>
       
@@ -37,7 +21,26 @@
 
 &lt;h1 id=&#34;installing-tyche&#34;&gt;Installing Tyche&lt;/h1&gt;
 
-&lt;p&gt;Installing tyche is pretty easy.&lt;/p&gt;
+&lt;p&gt;Installing tyche is pretty easy. In fact, it&amp;rsquo;s as easy as installing an npm package:&lt;/p&gt;
+
+&lt;div class=&#34;notices info&#34; &gt;&lt;p&gt;Be aware that node 6.5.0 or higher is required for this tool on Windows.&lt;/p&gt;
+&lt;/div&gt;
+
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;npm install -g tyche
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once installed, you&amp;rsquo;re ready to configure a project to use tyche as a build tool.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>create tyche json</title>
+      <link>https://withinboredom.github.io/tyche/basics/create-tyche-json/</link>
+      <pubDate>Thu, 08 Sep 2016 22:46:48 -0400</pubDate>
+      
+      <guid>https://withinboredom.github.io/tyche/basics/create-tyche-json/</guid>
+      <description>&lt;p&gt;Lorem Ipsum&lt;/p&gt;
 </description>
     </item>
     
