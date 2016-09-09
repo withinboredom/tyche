@@ -84,7 +84,7 @@
       "description": "Run unit tests",
       "exec": {
         "native": {
-          "command": ["npm","run","test"]
+          "command": ["npm","run","test","--","--coverage"]
         },
         "docker-compose": {
           "service": "tyche-tests"

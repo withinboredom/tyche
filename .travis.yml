@@ -1,6 +1,16 @@
 language: node_js
 node_js:
   - "6.5.0"
+  - "5"
+  - "node"
 os:
   - linux
-  - osx
+install:
+  - npm install
+  - npm run build-cli
+  - npm link
+script:
+  - node --harmony bin/index.js build
+  - node --harmony bin/index.js test
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
