@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0; url=/tyche/basics"/>
+    {{ partial "meta.html" . }}
+    {{ partial "favicon.html" . }}
+    {{ .Scratch.Add "title" "" }}{{ if isset .Site.Data.titles .Title }}{{ .Scratch.Set "title" (index .Site.Data.titles .Title).title }}{{ else }}{{ .Scratch.Set "title" .Title}}{{end}}
+    <title>{{ .Scratch.Get "title" }}</title>
+    {{ partial "style.html" . }}
+    <link href="/tyche/css/nucleus.css" rel="stylesheet">
+    <link href="/tyche/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/tyche/css/hybrid.css" rel="stylesheet">
+    <link href="/tyche/css/featherlight.min.css" rel="stylesheet">
+    <link href="/tyche/css/perfect-scrollbar.min.css" rel="stylesheet">
+    <link href="/tyche/css/theme.css" rel="stylesheet">
+    <link href="/tyche/css/hugo-theme.css" rel="stylesheet">
+    <style type="text/css">
+        :root #header + #content > #left > #rlblock_left {
+            display:none !important;
+        }
+
+        p,li,ul {
+            text-align: center
+        }
+
+        ul
+        {
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+<body class="" data-url="/">
+
+<section id="body" style="margin-left:0px;">
+    <div id="overlay"></div>
+
+    <div class="padding highlightable">
+        <h1>Loading an amazing documentation experience</h1>
+        <p>
+            If it doesn't load (for some reason) -- please go <a href="/tyche/basics">to the beginning of the docs</a>
+        </p>
+        <p>Made with <i class="fa fa-heart fa-4x"></i> by Rob Landers</p>
+    </div>
+</section>
+</body>
+</html>

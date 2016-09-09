@@ -128,11 +128,22 @@
           }
         },
         {
-          "name": "new-page",
+          "name": "new-chapter",
           "description": "Create a new page for the docs",
           "exec": {
             "native": {
               "command": ["hugo","new","--kind","chapter"],
+              "acceptsArgs": true,
+              "working": "./docs"
+            }
+          }
+        },
+        {
+          "name": "new-page",
+          "description": "Create a new page for the docs",
+          "exec": {
+            "native": {
+              "command": ["hugo","new"],
               "acceptsArgs": true,
               "working": "./docs"
             }
