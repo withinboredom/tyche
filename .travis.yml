@@ -3,7 +3,6 @@ node_js:
   - "6.5.0"
   - "5"
   - "node"
-  - "iojs"
 os:
   - linux
 install:
