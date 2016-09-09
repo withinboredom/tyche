@@ -9,6 +9,7 @@ os:
 install:
   - npm install
   - npm run build-cli
+  - ln -s /usr/bin/nodejs /usr/bin/node
   - npm link
 script:
   - tyche build
