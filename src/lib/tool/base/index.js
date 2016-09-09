@@ -127,20 +127,15 @@ export default class Tool {
             config.env = this.env;
         }
 
-        if (this.dry) {
-            console.log(this.command, this.native.join(' '));
-            return Promise.resolve();
-        }
-
         Log.trace(`About to execute $(${this.command} ${this.native.join(' ')})`);
         const cmd = spawn(this.command, this.native, config);
 
         return new Promise((done, reject) => {
             cmd.on('error', err => {
                 Log.trace(`Error running command!`);
-                Log.error(`Task failed`);
+                Log.error(`The task failed unexpectedly, it is likely that you are running an old version of nodejs. Please update.`);
                 Log.error(err);
-                done(127);
+                reject(127);
             });
             cmd.on('close', code => {
                 Log.trace(`Execution completed with exit code ${code}`);
