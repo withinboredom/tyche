@@ -38,7 +38,7 @@ Linux/OSX:
 
 As simple as `npm install -g tyche`...
 
-See the great getting started guide at [the tyche docs](https://github.io/withinboredom/tyche/basics/).
+See the great getting started guide at [the tyche docs](https://withinboredom.github.io/tyche).
 
 ### Configuring
 
