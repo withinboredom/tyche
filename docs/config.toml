@@ -7,3 +7,4 @@ title = "Tyche | Bring your project fortune"
 [params]
 	author = "Rob Landers"
 	description = "Documentation for tyche, a powerful development tool"
+	editURL = "https://github.com/withinboredom/tyche/edit/master/docs/content/"
