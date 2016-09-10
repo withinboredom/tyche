@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tyche | Bring your project fortune</title>
-    <link>https://withinboredom.github.io/tyche/</link>
-    <description>Recent content on Tyche | Bring your project fortune</description>
+    <title>References on Tyche | Bring your project fortune</title>
+    <link>https://withinboredom.github.io/tyche/reference/</link>
+    <description>Recent content in References on Tyche | Bring your project fortune</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 09 Sep 2016 22:22:09 -0400</lastBuildDate>
-    <atom:link href="https://withinboredom.github.io/tyche/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://withinboredom.github.io/tyche/reference/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Reference</title>
@@ -22,31 +22,6 @@
 &lt;h1 id=&#34;the-reference-chapter&#34;&gt;The Reference Chapter&lt;/h1&gt;
 
 &lt;p&gt;Please choose a menu item on the sidebar to find what it is you are looking for.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Getting Started</title>
-      <link>https://withinboredom.github.io/tyche/basics/</link>
-      <pubDate>Thu, 08 Sep 2016 08:44:32 -0400</pubDate>
-      
-      <guid>https://withinboredom.github.io/tyche/basics/</guid>
-      <description>
-
-&lt;h3 id=&#34;chapter-1&#34;&gt;Chapter 1&lt;/h3&gt;
-
-&lt;h1 id=&#34;installing-tyche&#34;&gt;Installing Tyche&lt;/h1&gt;
-
-&lt;p&gt;Installing tyche is pretty easy. In fact, it&amp;rsquo;s as easy as installing an npm package:&lt;/p&gt;
-
-&lt;div class=&#34;notices info&#34; &gt;&lt;p&gt;Be aware that node 6.5.0 or higher is required for this tool on Windows.&lt;/p&gt;
-&lt;/div&gt;
-
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;npm install -g tyche
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Once installed, you&amp;rsquo;re ready to configure a project to use tyche as a build tool.&lt;/p&gt;
 </description>
     </item>
     
@@ -265,146 +240,6 @@
     }
 }
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Create a tyche.json file</title>
-      <link>https://withinboredom.github.io/tyche/basics/create-tyche-json/</link>
-      <pubDate>Thu, 08 Sep 2016 22:46:48 -0400</pubDate>
-      
-      <guid>https://withinboredom.github.io/tyche/basics/create-tyche-json/</guid>
-      <description>&lt;p&gt;After you have tyche installed, there is one thing you&amp;rsquo;ll need to do.
-Create a &lt;code&gt;tyche.json&lt;/code&gt; file in the root of your repo (or where ever you
-want to launch tasks from). A tyche.json file is a description of
-tasks that work together to achieve some kind of result. Each task can
-have rules (or not) that allow you define tasks with great detail.&lt;/p&gt;
-
-&lt;p&gt;For example, it might make sense to create a task that runs &lt;code&gt;npm install&lt;/code&gt;
-if, and only if, the node_modules directory doesn&amp;rsquo;t exist or the
-package.json file changes.&lt;/p&gt;
-
-&lt;p&gt;In order to do that, the &lt;code&gt;tyche.json&lt;/code&gt; file might look something like:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
-    &amp;quot;settings&amp;quot;: {
-        &amp;quot;defaultTool&amp;quot;: &amp;quot;native&amp;quot;
-    },
-    &amp;quot;tasks&amp;quot;: [
-        {
-            &amp;quot;name&amp;quot;: &amp;quot;install-dependencies&amp;quot;,
-            &amp;quot;description&amp;quot;: &amp;quot;run npm install&amp;quot;,
-            &amp;quot;exec&amp;quot;: {
-                &amp;quot;native&amp;quot;: {
-                    &amp;quot;command&amp;quot;: &amp;quot;npm install&amp;quot;
-                }
-            },
-            &amp;quot;skips&amp;quot;: {
-                &amp;quot;files_not_changed&amp;quot;: [&amp;quot;package.json&amp;quot;],
-                &amp;quot;path_exists&amp;quot;: [&amp;quot;node_modules&amp;quot;]
-            }
-        }
-    ]
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&#34;notices info&#34; &gt;&lt;p&gt;Make sure your task names are globally unique. They are the identifier
-used internally.&lt;/p&gt;
-&lt;/div&gt;
-
-
-&lt;p&gt;The output of &lt;code&gt;tyche --help&lt;/code&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Usage: tyche [options] [command]
-
-
-  Commands:
-
-    install-dependencies [options]   run npm install
-    init                             Initialize the tool in this repository
-    bump [options]                   Bump the build number +1
-
-  Options:
-
-    -h, --help     output usage information
-    -V, --version  output the version number
-    -v, --verbose  Turn on verbose logging
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Another use case might be to build something, use &lt;code&gt;./configure&lt;/code&gt; and &lt;code&gt;make&lt;/code&gt;
-for example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
-    &amp;quot;settings&amp;quot;: {
-        &amp;quot;defaultTool&amp;quot;: &amp;quot;native&amp;quot;
-    },
-    &amp;quot;tasks&amp;quot;: [
-        {
-            &amp;quot;name&amp;quot;: &amp;quot;make&amp;quot;,
-            &amp;quot;description&amp;quot;: &amp;quot;Run make&amp;quot;,
-            &amp;quot;exec&amp;quot;: {
-                &amp;quot;native&amp;quot;: {
-                    &amp;quot;command&amp;quot;: &amp;quot;make&amp;quot;
-                }
-            },
-            &amp;quot;tasks&amp;quot;: [
-                {
-                    &amp;quot;name&amp;quot;: &amp;quot;configure&amp;quot;,
-                    &amp;quot;description&amp;quot;: &amp;quot;Run configure&amp;quot;,
-                    &amp;quot;exec&amp;quot;: {
-                        &amp;quot;native&amp;quot;: {
-                            &amp;quot;command&amp;quot;: &amp;quot;./configure&amp;quot;
-                        }
-                    }
-                }
-            ]
-        }
-    ]
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;And the output of &lt;code&gt;tyche --help&lt;/code&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;Usage: tyche [options] [command]
-
-
-  Commands:
-
-    make [options] [configure]  Run make
-    init                        Initialize the tool in this repository
-    bump [options]              Bump the build number +1
-
-  Options:
-
-    -h, --help     output usage information
-    -V, --version  output the version number
-    -v, --verbose  Turn on verbose logging
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Notice how the tasks are nested inside one another. This means that the
-&lt;code&gt;make&lt;/code&gt; task depends on the &lt;code&gt;configure&lt;/code&gt; task. This also makes running
-immediate children of a top-level task easy from the cli as well. Since
-you can run &lt;code&gt;tyche make configure&lt;/code&gt; to run that specific task.&lt;/p&gt;
-
-&lt;p&gt;tyche uses this internally to build and develop the documentation you
-are reading right now. &lt;code&gt;tyche docs dev&lt;/code&gt; to enable development while
-watching the filesystem and &lt;code&gt;tyche docs new-chapter&lt;/code&gt; for example.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;It&amp;rsquo;s important to note that the command you specify will inherit the
-same environment variables that are present from wherever you invoke tyche
-as well as run the command in a shell. This is what makes tyche pretty
-amazing as a lot of build environments (such as TravisCI or TeamCity)
-inject environment variables into the build process.&lt;/p&gt;
-
-&lt;div class=&#34;notices warning&#34; &gt;&lt;p&gt;Currently, there&amp;rsquo;s not any way to trap a signal 9 (SIGKILL). This means
-a command started by a task, may continue to run in the background when
-the tyche process is killed in this way.
-Most likely, this will only affect people running TeamCity on versions
-less than 10.02&amp;hellip; You&amp;rsquo;ve been warned.&lt;/p&gt;
-&lt;/div&gt;
-
 </description>
     </item>
     
@@ -823,51 +658,6 @@ with skipping.&lt;/p&gt;
 for everything except the kind of things that you can&amp;rsquo;t do in docker,
 like maybe install docker? I&amp;rsquo;d be interested in seeing what you come up
 with.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Studies</title>
-      <link>https://withinboredom.github.io/tyche/basics/studies/</link>
-      <pubDate>Fri, 09 Sep 2016 22:24:21 -0400</pubDate>
-      
-      <guid>https://withinboredom.github.io/tyche/basics/studies/</guid>
-      <description>&lt;p&gt;Studies are a concept in tyche that allow you to define certain files
-that should be watched for changes and if a task hasn&amp;rsquo;t been run by the
-time a commit or push is attempted, then it should tell the user they
-need to perform those tasks. This is installed into a repository by
-running &lt;code&gt;tyche init&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&#34;notices info&#34; &gt;&lt;p&gt;This feature is currently only supported in git. You are welcome to open
-an issue and/or pull request if you&amp;rsquo;d like to see this feature extended
-to other version control systems.&lt;/p&gt;
-&lt;/div&gt;
-
-
-&lt;p&gt;For example, if you&amp;rsquo;d like to watch the folder &lt;code&gt;src&lt;/code&gt; for changes and
-require that tests be run before allowing a commit, it would look
-something like:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
-    &amp;quot;study&amp;quot;: [
-        {
-            &amp;quot;on&amp;quot;: &amp;quot;commit&amp;quot;,
-            &amp;quot;watch&amp;quot;: [
-                &amp;quot;./src&amp;quot;
-            ],
-            &amp;quot;message&amp;quot;: {
-                &amp;quot;error&amp;quot;: &amp;quot;It looks like you forgot to test the code before committing, please do so&amp;quot;
-            },
-            &amp;quot;reset&amp;quot;: [
-                &amp;quot;test&amp;quot;
-            ]
-        }
-    ]
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Once a task named &lt;code&gt;test&lt;/code&gt; is run, it will reset the error and allow the
-commit into source control.&lt;/p&gt;
 </description>
     </item>
     

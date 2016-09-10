@@ -1,3 +1,16 @@
++++
+date = "2016-09-09T22:41:23-04:00"
+next = "/reference/docker-compose-tool/"
+prev = "/reference/"
+title = "tyche.json Reference"
+toc = true
+weight = 1
+
++++
+
+An example `tyche.json` file, taken from the tyche repository:
+
+``` json
 {
   "settings": {
     "defaultTool": "native"
@@ -193,3 +206,14 @@
     }
   ]
 }
+```
+
+# Settings
+
+``` json
+{
+    "settings": {
+        "defaultTool": "docker-compose" # Either native or docker-compose
+    }
+}
+```

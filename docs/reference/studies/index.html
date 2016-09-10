@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="https://withinboredom.github.io/tyche/images/favicon.png" type="image/x-icon" />
 
     
-    <title>Getting Started</title>
+    <title>studies</title>
     <link href="https://withinboredom.github.io/tyche/css/nucleus.css" rel="stylesheet">
     <link href="https://withinboredom.github.io/tyche/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://withinboredom.github.io/tyche/css/hybrid.css" rel="stylesheet">
@@ -23,7 +23,7 @@
     
 
   </head>
-  <body class="" data-url="/basics/">
+  <body class="" data-url="/reference/studies/">
     <nav id="sidebar">
   <div id="header-wrapper">
     <div id="header">
@@ -43,7 +43,7 @@
       
       
 
-      <li class="dd-item active parent" data-nav-id="/basics/">
+      <li class="dd-item  " data-nav-id="/basics/">
         <a href="https://withinboredom.github.io/tyche/basics/">
           <span>
             
@@ -82,7 +82,7 @@
       
       
 
-      <li class="dd-item  " data-nav-id="/reference/">
+      <li class="dd-item  parent" data-nav-id="/reference/">
         <a href="https://withinboredom.github.io/tyche/reference/">
           <span>
             
@@ -130,7 +130,7 @@
           
           
           
-            <li class="dd-item " data-nav-id="/reference/studies/">
+            <li class="dd-item active" data-nav-id="/reference/studies/">
               <a href="https://withinboredom.github.io/tyche/reference/studies/">
                 <span>studies     </i></span>
               </a>
@@ -170,7 +170,7 @@
                 
                 
               <div id="top-github-link">
-                  <a class="github-link" href="https://github.com/withinboredom/tyche/edit/master/docs/content/basics/index.md" target="blank">
+                  <a class="github-link" href="https://github.com/withinboredom/tyche/edit/master/docs/content/reference/studies.md" target="blank">
                     <i class="fa fa-code-fork"></i>
                     Edit this page
                   </a>
@@ -184,54 +184,199 @@
                       </a>
                   </span>
                 
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
                 
                 
+                
+                
+                  
                 
                   
                     
                     
+                <a href="https://withinboredom.github.io/tyche/reference/" itemprop="url"><span itemprop="title">Reference</span></a> <i class="fa fa-angle-right"></i>
+                    
                   
                 
-                  
-                
-                <span itemprop="title"> Getting Started</span>
+                <span itemprop="title"> studies</span>
               </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#on">on</a></li>
+<li><a href="#watch">watch</a></li>
+<li><a href="#message">message</a></li>
+<li><a href="#reset">reset</a></li>
+</ul></li>
+</ul>
+</nav>
+    </div>
+</div>
+
               
 
             </div>
             
-              <div id="chapter">
-            
     	        <div id="body-inner">
+                
+                <h1>studies</h1>
                 
 
 
 
-<h3 id="chapter-1">Chapter 1</h3>
+<p>Studies are a way to constrain the user of tyche and prevent them from
+making common mistakes. It requires the user to be using <code>git</code> as their
+source control provider as well as running <code>tyche init</code> before the feature
+can be utilized. It works through git-hooks.</p>
 
-<h1 id="installing-tyche">Installing Tyche</h1>
+<p>To add a study:</p>
 
-<p>Installing tyche is pretty easy. In fact, it&rsquo;s as easy as installing an npm package:</p>
-
-<div class="notices info" ><p>Be aware that node 6.5.0 or higher is required for this tool on Windows.</p>
-</div>
-
-
-<pre><code class="language-bash">npm install -g tyche
+<pre><code class="language-json">{
+    &quot;study&quot;: [
+        {
+            &quot;on&quot;: &quot;commit&quot;,
+            &quot;watch&quot;: [
+                &quot;package.json&quot;,
+                &quot;src/**/*.js&quot;
+            ],
+            &quot;message&quot;: {
+                &quot;error&quot;: &quot;Please run `tyche test` before committing&quot;
+            },
+            &quot;reset&quot;: [
+                &quot;test&quot;
+            ]
+        }
+    ]
+}
 </code></pre>
 
-<p>Once installed, you&rsquo;re ready to configure a project to use tyche as a build tool.</p>
+<p>In this example, if <code>package.json</code> or any javascript file changes in the
+src/ directory tree, then the user will be given an error message and
+prevented from committing to the repo until they run <code>tyche test</code>. Once
+the &ldquo;test&rdquo; task is run, it will reset the error and allow them to commit
+to the repo.</p>
+
+<h2 id="on">on</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>true</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>one of <code>commit</code> or <code>push</code></td>
+</tr>
+</tbody>
+</table>
+
+<p>What action on the repo will trigger this message?</p>
+
+<h2 id="watch">watch</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>true</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>an array of glob strings</td>
+</tr>
+</tbody>
+</table>
+
+<p>Which files/folders to watch for changes</p>
+
+<h2 id="message">message</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>true</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>an object containing one of <code>error</code> or <code>warning</code></td>
+</tr>
+
+<tr>
+<td>error</td>
+<td>prevent the user from committing or pushing</td>
+</tr>
+
+<tr>
+<td>warning</td>
+<td>allow the user to continue committing or pushing, but display a message</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="reset">reset</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>true</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>array of task names</td>
+</tr>
+</tbody>
+</table>
+
+<p>Running any of these tasks will reset the warning/error and prevent it
+from stopping them.</p>
 
 
-      
-        </div> 
       
       </div>
     </div>
 
     <div id="navigation">
-        
-        <a class="nav nav-next" href="https://withinboredom.github.io/tyche/basics/create-tyche-json/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        <a class="nav nav-prev" href="https://withinboredom.github.io/tyche/reference/tasks/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="https://withinboredom.github.io/tyche/reference/version-bump/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
     </div>
 
     </section>

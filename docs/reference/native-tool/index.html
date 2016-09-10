@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="https://withinboredom.github.io/tyche/images/favicon.png" type="image/x-icon" />
 
     
-    <title>Getting Started</title>
+    <title>native tool</title>
     <link href="https://withinboredom.github.io/tyche/css/nucleus.css" rel="stylesheet">
     <link href="https://withinboredom.github.io/tyche/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://withinboredom.github.io/tyche/css/hybrid.css" rel="stylesheet">
@@ -23,7 +23,7 @@
     
 
   </head>
-  <body class="" data-url="/basics/">
+  <body class="" data-url="/reference/native-tool/">
     <nav id="sidebar">
   <div id="header-wrapper">
     <div id="header">
@@ -43,7 +43,7 @@
       
       
 
-      <li class="dd-item active parent" data-nav-id="/basics/">
+      <li class="dd-item  " data-nav-id="/basics/">
         <a href="https://withinboredom.github.io/tyche/basics/">
           <span>
             
@@ -82,7 +82,7 @@
       
       
 
-      <li class="dd-item  " data-nav-id="/reference/">
+      <li class="dd-item  parent" data-nav-id="/reference/">
         <a href="https://withinboredom.github.io/tyche/reference/">
           <span>
             
@@ -114,7 +114,7 @@
           
           
           
-            <li class="dd-item " data-nav-id="/reference/native-tool/">
+            <li class="dd-item active" data-nav-id="/reference/native-tool/">
               <a href="https://withinboredom.github.io/tyche/reference/native-tool/">
                 <span>native tool     </i></span>
               </a>
@@ -170,7 +170,7 @@
                 
                 
               <div id="top-github-link">
-                  <a class="github-link" href="https://github.com/withinboredom/tyche/edit/master/docs/content/basics/index.md" target="blank">
+                  <a class="github-link" href="https://github.com/withinboredom/tyche/edit/master/docs/content/reference/native-tool.md" target="blank">
                     <i class="fa fa-code-fork"></i>
                     Edit this page
                   </a>
@@ -184,54 +184,97 @@
                       </a>
                   </span>
                 
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
                 
                 
+                
+                
+                  
                 
                   
                     
                     
+                <a href="https://withinboredom.github.io/tyche/reference/" itemprop="url"><span itemprop="title">Reference</span></a> <i class="fa fa-angle-right"></i>
+                    
                   
                 
-                  
-                
-                <span itemprop="title"> Getting Started</span>
+                <span itemprop="title"> native tool</span>
               </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+
+    </div>
+</div>
+
               
 
             </div>
             
-              <div id="chapter">
-            
     	        <div id="body-inner">
                 
+                <h1>native tool</h1>
+                
 
+<p>The native tool is for running commands on bare metal, however, there&rsquo;s
+some flexibility to run commands in varying environments. It looks like
+this in a task definition:</p>
 
+<pre><code class="language-json">{
+    &quot;exec&quot;: {
+        &quot;native&quot;: {},
+        &quot;darwin&quot;: {}, # AKA, OSX
+        &quot;freebsd&quot;: {},
+        &quot;linux&quot;: {},
+        &quot;openbsd&quot;: {},
+        &quot;win32&quot;: {},
+        &quot;native-nix&quot;: {},
+        &quot;native-win&quot;: {}
+    }
+}
+</code></pre>
 
-<h3 id="chapter-1">Chapter 1</h3>
+<p>If the command you need to run will work universally, it&rsquo;s a good idea
+to use the &ldquo;native&rdquo; tool, however there are a few things that may not
+&ldquo;just work&rdquo; everywhere. For example, <code>rm -rf folder</code> doesn&rsquo;t work in
+windows where it&rsquo;s just <code>rmdir folder</code>. You can define these both:</p>
 
-<h1 id="installing-tyche">Installing Tyche</h1>
+<pre><code class="language-json">{
+    &quot;exec&quot;: {
+        &quot;native-nix&quot;: {
+            &quot;command&quot;: [&quot;rm&quot;,&quot;-rf&quot;,&quot;folder&quot;]
+        },
+        &quot;native-win&quot;: {
+            &quot;command&quot;: [&quot;rmdir&quot;,&quot;folder&quot;]
+        }
+    }
+}
+</code></pre>
 
-<p>Installing tyche is pretty easy. In fact, it&rsquo;s as easy as installing an npm package:</p>
+<p>This allows your tasks to run cross-platform without too much hassle.</p>
 
-<div class="notices info" ><p>Be aware that node 6.5.0 or higher is required for this tool on Windows.</p>
+<div class="notices info" ><p>tyche will choose the more specific native command. If <code>darwin</code> and
+<code>native-nix</code> is defined, and tyche is being run on osx, it will choose
+<code>darwin</code> instead of <code>native-nix</code>.</p>
 </div>
 
 
-<pre><code class="language-bash">npm install -g tyche
-</code></pre>
+<p>Here are the keys/values that the native tool responds to:</p>
 
-<p>Once installed, you&rsquo;re ready to configure a project to use tyche as a build tool.</p>
+<ul>
+<li><em>command</em>: (array of strings) The command to run</li>
+<li><em>working</em>: (string) The working directory (current location of <code>tyche.json</code> if not defined)</li>
+<li><em>acceptsArgs</em>: (boolean) Allows passing arguments from the tyche process</li>
+</ul>
 
 
-      
-        </div> 
       
       </div>
     </div>
 
     <div id="navigation">
-        
-        <a class="nav nav-next" href="https://withinboredom.github.io/tyche/basics/create-tyche-json/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        <a class="nav nav-prev" href="https://withinboredom.github.io/tyche/reference/docker-compose-tool/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="https://withinboredom.github.io/tyche/reference/tasks/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
     </div>
 
     </section>

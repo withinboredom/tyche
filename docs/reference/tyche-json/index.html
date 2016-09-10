@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.16" />
+    <meta name="description" content="Documentation for tyche, a powerful development tool">
+<meta name="author" content="Rob Landers">
+
+    <link rel="shortcut icon" href="https://withinboredom.github.io/tyche/images/favicon.png" type="image/x-icon" />
+
+    
+    <title>tyche.json Reference</title>
+    <link href="https://withinboredom.github.io/tyche/css/nucleus.css" rel="stylesheet">
+    <link href="https://withinboredom.github.io/tyche/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://withinboredom.github.io/tyche/css/hybrid.css" rel="stylesheet">
+    <link href="https://withinboredom.github.io/tyche/css/featherlight.min.css" rel="stylesheet">
+    <link href="https://withinboredom.github.io/tyche/css/perfect-scrollbar.min.css" rel="stylesheet">
+    <link href="https://withinboredom.github.io/tyche/css/theme.css" rel="stylesheet">
+    <link href="https://withinboredom.github.io/tyche/css/hugo-theme.css" rel="stylesheet">
+    <style type="text/css">:root #header + #content > #left > #rlblock_left
+    {display:none !important;}</style>
+    
+
+  </head>
+  <body class="" data-url="/reference/tyche-json/">
+    <nav id="sidebar">
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="https://github.com/withinboredom/tyche">
+    tyche
+</a>
+
+      
+    </div>
+</div>
+
+
+  <div class="highlightable">
+    <ul class="topics">
+      
+      
+      
+      
+
+      <li class="dd-item  " data-nav-id="/basics/">
+        <a href="https://withinboredom.github.io/tyche/basics/">
+          <span>
+            
+              <b>1. </b>
+            
+             Getting Started
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+          
+          
+          
+            <li class="dd-item " data-nav-id="/basics/create-tyche-json/">
+              <a href="https://withinboredom.github.io/tyche/basics/create-tyche-json/">
+                <span>Create a tyche.json file     </i></span>
+              </a>
+            </li>
+          
+          
+          
+            <li class="dd-item " data-nav-id="/basics/studies/">
+              <a href="https://withinboredom.github.io/tyche/basics/studies/">
+                <span>Studies     </i></span>
+              </a>
+            </li>
+          
+          
+        </ul>
+        
+      </li>
+      
+      
+      
+      
+
+      <li class="dd-item  parent" data-nav-id="/reference/">
+        <a href="https://withinboredom.github.io/tyche/reference/">
+          <span>
+            
+              <b>2. </b>
+            
+             Reference
+            
+           </span>
+        </a>
+        
+        <ul>
+          
+          
+          
+          
+            <li class="dd-item active" data-nav-id="/reference/tyche-json/">
+              <a href="https://withinboredom.github.io/tyche/reference/tyche-json/">
+                <span>tyche.json Reference     </i></span>
+              </a>
+            </li>
+          
+          
+          
+            <li class="dd-item " data-nav-id="/reference/docker-compose-tool/">
+              <a href="https://withinboredom.github.io/tyche/reference/docker-compose-tool/">
+                <span>docker compose tool     </i></span>
+              </a>
+            </li>
+          
+          
+          
+            <li class="dd-item " data-nav-id="/reference/native-tool/">
+              <a href="https://withinboredom.github.io/tyche/reference/native-tool/">
+                <span>native tool     </i></span>
+              </a>
+            </li>
+          
+          
+          
+            <li class="dd-item " data-nav-id="/reference/tasks/">
+              <a href="https://withinboredom.github.io/tyche/reference/tasks/">
+                <span>tasks     </i></span>
+              </a>
+            </li>
+          
+          
+          
+            <li class="dd-item " data-nav-id="/reference/studies/">
+              <a href="https://withinboredom.github.io/tyche/reference/studies/">
+                <span>studies     </i></span>
+              </a>
+            </li>
+          
+          
+          
+            <li class="dd-item " data-nav-id="/reference/version-bump/">
+              <a href="https://withinboredom.github.io/tyche/reference/version-bump/">
+                <span>version bump     </i></span>
+              </a>
+            </li>
+          
+          
+        </ul>
+        
+      </li>
+      
+      
+    </ul>
+    <hr>
+      
+    <section id="footer">
+      <p>Built with <a href="https://github.com/matcornic/hugo-theme-learn"><i class="fa fa-heart"></i></a> from <a href="http://withinboredom.info">Rob Landers</a></a></p>
+    </section>
+  </div>
+</nav>
+
+        <section id="body">
+        <div id="overlay"></div>
+
+        <div class="padding highlightable">
+
+            <div id="top-bar">
+              
+                
+                
+                
+              <div id="top-github-link">
+                  <a class="github-link" href="https://github.com/withinboredom/tyche/edit/master/docs/content/reference/tyche-json.md" target="blank">
+                    <i class="fa fa-code-fork"></i>
+                    Edit this page
+                  </a>
+              </div>
+                
+              
+              <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                  <span id="sidebar-toggle-span">
+                      <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                        <i class="fa fa-bars"></i>
+                      </a>
+                  </span>
+                
+                <span id="toc-menu"><a href=""><i class="fa fa-list-alt"></i></a></span>
+                
+                
+                
+                
+                  
+                
+                  
+                    
+                    
+                <a href="https://withinboredom.github.io/tyche/reference/" itemprop="url"><span itemprop="title">Reference</span></a> <i class="fa fa-angle-right"></i>
+                    
+                  
+                
+                <span itemprop="title"> tyche.json Reference</span>
+              </div>
+              
+                  <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+<ul>
+<li><a href="#settings">Settings</a></li>
+</ul>
+</nav>
+    </div>
+</div>
+
+              
+
+            </div>
+            
+    	        <div id="body-inner">
+                
+                <h1>tyche.json Reference</h1>
+                
+
+
+
+<p>An example <code>tyche.json</code> file, taken from the tyche repository:</p>
+
+<pre><code class="language-json">{
+  &quot;settings&quot;: {
+    &quot;defaultTool&quot;: &quot;native&quot;
+  },
+  &quot;tasks&quot;: [
+    {
+      &quot;name&quot;: &quot;clean&quot;,
+      &quot;description&quot;: &quot;Removes all build dependencies&quot;,
+      &quot;tasks&quot;: [
+        {
+          &quot;name&quot;: &quot;node_modules&quot;,
+          &quot;description&quot;: &quot;Clean node_modules&quot;,
+          &quot;exec&quot;: {
+            &quot;native-nix&quot;: {
+              &quot;command&quot;: [&quot;rm&quot;,&quot;-rf&quot;,&quot;node_modules&quot;]
+            },
+            &quot;docker-compose&quot;: {
+              &quot;action&quot;: &quot;down&quot;,
+              &quot;volumes&quot;: true
+            }
+          }
+        }
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;build&quot;,
+      &quot;description&quot;: &quot;Build this nifty little cli tool&quot;,
+      &quot;tasks&quot;: [
+        {
+          &quot;name&quot;: &quot;dependencies&quot;,
+          &quot;description&quot;: &quot;Install build dependencies&quot;,
+          &quot;exec&quot;: {
+            &quot;native&quot;: {
+              &quot;command&quot;: [&quot;npm&quot;,&quot;install&quot;]
+            },
+            &quot;docker-compose&quot;: {
+              &quot;service&quot;: &quot;tyche-prep&quot;
+            }
+          },
+          &quot;skips&quot;: {
+            &quot;files_not_changed&quot;: [
+              &quot;package.json&quot;
+            ],
+            &quot;path_exists&quot;: [
+              &quot;node_modules&quot;
+            ],
+            &quot;skip_dependencies_if_skip&quot;: true
+          }
+        },
+        {
+          &quot;name&quot;: &quot;build-cli&quot;,
+          &quot;description&quot;: &quot;Actually build the tool...&quot;,
+          &quot;dependencies&quot;: [
+            &quot;dependencies&quot;
+          ],
+          &quot;exec&quot;: {
+            &quot;native&quot;: {
+              &quot;command&quot;: [&quot;npm&quot;,&quot;run&quot;,&quot;build-cli&quot;]
+            },
+            &quot;docker-compose&quot;: {
+              &quot;service&quot;: &quot;tyche-builder&quot;
+            }
+          }
+        }
+      ],
+      &quot;dependencies&quot;: [
+        &quot;doc-build&quot;
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;watch&quot;,
+      &quot;description&quot;: &quot;Build as you write code&quot;,
+      &quot;exec&quot;: {
+        &quot;native&quot;: {
+          &quot;command&quot;: [&quot;npm&quot;,&quot;run&quot;,&quot;watch&quot;]
+        }
+      },
+      &quot;dependencies&quot;: [
+        &quot;dependencies&quot;
+      ]
+    },
+    {
+      &quot;name&quot;: &quot;test&quot;,
+      &quot;description&quot;: &quot;Run unit tests&quot;,
+      &quot;exec&quot;: {
+        &quot;native&quot;: {
+          &quot;command&quot;: [&quot;npm&quot;,&quot;run&quot;,&quot;test&quot;,&quot;--&quot;,&quot;--coverage&quot;]
+        },
+        &quot;docker-compose&quot;: {
+          &quot;service&quot;: &quot;tyche-tests&quot;
+        },
+        &quot;dependencies&quot;: [
+          &quot;build&quot;
+        ]
+      }
+    },
+    {
+      &quot;name&quot;: &quot;bump&quot;,
+      &quot;description&quot;: &quot;bumps the current version&quot;,
+      &quot;exec&quot;: {
+        &quot;native&quot;: {
+          &quot;command&quot;: [&quot;npm&quot;,&quot;version&quot;,&quot;$BUILD_NUMBER&quot;]
+        }
+      }
+    },
+    {
+      &quot;name&quot;: &quot;docs&quot;,
+      &quot;description&quot;: &quot;operate on the documentation&quot;,
+      &quot;tasks&quot;: [
+        {
+          &quot;name&quot;: &quot;dev&quot;,
+          &quot;description&quot;: &quot;Watch and build the docs in realtime&quot;,
+          &quot;exec&quot;: {
+            &quot;native&quot;: {
+              &quot;command&quot;: [&quot;hugo&quot;,&quot;serve&quot;],
+              &quot;working&quot;: &quot;./docs&quot;
+            }
+          }
+        },
+        {
+          &quot;name&quot;: &quot;doc-build&quot;,
+          &quot;description&quot;: &quot;Turn the docs into static pages for github&quot;,
+          &quot;exec&quot;: {
+            &quot;native&quot;: {
+              &quot;command&quot;: [&quot;hugo&quot;,&quot;-d&quot;,&quot;.&quot;],
+              &quot;working&quot;: &quot;./docs&quot;
+            }
+          }
+        },
+        {
+          &quot;name&quot;: &quot;new-chapter&quot;,
+          &quot;description&quot;: &quot;Create a new page for the docs&quot;,
+          &quot;exec&quot;: {
+            &quot;native&quot;: {
+              &quot;command&quot;: [&quot;hugo&quot;,&quot;new&quot;,&quot;--kind&quot;,&quot;chapter&quot;],
+              &quot;acceptsArgs&quot;: true,
+              &quot;working&quot;: &quot;./docs&quot;
+            }
+          }
+        },
+        {
+          &quot;name&quot;: &quot;new-page&quot;,
+          &quot;description&quot;: &quot;Create a new page for the docs&quot;,
+          &quot;exec&quot;: {
+            &quot;native&quot;: {
+              &quot;command&quot;: [&quot;hugo&quot;,&quot;new&quot;],
+              &quot;acceptsArgs&quot;: true,
+              &quot;working&quot;: &quot;./docs&quot;
+            }
+          }
+        }
+      ]
+    }
+  ],
+  &quot;study&quot;: [
+    {
+      &quot;on&quot;: &quot;commit&quot;,
+      &quot;watch&quot;: [
+        &quot;tyche.json&quot;,
+        &quot;package.json&quot;,
+        &quot;src/**/*&quot;
+      ],
+      &quot;message&quot;: {
+        &quot;warn&quot;: &quot;It looks like you forgot to build this commit, maybe you should do that?&quot;
+      },
+      &quot;reset&quot;: [
+        &quot;build&quot;,
+        &quot;watch&quot;
+      ]
+    },
+    {
+      &quot;on&quot;: &quot;push&quot;,
+      &quot;watch&quot;: [
+        &quot;tyche.json&quot;,
+        &quot;package.json&quot;,
+        &quot;src/**/*.js&quot;
+      ],
+      &quot;message&quot;: {
+        &quot;error&quot;: &quot;It looks like you forgot to build this commit, please do that&quot;
+      },
+      &quot;reset&quot;: [
+        &quot;build&quot;,
+        &quot;watch&quot;
+      ],
+      &quot;branch&quot;: [&quot;master&quot;]
+    },
+    {
+      &quot;on&quot;: &quot;commit&quot;,
+      &quot;plugin&quot;: &quot;no-conflicts&quot;,
+      &quot;message&quot;: {
+        &quot;error&quot;: &quot;You cannot commit conflicts. Please resolve them and try again.&quot;
+      }
+    }
+  ]
+}
+</code></pre>
+
+<h1 id="settings">Settings</h1>
+
+<pre><code class="language-json">{
+    &quot;settings&quot;: {
+        &quot;defaultTool&quot;: &quot;docker-compose&quot; # Either native or docker-compose
+    }
+}
+</code></pre>
+
+
+      
+      </div>
+    </div>
+
+    <div id="navigation">
+        <a class="nav nav-prev" href="https://withinboredom.github.io/tyche/reference/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="https://withinboredom.github.io/tyche/reference/docker-compose-tool/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    </section>
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="https://withinboredom.github.io/tyche/js/jquery-2.x.min.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/clipboard.min.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/perfect-scrollbar.min.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/jquery.sticky-kit.min.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/featherlight.min.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/html5shiv-printshiv.min.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://withinboredom.github.io/tyche/js/modernizr.custom.71422.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/learn.js"></script>
+    <script src="https://withinboredom.github.io/tyche/js/hugo-learn.js"></script>
+    
+
+  </body>
+</html>
+
