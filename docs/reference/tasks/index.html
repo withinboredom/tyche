@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="https://withinboredom.github.io/tyche/images/favicon.png" type="image/x-icon" />
 
     
-    <title>Create a tyche.json file</title>
+    <title>tasks</title>
     <link href="https://withinboredom.github.io/tyche/css/nucleus.css" rel="stylesheet">
     <link href="https://withinboredom.github.io/tyche/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://withinboredom.github.io/tyche/css/hybrid.css" rel="stylesheet">
@@ -23,7 +23,7 @@
     
 
   </head>
-  <body class="" data-url="/basics/create-tyche-json/">
+  <body class="" data-url="/reference/tasks/">
     <nav id="sidebar">
   <div id="header-wrapper">
     <div id="header">
@@ -43,7 +43,7 @@
       
       
 
-      <li class="dd-item  parent" data-nav-id="/basics/">
+      <li class="dd-item  " data-nav-id="/basics/">
         <a href="https://withinboredom.github.io/tyche/basics/">
           <span>
             
@@ -59,7 +59,7 @@
           
           
           
-            <li class="dd-item active" data-nav-id="/basics/create-tyche-json/">
+            <li class="dd-item " data-nav-id="/basics/create-tyche-json/">
               <a href="https://withinboredom.github.io/tyche/basics/create-tyche-json/">
                 <span>Create a tyche.json file     </i></span>
               </a>
@@ -82,7 +82,7 @@
       
       
 
-      <li class="dd-item  " data-nav-id="/reference/">
+      <li class="dd-item  parent" data-nav-id="/reference/">
         <a href="https://withinboredom.github.io/tyche/reference/">
           <span>
             
@@ -122,7 +122,7 @@
           
           
           
-            <li class="dd-item " data-nav-id="/reference/tasks/">
+            <li class="dd-item active" data-nav-id="/reference/tasks/">
               <a href="https://withinboredom.github.io/tyche/reference/tasks/">
                 <span>tasks     </i></span>
               </a>
@@ -170,7 +170,7 @@
                 
                 
               <div id="top-github-link">
-                  <a class="github-link" href="https://github.com/withinboredom/tyche/edit/master/docs/content/basics/create-tyche-json.md" target="blank">
+                  <a class="github-link" href="https://github.com/withinboredom/tyche/edit/master/docs/content/reference/tasks.md" target="blank">
                     <i class="fa fa-code-fork"></i>
                     Edit this page
                   </a>
@@ -190,20 +190,37 @@
                 
                 
                   
+                
+                  
                     
                     
-                <a href="https://withinboredom.github.io/tyche/basics/" itemprop="url"><span itemprop="title">Getting Started</span></a> <i class="fa fa-angle-right"></i>
+                <a href="https://withinboredom.github.io/tyche/reference/" itemprop="url"><span itemprop="title">Reference</span></a> <i class="fa fa-angle-right"></i>
                     
                   
                 
-                  
-                
-                <span itemprop="title"> Create a tyche.json file</span>
+                <span itemprop="title"> tasks</span>
               </div>
               
                   <div class="progress">
     <div class="wrapper">
-
+<nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#environment-variables">Environment Variables</a></li>
+</ul></li>
+<li><a href="#name">name</a></li>
+<li><a href="#description">description</a></li>
+<li><a href="#exec">exec</a></li>
+<li><a href="#tasks">tasks</a></li>
+<li><a href="#dependencies">dependencies</a></li>
+<li><a href="#skips">skips</a></li>
+<li><a href="#constraints">constraints</a></li>
+</ul></li>
+</ul>
+</nav>
     </div>
 </div>
 
@@ -213,140 +230,317 @@
             
     	        <div id="body-inner">
                 
-                <h1>Create a tyche.json file</h1>
+                <h1>tasks</h1>
                 
 
-<p>After you have tyche installed, there is one thing you&rsquo;ll need to do.
-Create a <code>tyche.json</code> file in the root of your repo (or where ever you
-want to launch tasks from). A tyche.json file is a description of
-tasks that work together to achieve some kind of result. Each task can
-have rules (or not) that allow you define tasks with great detail.</p>
 
-<p>For example, it might make sense to create a task that runs <code>npm install</code>
-if, and only if, the node_modules directory doesn&rsquo;t exist or the
-package.json file changes.</p>
 
-<p>In order to do that, the <code>tyche.json</code> file might look something like:</p>
+<p>Tasks are the life-blood of tyche. To define a task, simply add it to
+the <code>tyche.json</code> file:</p>
 
 <pre><code class="language-json">{
-    &quot;settings&quot;: {
-        &quot;defaultTool&quot;: &quot;native&quot;
-    },
     &quot;tasks&quot;: [
         {
-            &quot;name&quot;: &quot;install-dependencies&quot;,
-            &quot;description&quot;: &quot;run npm install&quot;,
+            &quot;name&quot;: &quot;a task&quot;, # this is the only thing a task requires
+            &quot;description&quot;: &quot;a description&quot;,
             &quot;exec&quot;: {
-                &quot;native&quot;: {
-                    &quot;command&quot;: &quot;npm install&quot;
-                }
-            },
-            &quot;skips&quot;: {
-                &quot;files_not_changed&quot;: [&quot;package.json&quot;],
-                &quot;path_exists&quot;: [&quot;node_modules&quot;]
-            }
-        }
-    ]
-}
-</code></pre>
-
-<div class="notices info" ><p>Make sure your task names are globally unique. They are the identifier
-used internally.</p>
-</div>
-
-
-<p>The output of <code>tyche --help</code>:</p>
-
-<pre><code>Usage: tyche [options] [command]
-
-
-  Commands:
-
-    install-dependencies [options]   run npm install
-    init                             Initialize the tool in this repository
-    bump [options]                   Bump the build number +1
-
-  Options:
-
-    -h, --help     output usage information
-    -V, --version  output the version number
-    -v, --verbose  Turn on verbose logging
-</code></pre>
-
-<p>Another use case might be to build something, use <code>./configure</code> and <code>make</code>
-for example:</p>
-
-<pre><code class="language-json">{
-    &quot;settings&quot;: {
-        &quot;defaultTool&quot;: &quot;native&quot;
-    },
-    &quot;tasks&quot;: [
-        {
-            &quot;name&quot;: &quot;make&quot;,
-            &quot;description&quot;: &quot;Run make&quot;,
-            &quot;exec&quot;: {
-                &quot;native&quot;: {
-                    &quot;command&quot;: &quot;make&quot;
-                }
+                &quot;native&quot;: {}
             },
             &quot;tasks&quot;: [
                 {
-                    &quot;name&quot;: &quot;configure&quot;,
-                    &quot;description&quot;: &quot;Run configure&quot;,
-                    &quot;exec&quot;: {
-                        &quot;native&quot;: {
-                            &quot;command&quot;: &quot;./configure&quot;
-                        }
-                    }
+                    &quot;name&quot;: &quot;another task&quot;
                 }
+            ],
+            &quot;skips&quot;: {
+                &quot;path_exists&quot;: [&quot;./path-to-file&quot;],
+                &quot;files_not_changed&quot;: [&quot;./src/**/*.js&quot;],
+                &quot;forced&quot;: false,
+                &quot;skip_dependencies_if_skip&quot;: false
+            },
+            &quot;constraints&quot;: {
+                &quot;always_use_tool&quot;: &quot;docker-compose&quot;,
+                &quot;ignore_preferred_tool&quot;: true
+            },
+            &quot;dependencies&quot;: [
+                &quot;another task&quot;
             ]
         }
     ]
 }
 </code></pre>
 
-<p>And the output of <code>tyche --help</code></p>
+<h3 id="environment-variables">Environment Variables</h3>
 
-<pre><code>Usage: tyche [options] [command]
+<p>All environment variables from the shell that invoked <code>tyche</code> are passed
+onto the command being run. The current version of the software is passed
+as an environment variable as well as the variable <code>$BUILD_NUMBER</code>&hellip;</p>
 
+<p>In a future release, this will probably be configurable.</p>
 
-  Commands:
+<h2 id="name">name</h2>
 
-    make [options] [configure]  Run make
-    init                        Initialize the tool in this repository
-    bump [options]              Bump the build number +1
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
 
-  Options:
+<tbody>
+<tr>
+<td>required</td>
+<td>true</td>
+</tr>
 
-    -h, --help     output usage information
-    -V, --version  output the version number
-    -v, --verbose  Turn on verbose logging
-</code></pre>
+<tr>
+<td>type</td>
+<td>string</td>
+</tr>
 
-<p>Notice how the tasks are nested inside one another. This means that the
-<code>make</code> task depends on the <code>configure</code> task. This also makes running
-immediate children of a top-level task easy from the cli as well. Since
-you can run <code>tyche make configure</code> to run that specific task.</p>
+<tr>
+<td>unique</td>
+<td>true</td>
+</tr>
+</tbody>
+</table>
 
-<p>tyche uses this internally to build and develop the documentation you
-are reading right now. <code>tyche docs dev</code> to enable development while
-watching the filesystem and <code>tyche docs new-chapter</code> for example.</p>
+<p>The name must be unique to the entire <code>tyche.json</code> file.</p>
 
-<hr />
+<h2 id="description">description</h2>
 
-<p>It&rsquo;s important to note that the command you specify will inherit the
-same environment variables that are present from wherever you invoke tyche
-as well as run the command in a shell. This is what makes tyche pretty
-amazing as a lot of build environments (such as TravisCI or TeamCity)
-inject environment variables into the build process.</p>
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
 
-<div class="notices warning" ><p>Currently, there&rsquo;s not any way to trap a signal 9 (SIGKILL). This means
-a command started by a task, may continue to run in the background when
-the tyche process is killed in this way.
-Most likely, this will only affect people running TeamCity on versions
-less than 10.02&hellip; You&rsquo;ve been warned.</p>
+<tbody>
+<tr>
+<td>required</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+</tr>
+</tbody>
+</table>
+
+<p>A freeform description</p>
+
+<h2 id="exec">exec</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td><a  href="https://withinboredom.github.io/tyche/reference/native-tool/" target="_blank"  class="btn btn-default">
+  
+  
+  
+    
+  <i class="fa fa-book"></i>
+    
+  
+  Native
+  
+</a>
+<a  href="https://withinboredom.github.io/tyche/reference/docker-compose-tool/" target="_blank"  class="btn btn-default">
+  
+  
+  
+    
+  <i class="fa fa-book"></i>
+    
+  
+  Docker Compose
+  
+</a>
+</td>
+</tr>
+</tbody>
+</table>
+
+<p>A description of how to run this task</p>
+
+<h2 id="tasks">tasks</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td><a  href="https://withinboredom.github.io/tyche/reference/tasks/" target="_blank"  class="btn btn-default">
+  
+  
+  
+    
+  <i class="fa fa-book"></i>
+    
+  
+  Task
+  
+</a>
+</td>
+</tr>
+</tbody>
+</table>
+
+<p>Dependent tasks that must be completed before this task can be completed.</p>
+
+<p>Keep in mind, that sibling tasks could be run in parallel in future versions.
+If you need to guarantee order, it would be a good idea to use
+<code>dependencies</code> to specify the order.</p>
+
+<div class="notices tip" ><p>toplevel tasks can be called directly from the cli, as can their immediate descendants</p>
 </div>
 
+
+<h2 id="dependencies">dependencies</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>array of task names</td>
+</tr>
+</tbody>
+</table>
+
+<p>A list of tasks that must be completed before this task can be completed.
+They can be siblings to this task (a way to guarantee order)</p>
+
+<div class="notices warning" ><p>If it cannot find a task by the given name, it won&rsquo;t give any warning.
+It will just pretend it is always complete. If you disagree with this
+behavior please open an <a href="https://github.com/withinboredom/tyche/issues">issue in GitHub</a>
+and lets discuss it.</p>
+</div>
+
+
+<h2 id="skips">skips</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>object</td>
+</tr>
+
+<tr>
+<td>file_exists</td>
+<td>a list of files/directories that it checks for existence of. If it exists it will mark this task for a skip. Globs can be used.</td>
+</tr>
+
+<tr>
+<td>files_not_changed</td>
+<td>a list of files (no directories &ndash; but globs are allowed) to watch for changes. If a matching file has not changed since the last run of this task, it will mark the task for a skip</td>
+</tr>
+
+<tr>
+<td>forced</td>
+<td>if <code>true</code> it will always skip this task. Handy for debugging&hellip;</td>
+</tr>
+
+<tr>
+<td>skip_dependencies_if_skip</td>
+<td>skip all dependencies and their children if this task gets marked for skipping.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Skips gives tyche tasks some degree of flow control in a manner that
+makes sense for tasks. Please <a href="https://github.com/withinboredom/tyche/issues">issue in GitHub</a>
+if you think of any other reasons a skip should occur or you find an issue
+with skipping.</p>
+
+<h2 id="constraints">constraints</h2>
+
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>required</td>
+<td>false</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>string</td>
+</tr>
+
+<tr>
+<td>always_use_tool</td>
+<td>Always, <em>always</em>, <strong>always</strong> use the specified tool, unless they are preferring a different tool.</td>
+</tr>
+
+<tr>
+<td>ignore_preferred_tool</td>
+<td>When used in conjunction with <code>always_use_tool</code>, it will ignore the user&rsquo;s preferred tool and use the specified tool no matter what.</td>
+</tr>
+</tbody>
+</table>
+
+<p>These options constrain the tasks in some way and allow you to use <code>docker-compose</code>
+for everything except the kind of things that you can&rsquo;t do in docker,
+like maybe install docker? I&rsquo;d be interested in seeing what you come up
+with.</p>
 
 
       
@@ -354,8 +548,8 @@ less than 10.02&hellip; You&rsquo;ve been warned.</p>
     </div>
 
     <div id="navigation">
-        <a class="nav nav-prev" href="https://withinboredom.github.io/tyche/basics/"> <i class="fa fa-chevron-left"></i></a>
-        <a class="nav nav-next" href="https://withinboredom.github.io/tyche/basics/studies/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+        <a class="nav nav-prev" href="https://withinboredom.github.io/tyche/reference/native-tool/"> <i class="fa fa-chevron-left"></i></a>
+        <a class="nav nav-next" href="https://withinboredom.github.io/tyche/reference/studies/" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
     </div>
 
     </section>
