@@ -95,11 +95,51 @@
     {
       "name": "bump",
       "description": "bumps the current version",
-      "exec": {
-        "native": {
-          "command": ["npm","version","$BUILD_NUMBER"]
+      "tasks": [
+        {
+          "name": "bump-package-version",
+          "description": "bumps the version number in package.json",
+          "exec": {
+            "native": {
+              "command": ["npm","version","$BUILD_NUMBER"]
+            }
+          }
+        },
+        {
+          "name": "delete-existing-release-branch",
+          "description": "delete any existing release branch",
+          "exec": {
+            "native": {
+              "command": ["git","branch","-D","release"]
+            }
+          }
+        },
+        {
+          "name": "create-release-branch",
+          "description": "create the release branch",
+          "exec": {
+            "native": {
+              "command": ["git","checkout","-b","release"]
+            }
+          }
+        },
+        {
+          "name": "push-release-branch",
+          "exec": {
+            "native": {
+              "command": ["git","push","origin","release","--force"]
+            }
+          }
+        },
+        {
+          "name": "open-release-pr",
+          "exec": {
+            "native": {
+              "command": ["printf","$BUILD_NUMBER Automated Release Pull Request","|","hub","pull-request","-F","-"]
+            }
+          }
         }
-      }
+      ]
     },
     {
       "name": "docs",

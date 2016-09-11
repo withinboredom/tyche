@@ -371,6 +371,9 @@ class Task {
             if (!(await this.shouldSkip(preferredTool))) {
                 Log.trace(`${this.name} executing with tool: ${executor.toolName}`);
                 result = await executor.execTool();
+                if (result.code != 0) {
+                    throw new Error('Oh noes ... something happened');
+                }
 
                 // update files this task watches
                 if (this.skips.files_not_changed) {
