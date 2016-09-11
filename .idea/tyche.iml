@@ -14,5 +14,9 @@
     <orderEntry type="library" name="requirejs-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="lokijs-DefinitelyTyped" level="application" />
     <orderEntry type="library" name="jest-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="babel-core-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="babel-types-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="glob-DefinitelyTyped" level="application" />
+    <orderEntry type="library" name="semver-DefinitelyTyped" level="application" />
   </component>
 </module>
