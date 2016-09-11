@@ -215,7 +215,6 @@
 <li><a href="#description">description</a></li>
 <li><a href="#exec">exec</a></li>
 <li><a href="#tasks">tasks</a></li>
-<li><a href="#dependencies">dependencies</a></li>
 <li><a href="#skips">skips</a></li>
 <li><a href="#constraints">constraints</a></li>
 </ul></li>
@@ -241,6 +240,9 @@ the <code>tyche.json</code> file:</p>
 <pre><code class="language-json">{
     &quot;tasks&quot;: [
         {
+            &quot;name&quot;: &quot;sibling task&quot;
+        },
+        {
             &quot;name&quot;: &quot;a task&quot;, # this is the only thing a task requires
             &quot;description&quot;: &quot;a description&quot;,
             &quot;exec&quot;: {
@@ -249,7 +251,8 @@ the <code>tyche.json</code> file:</p>
             &quot;tasks&quot;: [
                 {
                     &quot;name&quot;: &quot;another task&quot;
-                }
+                },
+                &quot;sibling task&quot;
             ],
             &quot;skips&quot;: {
                 &quot;path_exists&quot;: [&quot;./path-to-file&quot;],
@@ -260,10 +263,7 @@ the <code>tyche.json</code> file:</p>
             &quot;constraints&quot;: {
                 &quot;always_use_tool&quot;: &quot;docker-compose&quot;,
                 &quot;ignore_preferred_tool&quot;: true
-            },
-            &quot;dependencies&quot;: [
-                &quot;another task&quot;
-            ]
+            }
         }
     ]
 }
@@ -408,51 +408,16 @@ as an environment variable as well as the variable <code>$BUILD_NUMBER</code>&he
   Task
   
 </a>
-</td>
+ or a string, which is a reference to another task</td>
 </tr>
 </tbody>
 </table>
 
 <p>Dependent tasks that must be completed before this task can be completed.</p>
 
-<p>Keep in mind, that sibling tasks could be run in parallel in future versions.
-If you need to guarantee order, it would be a good idea to use
-<code>dependencies</code> to specify the order.</p>
+<p>Keep in mind, that sibling tasks could be run in parallel in future versions.</p>
 
 <div class="notices tip" ><p>toplevel tasks can be called directly from the cli, as can their immediate descendants</p>
-</div>
-
-
-<h2 id="dependencies">dependencies</h2>
-
-<table>
-<thead>
-<tr>
-<th>attribute</th>
-<th>value</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>required</td>
-<td>false</td>
-</tr>
-
-<tr>
-<td>type</td>
-<td>array of task names</td>
-</tr>
-</tbody>
-</table>
-
-<p>A list of tasks that must be completed before this task can be completed.
-They can be siblings to this task (a way to guarantee order)</p>
-
-<div class="notices warning" ><p>If it cannot find a task by the given name, it won&rsquo;t give any warning.
-It will just pretend it is always complete. If you disagree with this
-behavior please open an <a href="https://github.com/withinboredom/tyche/issues">issue in GitHub</a>
-and lets discuss it.</p>
 </div>
 
 

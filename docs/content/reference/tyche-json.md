@@ -39,6 +39,7 @@ An example `tyche.json` file, taken from the tyche repository:
       "name": "build",
       "description": "Build this nifty little cli tool",
       "tasks": [
+        "doc-build",
         {
           "name": "dependencies",
           "description": "Install build dependencies",
@@ -63,7 +64,7 @@ An example `tyche.json` file, taken from the tyche repository:
         {
           "name": "build-cli",
           "description": "Actually build the tool...",
-          "dependencies": [
+          "tasks": [
             "dependencies"
           ],
           "exec": {
@@ -75,9 +76,6 @@ An example `tyche.json` file, taken from the tyche repository:
             }
           }
         }
-      ],
-      "dependencies": [
-        "doc-build"
       ]
     },
     {
@@ -88,7 +86,7 @@ An example `tyche.json` file, taken from the tyche repository:
           "command": ["npm","run","watch"]
         }
       },
-      "dependencies": [
+      "tasks": [
         "dependencies"
       ]
     },
@@ -102,7 +100,7 @@ An example `tyche.json` file, taken from the tyche repository:
         "docker-compose": {
           "service": "tyche-tests"
         },
-        "dependencies": [
+        "tasks": [
           "build"
         ]
       }

@@ -15,6 +15,9 @@ the `tyche.json` file:
 {
     "tasks": [
         {
+            "name": "sibling task"
+        },
+        {
             "name": "a task", # this is the only thing a task requires
             "description": "a description",
             "exec": {
@@ -23,7 +26,8 @@ the `tyche.json` file:
             "tasks": [
                 {
                     "name": "another task"
-                }
+                },
+                "sibling task"
             ],
             "skips": {
                 "path_exists": ["./path-to-file"],
@@ -34,10 +38,7 @@ the `tyche.json` file:
             "constraints": {
                 "always_use_tool": "docker-compose",
                 "ignore_preferred_tool": true
-            },
-            "dependencies": [
-                "another task"
-            ]
+            }
         }
     ]
 }
@@ -84,33 +85,14 @@ A description of how to run this task
 |attribute|value|
 |--------|-----|
 |required|false|
-|type    |{{% button href="/reference/tasks/" icon="fa fa-book" %}}Task{{% /button %}}|
+|type    |{{% button href="/reference/tasks/" icon="fa fa-book" %}}Task{{% /button %}} or a string, which is a reference to another task|
 
 Dependent tasks that must be completed before this task can be completed.
 
 Keep in mind, that sibling tasks could be run in parallel in future versions.
-If you need to guarantee order, it would be a good idea to use
-`dependencies` to specify the order.
 
 {{% notice tip %}}
 toplevel tasks can be called directly from the cli, as can their immediate descendants
-{{% /notice %}}
-
-## dependencies
-
-|attribute|value|
-|--------|-----|
-|required|false|
-|type    |array of task names|
-
-A list of tasks that must be completed before this task can be completed.
-They can be siblings to this task (a way to guarantee order)
-
-{{% notice warning %}}
-If it cannot find a task by the given name, it won't give any warning. 
-It will just pretend it is always complete. If you disagree with this
-behavior please open an [issue in GitHub](https://github.com/withinboredom/tyche/issues)
-and lets discuss it.
 {{% /notice %}}
 
 ## skips

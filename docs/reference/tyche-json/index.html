@@ -252,6 +252,7 @@
       &quot;name&quot;: &quot;build&quot;,
       &quot;description&quot;: &quot;Build this nifty little cli tool&quot;,
       &quot;tasks&quot;: [
+        &quot;doc-build&quot;,
         {
           &quot;name&quot;: &quot;dependencies&quot;,
           &quot;description&quot;: &quot;Install build dependencies&quot;,
@@ -276,7 +277,7 @@
         {
           &quot;name&quot;: &quot;build-cli&quot;,
           &quot;description&quot;: &quot;Actually build the tool...&quot;,
-          &quot;dependencies&quot;: [
+          &quot;tasks&quot;: [
             &quot;dependencies&quot;
           ],
           &quot;exec&quot;: {
@@ -288,9 +289,6 @@
             }
           }
         }
-      ],
-      &quot;dependencies&quot;: [
-        &quot;doc-build&quot;
       ]
     },
     {
@@ -301,7 +299,7 @@
           &quot;command&quot;: [&quot;npm&quot;,&quot;run&quot;,&quot;watch&quot;]
         }
       },
-      &quot;dependencies&quot;: [
+      &quot;tasks&quot;: [
         &quot;dependencies&quot;
       ]
     },
@@ -315,7 +313,7 @@
         &quot;docker-compose&quot;: {
           &quot;service&quot;: &quot;tyche-tests&quot;
         },
-        &quot;dependencies&quot;: [
+        &quot;tasks&quot;: [
           &quot;build&quot;
         ]
       }
