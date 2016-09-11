@@ -132,11 +132,25 @@
           }
         },
         {
+          "name": "push-release-tags",
+          "exec": {
+            "native": {
+              "command": ["git","push","origin","--tags"]
+            }
+          }
+        }
+        {
           "name": "open-release-pr",
           "exec": {
             "native": {
               "command": ["printf","$BUILD_NUMBER Automated Release Pull Request","|","hub","pull-request","-F","-"]
             }
+          }
+        },
+        {
+          "name": "open-release-draft",
+          "exec": {
+            "native": ["printf","$BUILD_NUMBER","|","hub","release","create","-d","-f","-","$BUILD_NUMBER"]
           }
         }
       ]
