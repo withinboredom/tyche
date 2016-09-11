@@ -151,7 +151,7 @@
           "name": "wait-for-status-green",
           "exec": {
             "native": {
-              "command": ["while","[","`hub","ci-status","HEAD`","!=","'success'","];","do","echo","'waiting for status checks -- dont forget lgtm!'",";","sleep","5",";","if","[","$(hub","ci-status","HEAD)","==","'failure'","];","then","echo","'oh snap, we cannot release this';","exit","1;","fi;","done;"]
+              "command": ["while","[","\"$(hub ci-status HEAD)\"","!=","'success'","];","do","echo","'waiting for status checks -- dont forget lgtm!'",";","sleep","5",";","if","[","$(hub","ci-status","HEAD)","==","'failure'","];","then","echo","'oh snap, we cannot release this';","exit","1;","fi;","done;"]
             }
           }
         },
@@ -168,6 +168,10 @@
           }
         }
       ]
+    },
+    {
+      "name":"test-things",
+      "tasks": ["wait-for-status-green"]
     },
     {
       "name": "docs",
