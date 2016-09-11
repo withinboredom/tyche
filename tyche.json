@@ -170,6 +170,30 @@
               "command": ["git push origin master"]
             }
           }
+        },
+        {
+          "name": "checkout-master",
+          "exec": {
+            "native": {
+              "command": ["git","checkout","master"]
+            }
+          }
+        },
+        {
+          "name": "build",
+          "exec": {
+            "native": {
+              "command": ["tyche","build"]
+            }
+          }
+        },
+        {
+          "name": "publish",
+          "exec": {
+            "native": {
+              "command": ["npm","publish"]
+            }
+          }
         }
       ]
     },
