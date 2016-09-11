@@ -95,11 +95,83 @@
     {
       "name": "bump",
       "description": "bumps the current version",
-      "exec": {
-        "native": {
-          "command": ["npm","version","$BUILD_NUMBER"]
+      "tasks": [
+        {
+          "name": "bump-package-version",
+          "description": "bumps the version number in package.json",
+          "exec": {
+            "native": {
+              "command": ["npm","version","$BUILD_NUMBER"]
+            }
+          }
+        },
+        {
+          "name": "delete-existing-release-branch",
+          "description": "delete any existing release branch",
+          "exec": {
+            "native": {
+              "command": ["git","branch","-D","release"]
+            }
+          }
+        },
+        {
+          "name": "create-release-branch",
+          "description": "create the release branch",
+          "exec": {
+            "native": {
+              "command": ["git","checkout","-b","release"]
+            }
+          }
+        },
+        {
+          "name": "push-release-branch",
+          "exec": {
+            "native": {
+              "command": ["git","push","origin","release","--force"]
+            }
+          }
+        },
+        {
+          "name": "push-release-tags",
+          "exec": {
+            "native": {
+              "command": ["git","push","origin","--tags"]
+            }
+          }
+        },
+        {
+          "name": "open-release-pr",
+          "exec": {
+            "native": {
+              "command": ["printf","$BUILD_NUMBER Automated Release Pull Request","|","hub","pull-request","-F","-"]
+            }
+          }
+        },
+        {
+          "name": "wait-for-status-green",
+          "exec": {
+            "native": {
+              "command": ["while","[","\"$(hub ci-status HEAD)\"","!=","'success'","];","do","echo","'waiting for status checks -- dont forget lgtm!'",";","sleep","5",";","if","[","$(hub","ci-status","HEAD)","==","'failure'","];","then","echo","'oh snap, we cannot release this';","exit","1;","fi;","done;"]
+            }
+          }
+        },
+        {
+          "name": "open-release-draft",
+          "exec": {
+            "native": ["printf","$BUILD_NUMBER","|","hub","release","create","-d","-f","-","$BUILD_NUMBER"]
+          }
+        },
+        {
+          "name": "push-master-release",
+          "exec": {
+            "native": ["git push origin master"]
+          }
         }
-      }
+      ]
+    },
+    {
+      "name":"test-things",
+      "tasks": ["wait-for-status-green"]
     },
     {
       "name": "docs",

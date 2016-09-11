@@ -93,7 +93,7 @@ If you are building a javascript project, a good starting point might be:
         {
           "name": "build-project",
           "description": "Actually build the thing...",
-          "dependencies": [
+          "tasks": [
             "dependencies"
           ],
           "exec": {
