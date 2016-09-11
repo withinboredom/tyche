@@ -156,48 +156,59 @@ class Task {
 
         if(this.skips) {
             if(this.skips.path_exists) {
-                for(const file of this.skips.path_exists) {
-                    try {
-                        fs.accessSync(file, fs.F_OK);
-                        Log.trace(`skipping ${this.name} because ${file} exists`);
-                        skip();
-                    }
-                    catch (e) {
-                        noSkip();
-                        Log.trace(`Path ${file} does not exist, so not skipping ${this.name}`);
-                    }
-                }
+                await Promise.all(this.skips.path_exists.map(file => {
+                    return new Promise(done => {
+                        try {
+                            fs.accessSync(file, fs.F_OK);
+                            Log.trace(`skipping ${this.name} because ${file} exists`);
+                            skip();
+                        }
+                        catch (e) {
+                            noSkip();
+                            Log.trace(`Path ${file} does not exist, so not skipping ${this.name}`);
+                        }
+                        finally {
+                            done();
+                        }
+                    });
+                }));
             }
 
             if (this.skips.files_not_changed) {
-                for(const file of this.skips.files_not_changed) {
-                    if((await this.database.fileChanged(file))) {
-                        noSkip();
-                        Log.trace(`File ${file} changed, so not skipping ${this.name}`)
-                    }
-                    else {
-                        skip();
-                        Log.trace(`Skipping ${this.name} because ${file} hasn't changed`);
-                    }
-                }
+                await Promise.all(this.skips.files_not_changed.map(file => {
+                    return new Promise(async (done) => {
+                        if ((await this.database.fileChanged(file))) {
+                            noSkip();
+                            Log.trace(`File ${file} changed, so not skipping ${this.name}`)
+                        }
+                        else {
+                            skip();
+                            Log.trace(`Skipping ${this.name} because ${file} hasn't changed`);
+                        }
+                        done();
+                    });
+                }));
             }
         }
 
         // now we check constraints that may affect skipping
         if (this.exec) {
+
+            // if the constraint is to change the tool, then change it
             if (this.constraints && this.constraints.always_use_tool && this.constraints.ignore_preferred_tool) {
                 preferredTool = toolMachine(this.constraints.always_use_tool);
                 Log.warn(`Changing default tool to ${this.constraints.always_use_tool} due to constraints`);
             }
 
-            let foundTool = false;
-            for (const tool of Object.keys(this.exec)) {
-                if (preferredTool.knows.find(e => e === tool) !== undefined) {
-                    foundTool = true;
-                }
-            }
+            // Find the intersections of what the tool and the task knows how to do.
+            const toolKnows = new Set(preferredTool.knows);
+            const taskKnows = new Set(Object.keys(this.exec));
+            const intersection = new Set([...toolKnows].filter(x => taskKnows.has(x)));
+            const foundTool = intersection.size > 0;
+
             if (!foundTool) {
                 Log.warn(`Couldn't find a tool for ${this.name} so we are skipping it`);
+                this.skips.forced = true;
                 skip();
             }
         }
@@ -277,15 +288,30 @@ class Task {
     }
 
     /**
+     *
+     * @param {Task[]} arr An array of tasks (or some object)
+     * @param {string} func The function to call on each object in arr
+     * @param {*[]} params An array of parameters to call on each task.func
+     * @return {Promise} An Promise that resolves to an array of results
+     * @private
+     */
+    _chain(arr, func, params) {
+        return arr.reduce((prev, current) => {
+            return new Promise(async (done) => {
+                const progress = await prev;
+                progress.push(...(await current[func](...params)));
+                done(progress);
+            });
+        }, Promise.resolve([]));
+    }
+
+    /**
      * Just like execute, except it doesn't actually execute
      * @param {Tool} preferredTool The tool that does the executing, maybe... it depends
      * @return {Array}
      */
     async dry(preferredTool) {
-        let complete = [];
-        for(const task of this.tasks) {
-            complete = complete.concat(await task.dry(preferredTool));
-        }
+        const complete = await this._chain(this.tasks, 'dry', [preferredTool]);
 
         let result = false;
         if (this.exec) {
@@ -313,10 +339,7 @@ class Task {
      */
     async execute(preferredTool) {
         Log.trace(`Starting execution of task ${this.name}`);
-        let complete = [];
-        for(const task of this.tasks) {
-            complete = complete.concat(await task.execute(preferredTool));
-        }
+        const complete = await this._chain(this.tasks, 'execute', preferredTool);
 
         let result = false;
         let dry = false;

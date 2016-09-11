@@ -3,112 +3,127 @@ import toolMachine from '../../tool';
 
 jest.mock('../../database');
 
-const doNothingTask = {
-    name: 'do-nothing',
-    description: 'does not do anything'
-};
-
-const doSomethingTask = {
-    name: 'does-something',
-    description: 'does an echo',
-    exec: {
-        native: {
-            command: ['echo', 'hi']
-        },
-        'docker-compose': {
-            action: 'up'
-        }
-    }
-};
-
-const skipsAlways = {
-    name: 'skips-always',
-    description: 'should always skip',
-    skips: {
-        path_exists: ['./node_modules']
-    }
-};
-
-const sometimesSkips = {
-    name: 'sometimes-skips',
-    description: 'will skip if test file has not changed',
-    exec: {
-        native: {
-            command: ['echo','hello','world']
-        },
-        'docker-compose': {
-            action: 'down'
-        }
-    },
-    skips: {
-        files_not_changed: ['./test-file.json']
-    }
-};
-
-const skipDeps = {
-    name: 'skip-dependencies',
-    description: 'always skip dependencies',
-    skips: {
-        skip_dependencies_if_skip: true,
-        path_exists: ['./node_modules']
-    }
-};
-
-const realLife = [
-    {
-        "name": "dependencies",
-        "description": "Install build dependencies",
-        "exec": {
-            "native": {
-                "command": ["npm","install"]
-            },
-            "docker-compose": {
-                "service": "tyche-prep"
-            }
-        },
-        "dependencies": [
-            "clean"
-        ],
-        "skips": {
-            "files_not_changed": [
-                "package.json"
-            ],
-            "path_exists": [
-                "node_modules"
-            ],
-            "skip_dependencies_if_skip": true
-        }
-    },
-    {
-        "name": "build-cli",
-        "description": "Actually build the tool...",
-        "exec": {
-            "native": {
-                "command": ["npm","run","build-cli"]
-            },
-            "docker-compose": {
-                "service": "tyche-builder"
-            }
-        }
-    }
-];
-
-const preferredTool = toolMachine('native');
-class fakeDocker extends toolMachine('docker-compose') {
-    constructor() {
-        super();
-        this.command = 'echo';
-    }
-}
-const dockerCompose = toolMachine('docker-compose');
-
 describe('tasks', () => {
     let database = null;
+    let doNothingTask, doSomethingTask, onlyDockerTask, skipsAlways, sometimesSkips, skipDeps, realLife, preferredTool, fakeDocker;
+
+
     beforeEach(() => {
+
+        // create tasks
+
+        doNothingTask = {
+            name: 'do-nothing',
+            description: 'does not do anything'
+        };
+
+        doSomethingTask = {
+            name: 'does-something',
+            description: 'does an echo',
+            exec: {
+                native: {
+                    command: ['echo', 'hi']
+                },
+                'docker-compose': {
+                    action: 'up'
+                }
+            }
+        };
+
+        onlyDockerTask = {
+            name: 'onlyDocker',
+            description: 'does an echo',
+            exec: {
+                'docker-compose': {
+                    action: 'up'
+                }
+            }
+        };
+
+        skipsAlways = {
+            name: 'skips-always',
+            description: 'should always skip',
+            skips: {
+                path_exists: ['./node_modules']
+            }
+        };
+
+        sometimesSkips = {
+            name: 'sometimes-skips',
+            description: 'will skip if test file has not changed',
+            exec: {
+                native: {
+                    command: ['echo','hello','world']
+                },
+                'docker-compose': {
+                    action: 'down'
+                }
+            },
+            skips: {
+                files_not_changed: ['./test-file.json']
+            }
+        };
+
+        skipDeps = {
+            name: 'skip-dependencies',
+            description: 'always skip dependencies',
+            skips: {
+                skip_dependencies_if_skip: true,
+                path_exists: ['./node_modules']
+            }
+        };
+
+        realLife = [
+            {
+                "name": "dependencies",
+                "description": "Install build dependencies",
+                "exec": {
+                    "native": {
+                        "command": ["npm","install"]
+                    },
+                    "docker-compose": {
+                        "service": "tyche-prep"
+                    }
+                },
+                "dependencies": [
+                    "clean"
+                ],
+                "skips": {
+                    "files_not_changed": [
+                        "package.json"
+                    ],
+                    "path_exists": [
+                        "node_modules"
+                    ],
+                    "skip_dependencies_if_skip": true
+                }
+            },
+            {
+                "name": "build-cli",
+                "description": "Actually build the tool...",
+                "exec": {
+                    "native": {
+                        "command": ["npm","run","build-cli"]
+                    },
+                    "docker-compose": {
+                        "service": "tyche-builder"
+                    }
+                }
+            }
+        ];
+
+        preferredTool = toolMachine('native');
+        fakeDocker = class extends toolMachine('docker-compose') {
+            constructor() {
+                super();
+                this.command = 'echo';
+            }
+        }
+        // create the tools and db
+
         database = {
             buildNumber: 0
         };
-        dockerCompose.command = 'echo';
     });
 
     it('can be described', () => {
@@ -204,7 +219,7 @@ describe('tasks', () => {
         delete doSomethingTask.exec['docker-compose'];
         const test = new Task(database, doSomethingTask);
         expect(test).toBeDefined();
-        expect(await test.shouldSkip(dockerCompose)).toBe(true);
+        expect(await test.shouldSkip(fakeDocker)).toBe(true);
     });
 
     it('will not skip if there is a constraint to always use a specific tool and it is told to ignore the preferred tool', async () => {
@@ -213,7 +228,7 @@ describe('tasks', () => {
         doSomethingTask.constraints.ignore_preferred_tool = true;
         const constraint = new Task(database, doSomethingTask);
         expect(constraint).toBeDefined();
-        expect(await constraint.shouldSkip(dockerCompose)).toBe(false);
+        expect(await constraint.shouldSkip(fakeDocker)).toBe(false);
     });
 
     it('will exec the defined tool instead of the prefered tool when told to', async () => {
@@ -222,8 +237,8 @@ describe('tasks', () => {
         doSomethingTask.constraints.ignore_preferred_tool = true;
         const constraint = new Task(database, doSomethingTask);
         expect(constraint).toBeDefined();
-        expect(await constraint.shouldSkip(dockerCompose)).toBe(false);
-        expect(await constraint.dry(dockerCompose)).toEqual([
+        expect(await constraint.shouldSkip(fakeDocker)).toBe(false);
+        expect(await constraint.dry(fakeDocker)).toEqual([
             {
                 name: 'does-something',
                 exec: 'BUILD_NUMBER=0 echo hi',
@@ -234,12 +249,12 @@ describe('tasks', () => {
     });
 
     it('will skip if there is a constraint to always use a specific tool but not to ignore the preferred tool', async () => {
-        doSomethingTask.constraints = {};
-        doSomethingTask.constraints.always_use_tool = 'native';
-        doSomethingTask.constraints.ignore_preferred_tool = false;
-        const constraint2 = new Task(database, doSomethingTask);
+        onlyDockerTask.constraints = {};
+        onlyDockerTask.constraints.always_use_tool = 'native';
+        onlyDockerTask.constraints.ignore_preferred_tool = false;
+        const constraint2 = new Task(database, onlyDockerTask);
         expect(constraint2).toBeDefined();
-        expect(await constraint2.shouldSkip(dockerCompose)).toBe(true);
+        expect(await constraint2.shouldSkip(preferredTool)).toBe(true);
     });
 
     it('will skip if a file has not changed', async () => {
