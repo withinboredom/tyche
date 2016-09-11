@@ -138,7 +138,7 @@
               "command": ["git","push","origin","--tags"]
             }
           }
-        }
+        },
         {
           "name": "open-release-pr",
           "exec": {
@@ -148,9 +148,23 @@
           }
         },
         {
+          "name": "wait-for-status-green",
+          "exec": {
+            "native": {
+              "command": ["while","[","$(hub","ci-status","HEAD)","!=","'success'","];","do","echo","'waiting for status checks'",";","sleep","1",";","if","[","$(hub","ci-status","HEAD)","==","'failure'","];","then","echo","'oh snap, we cannot release this';","exit","1;","fi;","done;"]
+            }
+          }
+        },
+        {
           "name": "open-release-draft",
           "exec": {
             "native": ["printf","$BUILD_NUMBER","|","hub","release","create","-d","-f","-","$BUILD_NUMBER"]
+          }
+        },
+        {
+          "name": "push-master-release",
+          "exec": {
+            "native": ["git push origin master"]
           }
         }
       ]
