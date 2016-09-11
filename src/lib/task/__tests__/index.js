@@ -5,7 +5,8 @@ jest.mock('../../database');
 
 describe('tasks', () => {
     let database = null;
-    let doNothingTask, doSomethingTask, onlyDockerTask, skipsAlways, sometimesSkips, skipDeps, realLife, preferredTool, fakeDocker;
+    let doNothingTask, doSomethingTask, onlyDockerTask, skipsAlways, sometimesSkips, skipDeps, realLife, preferredTool,
+        fakeDocker;
 
 
     beforeEach(() => {
@@ -85,9 +86,6 @@ describe('tasks', () => {
                         "service": "tyche-prep"
                     }
                 },
-                "dependencies": [
-                    "clean"
-                ],
                 "skips": {
                     "files_not_changed": [
                         "package.json"
@@ -206,7 +204,7 @@ describe('tasks', () => {
                 },
                 {
                     name: 'other',
-                    dependencies: ['sibling']
+                    tasks: ['sibling']
                 }
             ]
         };
@@ -367,6 +365,14 @@ describe('tasks', () => {
         ]);
     });
 
+    it('will give an error if there are undefined deps', () => {
+        const task = {
+            name: 'error',
+            tasks: ['more']
+        };
+        expect(() => new Task(database, task)).toThrow();
+    });
+
     it('properly does a transitive reduction', () => {
         // this example tree taken from https://en.wikipedia.org/wiki/Transitive_reduction
         const example = {
@@ -374,15 +380,13 @@ describe('tasks', () => {
             tasks: [
                 {
                     name: 'b',
-                    tasks: [],
-                    dependencies: [
+                    tasks: [
                         'd'
                     ]
                 },
                 {
                     name: 'c',
-                    tasks: [],
-                    dependencies: [
+                    tasks: [
                         'd',
                         'e'
                     ]
@@ -394,9 +398,7 @@ describe('tasks', () => {
                             name: 'e'
                         }
                     ]
-                }
-            ],
-            dependencies: [
+                },
                 'e'
             ]
         };

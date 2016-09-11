@@ -26,6 +26,7 @@
       "name": "build",
       "description": "Build this nifty little cli tool",
       "tasks": [
+        "doc-build",
         {
           "name": "dependencies",
           "description": "Install build dependencies",
@@ -50,7 +51,7 @@
         {
           "name": "build-cli",
           "description": "Actually build the tool...",
-          "dependencies": [
+          "tasks": [
             "dependencies"
           ],
           "exec": {
@@ -62,9 +63,6 @@
             }
           }
         }
-      ],
-      "dependencies": [
-        "doc-build"
       ]
     },
     {
@@ -75,7 +73,7 @@
           "command": ["npm","run","watch"]
         }
       },
-      "dependencies": [
+      "tasks": [
         "dependencies"
       ]
     },
@@ -89,7 +87,7 @@
         "docker-compose": {
           "service": "tyche-tests"
         },
-        "dependencies": [
+        "tasks": [
           "build"
         ]
       }

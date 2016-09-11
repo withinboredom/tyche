@@ -7,6 +7,7 @@ import fs from 'fs';
 import toolMachine from '../tool';
 import EventBus from '../bus';
 import Logger from 'lib/logger';
+import UnresolvedTask from './unresolvedTask';
 
 const Log = Logger.child({
     component: 'Task'
@@ -22,7 +23,7 @@ class Task {
      * @param {TycheDb} database
      * @param {{ name: {string}, description: {string}, exec: {object}, tasks: {Task[]}, skips: {object}, constraints: {object}, dependencies: {string[]}}} definition
      */
-    constructor(database, definition) {
+    constructor(database, definition, parent) {
         this.database = database;
         this.definition = definition;
         this.name = definition.name;
@@ -34,9 +35,6 @@ class Task {
         this.constraints = this.definition.constraints || {};
 
         this.tasks = [];
-        this.unresolved = definition.dependencies || [];
-
-        this.buildNumber = database.buildNumber;
 
         Log.trace(`Creating task with name: ${this.name}`);
 
@@ -47,41 +45,34 @@ class Task {
          * Obviously, this isn't very efficient and could use some work in a later iteration
          */
 
-        for(const child of definition.tasks) {
-            // we create a new task and try to find any matching unresolved dependencies
-            const task = new Task(database, child);
-            this.tasks.push(task);
-        }
-
-        // after creating children, look for resolving external deps
-        for(const task of this.tasks) {
-            for(const unresolved of task.unresolved) {
-                const found = this.search(unresolved.name);
-                if (found) {
-                    unresolved.fix(found);
-                }
-                else {
-                    this.unresolved.push(unresolved);
-                }
-            }
-        }
-
-        // resolve explain to parent tasks how to resolve any unresolved dependencies
-        const toResolve = [];
-        for(const unresolved of this.unresolved) {
-            if (typeof unresolved === 'string') {
-                toResolve.push({
-                    name: unresolved,
-                    fix: (found) => {
-                        this.tasks.unshift(found);
-                    }
-                });
+        this.tasks = definition.tasks.map(child => {
+            // if this is a task that exists somewhere else
+            if (typeof child === 'string' || child instanceof String) {
+                Log.trace(`Found external dependency: ${child} ... putting aside to figure out later`);
+                return new UnresolvedTask(child, this);
             }
             else {
-                toResolve.push(unresolved);
+                Log.trace(`Found real dependency: ${child.name}`);
+                return new Task(database, child, this);
             }
+        });
+
+        const allResolved = this._findUnresolvedTasks().map(utask => {
+            const found = this.search(utask.name);
+            if (found) {
+                Log.trace(`Resolved unresolved dependency: ${found.name}`);
+                utask.fix(found);
+                return true;
+            }
+
+            return utask.name;
+        }).filter(namesOnly => namesOnly !== true);
+
+        if (!parent && allResolved.length > 0) {
+            throw new Error(`There are unresolved dependencies: ${allResolved.reduce((prev, current) => {
+                return (prev === '' ? '' : ', ') + prev + current;
+            }, '')}`)
         }
-        this.unresolved = toResolve;
     }
 
     /**
@@ -117,7 +108,22 @@ class Task {
     }
 
     /**
-     * Searches the entire dependency tree
+     * Searches the task tree for unresolved tasks
+     * @return {Array} An array of unresolved dependencies
+     * @private
+     */
+    _findUnresolvedTasks() {
+        const results = [];
+        for(const task of this.tasks) {
+            if (task instanceof UnresolvedTask) results.push(task);
+            else results.push(...task._findUnresolvedTasks());
+        }
+
+        return results;
+    }
+
+    /**
+     * Searches the entire dependency tree for resolved tasks
      * @param {string} name The name of the task to find
      * @return {null|Task} The task, if found
      */
@@ -125,15 +131,25 @@ class Task {
         Log.trace(`Searching dependency tree for ${name}`);
         if(this.name === name) return this;
 
-        for(const task of this.tasks) {
+        return this.tasks.map(task => {
+            if (task instanceof UnresolvedTask) return null;
+
             const result = task.search(name);
             if (result) {
-                Log.trace(`Found ${result.name}`);
+                Log.trace(`Found ${name}`);
                 return result;
             }
-        }
 
-        return null;
+            return null;
+        }).reduce((prev, current) => {
+            if (prev) {
+                return prev;
+            }
+
+            if (current) {
+                return current;
+            }
+        }, null);
     }
 
     /**
@@ -142,6 +158,7 @@ class Task {
      * @return {boolean} False: do not skip, True: skip
      */
     async shouldSkip(preferredTool) {
+        Log.trace(`Determining if ${this.name} should be skipped`);
         let skipCount = 0;
         let noSkipCount = 0;
 
@@ -266,6 +283,7 @@ class Task {
      * @private
      */
     _getConstrainedTool(preferredTool) {
+        Log.trace(`Getting actual tool from tool machine`);
         let tool = preferredTool;
         if (this.constraints && this.constraints.always_use_tool && this.constraints.ignore_preferred_tool) {
             tool = toolMachine(this.constraints.always_use_tool);
@@ -280,6 +298,7 @@ class Task {
      * @private
      */
     _getExecutor(preferredTool) {
+        Log.trace('Getting executor');
         const tool = this._getConstrainedTool(preferredTool);
         const executor = new tool();
         executor.buildFromStep(this);
@@ -339,13 +358,15 @@ class Task {
      */
     async execute(preferredTool) {
         Log.trace(`Starting execution of task ${this.name}`);
-        const complete = await this._chain(this.tasks, 'execute', preferredTool);
+        const complete = await this._chain(this.tasks, 'execute', [preferredTool]);
 
         let result = false;
         let dry = false;
 
         if (this.exec) {
+            Log.trace(`Getting executor for ${this.name}`);
             const executor = this._getExecutor(preferredTool);
+            Log.trace(`Got executor for ${this.name} with ToolName: ${executor.toolName}`);
             dry = executor.getDryRun(); // order is important here ...
             if (!(await this.shouldSkip(preferredTool))) {
                 Log.trace(`${this.name} executing with tool: ${executor.toolName}`);

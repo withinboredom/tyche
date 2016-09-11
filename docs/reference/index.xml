@@ -63,6 +63,7 @@
       &amp;quot;name&amp;quot;: &amp;quot;build&amp;quot;,
       &amp;quot;description&amp;quot;: &amp;quot;Build this nifty little cli tool&amp;quot;,
       &amp;quot;tasks&amp;quot;: [
+        &amp;quot;doc-build&amp;quot;,
         {
           &amp;quot;name&amp;quot;: &amp;quot;dependencies&amp;quot;,
           &amp;quot;description&amp;quot;: &amp;quot;Install build dependencies&amp;quot;,
@@ -87,7 +88,7 @@
         {
           &amp;quot;name&amp;quot;: &amp;quot;build-cli&amp;quot;,
           &amp;quot;description&amp;quot;: &amp;quot;Actually build the tool...&amp;quot;,
-          &amp;quot;dependencies&amp;quot;: [
+          &amp;quot;tasks&amp;quot;: [
             &amp;quot;dependencies&amp;quot;
           ],
           &amp;quot;exec&amp;quot;: {
@@ -99,9 +100,6 @@
             }
           }
         }
-      ],
-      &amp;quot;dependencies&amp;quot;: [
-        &amp;quot;doc-build&amp;quot;
       ]
     },
     {
@@ -112,7 +110,7 @@
           &amp;quot;command&amp;quot;: [&amp;quot;npm&amp;quot;,&amp;quot;run&amp;quot;,&amp;quot;watch&amp;quot;]
         }
       },
-      &amp;quot;dependencies&amp;quot;: [
+      &amp;quot;tasks&amp;quot;: [
         &amp;quot;dependencies&amp;quot;
       ]
     },
@@ -126,7 +124,7 @@
         &amp;quot;docker-compose&amp;quot;: {
           &amp;quot;service&amp;quot;: &amp;quot;tyche-tests&amp;quot;
         },
-        &amp;quot;dependencies&amp;quot;: [
+        &amp;quot;tasks&amp;quot;: [
           &amp;quot;build&amp;quot;
         ]
       }
@@ -358,6 +356,9 @@ the &lt;code&gt;tyche.json&lt;/code&gt; file:&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{
     &amp;quot;tasks&amp;quot;: [
         {
+            &amp;quot;name&amp;quot;: &amp;quot;sibling task&amp;quot;
+        },
+        {
             &amp;quot;name&amp;quot;: &amp;quot;a task&amp;quot;, # this is the only thing a task requires
             &amp;quot;description&amp;quot;: &amp;quot;a description&amp;quot;,
             &amp;quot;exec&amp;quot;: {
@@ -366,7 +367,8 @@ the &lt;code&gt;tyche.json&lt;/code&gt; file:&lt;/p&gt;
             &amp;quot;tasks&amp;quot;: [
                 {
                     &amp;quot;name&amp;quot;: &amp;quot;another task&amp;quot;
-                }
+                },
+                &amp;quot;sibling task&amp;quot;
             ],
             &amp;quot;skips&amp;quot;: {
                 &amp;quot;path_exists&amp;quot;: [&amp;quot;./path-to-file&amp;quot;],
@@ -377,10 +379,7 @@ the &lt;code&gt;tyche.json&lt;/code&gt; file:&lt;/p&gt;
             &amp;quot;constraints&amp;quot;: {
                 &amp;quot;always_use_tool&amp;quot;: &amp;quot;docker-compose&amp;quot;,
                 &amp;quot;ignore_preferred_tool&amp;quot;: true
-            },
-            &amp;quot;dependencies&amp;quot;: [
-                &amp;quot;another task&amp;quot;
-            ]
+            }
         }
     ]
 }
@@ -525,51 +524,16 @@ as an environment variable as well as the variable &lt;code&gt;$BUILD_NUMBER&lt;
   Task
   
 &lt;/a&gt;
-&lt;/td&gt;
+ or a string, which is a reference to another task&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 
 &lt;p&gt;Dependent tasks that must be completed before this task can be completed.&lt;/p&gt;
 
-&lt;p&gt;Keep in mind, that sibling tasks could be run in parallel in future versions.
-If you need to guarantee order, it would be a good idea to use
-&lt;code&gt;dependencies&lt;/code&gt; to specify the order.&lt;/p&gt;
+&lt;p&gt;Keep in mind, that sibling tasks could be run in parallel in future versions.&lt;/p&gt;
 
 &lt;div class=&#34;notices tip&#34; &gt;&lt;p&gt;toplevel tasks can be called directly from the cli, as can their immediate descendants&lt;/p&gt;
-&lt;/div&gt;
-
-
-&lt;h2 id=&#34;dependencies&#34;&gt;dependencies&lt;/h2&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;attribute&lt;/th&gt;
-&lt;th&gt;value&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;required&lt;/td&gt;
-&lt;td&gt;false&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;type&lt;/td&gt;
-&lt;td&gt;array of task names&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;p&gt;A list of tasks that must be completed before this task can be completed.
-They can be siblings to this task (a way to guarantee order)&lt;/p&gt;
-
-&lt;div class=&#34;notices warning&#34; &gt;&lt;p&gt;If it cannot find a task by the given name, it won&amp;rsquo;t give any warning.
-It will just pretend it is always complete. If you disagree with this
-behavior please open an &lt;a href=&#34;https://github.com/withinboredom/tyche/issues&#34;&gt;issue in GitHub&lt;/a&gt;
-and lets discuss it.&lt;/p&gt;
 &lt;/div&gt;
 
 

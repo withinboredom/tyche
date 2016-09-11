@@ -19,11 +19,51 @@ Spinner.setDefaultSpinnerString(21);
 const spinner = new Spinner('Loading...');
 spinner.start();
 
-async function tyche() {
+async function getAppDb(dbFile) {
     const database = new TycheDb(dbFile);
     await database.initializeDb();
-    const config = Config.loadConfig(path.normalize(`${configPath()}/./tyche.json`), database);
+    return database;
+}
 
+function getConfig(database) {
+    return Config.loadConfig(path.normalize(`${configPath()}/./tyche.json`), database);
+}
+
+function generateCommands(config, vars) {
+    for (const command of config.tasks.tasks) {
+        const name = command.name;
+        if (name === 'bump') {
+            continue; // bump is reserved
+        }
+        const description = command.description || 'run task';
+        const subCommands = command.children().join('|');
+
+        program.command(`${name} [${subCommands}]`)
+        .description(description)
+        .option('-t, --tool <tool>', 'use the default tool')
+        .option('-d, --dry', 'Show all the commands the tool is about to run')
+        .action((subcommand, options) => {
+            if (typeof subcommand === 'object') {
+                options = subcommand;
+                subcommand = null;
+            }
+
+            while(process.argv[0].indexOf('tyche') < 0) {
+                process.argv.shift();
+            }
+            process.argv.shift(); // remove the tyche command
+            process.argv.shift(); // remove the command
+            if (subcommand) process.argv.shift(); // remove the subcommand
+
+            vars.command = command;
+            vars.tool = options.tool;
+            vars.subcommand = subcommand;
+            vars.dry = options.dry;
+        });
+    }
+}
+
+async function tyche() {
     //todo: Read repo state
 
     const vars = {
@@ -34,41 +74,20 @@ async function tyche() {
         force: false
     };
 
+    // manually search for this parameter, because we want it defined, first thing
+    for(const param of process.argv) {
+        if (param === '-v' || param === '--verbose') {
+            Logger.level(Logger.TRACE);
+        }
+    }
+
     program.option('-v, --verbose', 'Turn on verbose logging', () => {
-        Logger.level(Logger.TRACE);
     });
 
-    for (const command of config.tasks.tasks) {
-        const name = command.name;
-        if (name === 'bump') {
-            continue; // bump is reserved
-        }
-        const description = command.description || 'run task';
-        const subCommands = command.children().join('|');
+    const database = await getAppDb(dbFile);
+    const config = getConfig(database);
 
-        program.command(`${name} [${subCommands}]`)
-            .description(description)
-            .option('-t, --tool <tool>', 'use the default tool')
-            .option('-d, --dry', 'Show all the commands the tool is about to run')
-            .action((subcommand, options) => {
-                if (typeof subcommand === 'object') {
-                    options = subcommand;
-                    subcommand = null;
-                }
-
-                while(process.argv[0].indexOf('tyche') < 0) {
-                    process.argv.shift();
-                }
-                process.argv.shift(); // remove the tyche command
-                process.argv.shift(); // remove the command
-                if (subcommand) process.argv.shift(); // remove the subcommand
-
-                vars.command = command;
-                vars.tool = options.tool;
-                vars.subcommand = subcommand;
-                vars.dry = options.dry;
-            });
-    }
+    generateCommands(config, vars);
 
     program.command('init')
         .description('Initialize the tool in this repository')
@@ -130,6 +149,8 @@ async function tyche() {
         if (vars.tool) {
             preferredToolString = vars.tool;
         }
+
+        Log.trace(`Preferred Tool: ${preferredToolString}`);
 
         let command = vars.command;
         if (vars.subcommand) {

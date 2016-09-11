@@ -51,7 +51,7 @@
     "testEnvironment": "node",
     "preprocessorIgnorePatterns": [
       "<rootDir>/node_modules/",
-      "<rootDir>/bin/"
+      "<rootDir>/bin/.*js"
     ],
     "collectCoverage": false,
     "coverageReporters": [
