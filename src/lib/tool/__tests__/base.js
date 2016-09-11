@@ -50,7 +50,7 @@ describe('test the base tool', () => {
         tool.command = 'adgflaehfkjahfkj';
         expect(() => tool.nativeCommand = ['hello','world']).not.toThrow();
         const result = await tool.execTool();
-        expect(result).toBe(127);
+        expect(result).not.toBe(0);
     });
 
     it('will fail if a tool tries to run a command without being initialized', async () => {
