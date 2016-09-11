@@ -19,10 +19,10 @@ const dbFile = path.normalize(`${os.homedir()}/.tyche.json`);
  * @default dir The current working directory
  * @return {string}
  */
-function walkToPackage(dir = path.normalize(`${process.cwd()}/package.json`)) {
+function walkToPackage(dir = path.normalize(`${process.cwd()}/tyche.json`)) {
     try {
         fs.accessSync(dir, fs.F_OK);
-        Log.info('Found package.json at:', dir);
+        Log.info('Found tyche.json at:', dir);
         return path.dirname(dir);
     }
     catch (e) {
