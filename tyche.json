@@ -167,7 +167,7 @@
           "name": "push-master-release",
           "exec": {
             "native": {
-              "command": ["git push origin master"]
+              "command": ["sleep","10;","git","push","origin","master"]
             }
           }
         },
