@@ -427,4 +427,18 @@ describe('tasks', () => {
         const test = new Task(database, doSomethingTask);
         expect(await test.execute(preferredTool)).toEqual([{"exec":"BUILD_NUMBER=0 ls ","name":"does-something","result":0,"skipped":false}]);
     });
+
+    it('cannot handle non-zero exit codes', async () => {
+        doSomethingTask.exec.native.command = ['false'];
+        const test = new Task(database, doSomethingTask);
+        let passed = false;
+        try {
+            await test.execute(preferredTool);
+        }
+        catch (e) {
+            passed = true;
+        }
+
+        expect(passed).toBe(true);
+    })
 });
