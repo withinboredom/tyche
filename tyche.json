@@ -158,13 +158,17 @@
         {
           "name": "open-release-draft",
           "exec": {
-            "native": ["printf","$BUILD_NUMBER","|","hub","release","create","-d","-f","-","$BUILD_NUMBER"]
+            "native":{
+              "command": ["printf","$BUILD_NUMBER","|","hub","release","create","-d","-f","-","$BUILD_NUMBER"]
+            }
           }
         },
         {
           "name": "push-master-release",
           "exec": {
-            "native": ["git push origin master"]
+            "native": {
+              "command": ["git push origin master"]
+            }
           }
         }
       ]
