@@ -5,25 +5,32 @@ import {Readable, Writable} from 'stream';
 let mockFiles = Object.create(null);
 function __setMockFiles(newMockFiles) {
     mockFiles = Object.create(null);
-    for (const file in newMockFiles) {
-        const dir = path.dirname(file);
+    for (const file of Object.keys(newMockFiles)) {
+        const pathToFile = file.split('/').join(path.sep);
+        const dir = path.dirname(pathToFile);
 
         if (!mockFiles[dir]) {
             mockFiles[dir] = [];
         }
         mockFiles[dir].push({
-            basename: path.basename(file),
+            basename: path.basename(pathToFile),
             contents: newMockFiles[file]
         });
     }
 }
 
 function readdirSync(directoryPath) {
+    directoryPath = convertFilePathToOs(directoryPath);
     return mockFiles[directoryPath] || [];
+}
+
+function convertFilePathToOs(file) {
+    return file.split('/').join(path.sep);
 }
 
 
 function accessSync(file) {
+    file = convertFilePathToOs(file);
     if (!mockFiles[path.dirname(file)]) {
         throw new Error();
     }
@@ -69,6 +76,7 @@ class FakeWriteStream extends Writable {
 
 function createReadStream(file) {
     try {
+        file = convertFilePathToOs(file);
         accessSync(file);
         const data = mockFiles[path.dirname(file)].find(target => target.basename === path.basename(file));
         return new FakeReadStream(data.contents);
@@ -79,6 +87,7 @@ function createReadStream(file) {
 }
 
 function createWriteStream(target) {
+    target = convertFilePathToOs(target);
     const dir = path.dirname(target);
     if (!mockFiles[dir]) {
         mockFiles[dir] = [];
