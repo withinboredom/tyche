@@ -40,6 +40,7 @@ describe('HookManager', () => {
 
     it('can install a hook', async() => {
         const files = {};
+
         const hookLocation = path.normalize(path.join(path.dirname(__dirname),'../../../','src/lib/hook.js'));
         files[hookLocation] = `#!/usr/bin/env node --harmony
 /* {"HOOK_VERSION": 2} */`;
