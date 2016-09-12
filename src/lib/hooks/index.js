@@ -71,8 +71,7 @@ class HookManager {
         try {
             const lines = await this._readLines(file, 2);
             const version = lines[1].split('/*')[1].split('*/')[0];
-            const versionData = JSON.parse(version);
-            return versionData;
+            return JSON.parse(version);
         }
         catch(e) {
             Log.trace(`Failed to get version data from ${file} with error`);
@@ -150,7 +149,7 @@ class HookManager {
         // we are installing a brand new hook ...
         try {
             // check to make sure there's not already a hook installed, if so, copy it
-            fs.accessSync(target)
+            fs.accessSync(target);
             await this._copyFile(target, `${target}-original`);
         }
         catch(e) {
@@ -161,8 +160,7 @@ class HookManager {
                 return true;
             }
             catch(e) {
-                Log.trace(`failed to copy ${source} to ${target}`);
-                console.log(e);
+                Log.error(`failed to copy ${source} to ${target}`);
                 return false;
             }
         }
