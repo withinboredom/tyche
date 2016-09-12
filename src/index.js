@@ -81,8 +81,7 @@ async function tyche() {
         }
     }
 
-    program.option('-v, --verbose', 'Turn on verbose logging', () => {
-    });
+    program.option('-v, --verbose', 'Turn on verbose logging', () => {});
 
     const database = await getAppDb(dbFile);
     const config = getConfig(database);

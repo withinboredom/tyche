@@ -2,7 +2,7 @@ import Log from 'cli-logger';
 
 const logger = Log({
     src: true,
-    level: Log.WARN,
+    level: process.env.NODE_ENV == 'test' ? Log.TRACE : Log.WARN,
     console: false,
     prefix: function(record) {
         return `${new Date()} (${record.component || 'Main'}) [${this.names(record.level)}] <${record.src.file || ''}:${record.src.line || ''}>: `;
