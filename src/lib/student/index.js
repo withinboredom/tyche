@@ -91,10 +91,15 @@ class Student {
         }
     }
 
-    async countFiles() {
+    /**
+     * Counts files
+     * @param {array} trigger Array of triggers
+     * @return {number}
+     */
+    async countFiles(trigger = []) {
         let total = 0;
         for(const path of this.globs) {
-            if (path.files === undefined) {
+            if (path.files === undefined || this._isTriggerInGlob(path, trigger)) {
                 path.files = [];
                 const files = await new Promise((done, reject) => {
                     glob(path.path, {}, (err, files) => {
@@ -118,26 +123,36 @@ class Student {
         return total;
     }
 
+    _isTriggerInGlob(globObj, trigger) {
+        const trigg = new Set(trigger);
+        const inIt = globObj.triggers.filter(t => trigger.length === 0 || trigg.has(t)).length > 0;
+        return inIt;
+    }
+
+
     /**
      * Scans all known file globs for matches
+     * @param {array} trigger A list of triggers
      */
-    async scan() {
-        const fileCount = await this.countFiles();
+    async scan(trigger = []) {
+        const fileCount = await this.countFiles(trigger);
         const all = [];
         let changedCount = 0;
         for(const globObj of this.globs) {
-            for(const file of globObj.files) {
-                all.push(new Promise((done) => {
-                    this._database.fileChanged(file.path).then((changed) => {
-                        file.changed = changed;
-                        changed ? changedCount++ : null;
-                        done();
-                    }).catch(() => {
-                        // ignore errors ... probably a directory...
-                        file.changed = false;
-                        done();
-                    });
-                }));
+            if (this._isTriggerInGlob(globObj, trigger)) {
+                for(const file of globObj.files) {
+                    all.push(new Promise((done) => {
+                        this._database.fileChanged(file.path).then((changed) => {
+                            file.changed = changed;
+                            changed ? changedCount++ : null;
+                            done();
+                        }).catch(() => {
+                            // ignore errors ... probably a directory...
+                            file.changed = false;
+                            done();
+                        });
+                    }));
+                }
             }
         }
 

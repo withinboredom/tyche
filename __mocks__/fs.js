@@ -34,6 +34,24 @@ function convertFilePathToOs(file) {
     return file.split('/').join(path.sep);
 }
 
+function symlink(source, dest, type, complete) {
+    try {
+        accessSync(source)
+    }
+    catch(err) {
+        complete(new Error('failed to open source'));
+        return;
+    }
+
+    const file = convertFilePathToOs(source);
+
+    if(mockFiles[path.dirname(file)].filter(target => target.basename === path.basename(file))[0].fail) {
+        complete(new Error('fail!!!'));
+        return;
+    }
+
+    complete();
+}
 
 function accessSync(file) {
     file = convertFilePathToOs(file);
@@ -114,5 +132,6 @@ fs.readdirSync = readdirSync;
 fs.accessSync = accessSync;
 fs.createReadStream = createReadStream;
 fs.createWriteStream = createWriteStream;
+fs.symlink = symlink;
 
 module.exports = fs;

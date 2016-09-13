@@ -281,13 +281,6 @@
         "watch"
       ],
       "branch": ["master"]
-    },
-    {
-      "on": "commit",
-      "plugin": "no-conflicts",
-      "message": {
-        "error": "You cannot commit conflicts. Please resolve them and try again."
-      }
     }
   ]
 }

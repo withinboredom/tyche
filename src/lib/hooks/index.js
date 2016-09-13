@@ -96,27 +96,14 @@ class HookManager {
 
     async _copyFile(source, target) {
         return new Promise(function(resolve, reject) {
-            Log.trace(`Copying ${source} to ${target}`);
-            const rd = fs.createReadStream(source);
-            rd.on('error', (err) => {
-                Log.trace(`Copy readStream (${source}) broke with error`);
-                Log.trace(err);
-                reject(err);
-            });
-            const wr = fs.createWriteStream(target);
-            wr.on('error', (err) => {
-                Log.trace(`Copy writeStream (${target}) broke with error`);
-                Log.trace(err);
-                reject(err);
-            });
-            rd.on('end', () => {
-                Log.trace(`Successfully copied ${source} to ${target}`);
+            Log.trace(`Creating symlink from ${source} to ${target}`);
+            fs.symlink(source, target, 'junction', (err) => {
+                if (err) {
+                    reject(err);
+                }
+
                 resolve();
-            });
-            wr.on('end', () => {
-                resolve();
-            });
-            rd.pipe(wr);
+            })
         });
     }
 
@@ -131,8 +118,13 @@ class HookManager {
 
                 if (currentVersion.HOOK_VERSION !== installedVersion.HOOK_VERSION) {
                     // we need to update things
-                    this._copyFile(source, target);
-                    return true;
+                    try {
+                        this._copyFile(source, target);
+                        return true;
+                    }
+                    catch(err) {
+                        Log.error(`Failed to update ${hook} hook`);
+                    }
                 }
 
                 // nothing to do
