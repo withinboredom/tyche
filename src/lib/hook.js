@@ -1,6 +1,7 @@
 #!/usr/bin/env node --harmony
 
 import path from 'path';
+import fs from 'fs';
 import TycheDb from 'lib/database';
 import Config from 'lib/config';
 import {dbFile, configPath} from 'lib/config/paths';
@@ -47,14 +48,14 @@ async function runOtherHook(hook) {
             name: 'run-hook',
             exec: {
                 native: {
-                    command: `.git/hooks/${hook}-orig`
+                    command: [`.git/hooks/${hook}-orig`,...process.argv.slice(2)]
                 }
             }
         };
 
         const Tool = new (ToolMachine('native'));
         Tool.buildFromStep(task);
-        await Tool.execute();
+        await Tool.execTool();
     }
     catch(err) {
         console.log(err);
