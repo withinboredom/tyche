@@ -14,9 +14,15 @@ function __setMockFiles(newMockFiles) {
         }
         mockFiles[dir].push({
             basename: path.basename(pathToFile),
-            contents: newMockFiles[file]
+            contents: newMockFiles[file],
+            fail: false
         });
     }
+}
+
+function __failToRead(file) {
+    file = convertFilePathToOs(file);
+    mockFiles[path.dirname(file)].filter(target => target.basename === path.basename(file)).map(target => target.fail = true);
 }
 
 function readdirSync(directoryPath) {
@@ -44,7 +50,8 @@ class FakeReadStream extends Readable {
     constructor(data, options) {
         super(options);
         this.cursor = 0;
-        this.data = data;
+        this.data = data.contents;;
+        this.fail = data.fail;
     }
 
     _read(size) {
@@ -52,7 +59,8 @@ class FakeReadStream extends Readable {
         const data = this.data.slice(this.cursor, howMuch);
         this.cursor += howMuch;
         this.push(data, 'utf8');
-        if (this.cursor === this.data.length) this.push(null);
+        if (this.fail) this.emit('error', new Error('fake error on read stream'));
+        else if (this.cursor === this.data.length) this.push(null);
     }
 }
 
@@ -62,6 +70,7 @@ class FakeWriteStream extends Writable {
         super(options);
         this.target = target;
         this.target.content = '';
+        this.fail = target.fail;
     }
 
     _write(chunk, encoding, complete) {
@@ -69,21 +78,17 @@ class FakeWriteStream extends Writable {
             chunk = chunk.toString('utf8');
         }
         console.log('got chunk', chunk);
+        if (this.fail) complete(new Error('fake write stream error'));
         this.target.content += chunk;
         complete(null);
     }
 }
 
 function createReadStream(file) {
-    try {
-        file = convertFilePathToOs(file);
-        accessSync(file);
-        const data = mockFiles[path.dirname(file)].find(target => target.basename === path.basename(file));
-        return new FakeReadStream(data.contents);
-    }
-    catch(e) {
-
-    }
+    file = convertFilePathToOs(file);
+    accessSync(file);
+    const data = mockFiles[path.dirname(file)].find(target => target.basename === path.basename(file));
+    return new FakeReadStream(data);
 }
 
 function createWriteStream(target) {
@@ -104,6 +109,7 @@ function createWriteStream(target) {
 }
 
 fs.__setMockFiles = __setMockFiles;
+fs.__failToRead = __failToRead;
 fs.readdirSync = readdirSync;
 fs.accessSync = accessSync;
 fs.createReadStream = createReadStream;

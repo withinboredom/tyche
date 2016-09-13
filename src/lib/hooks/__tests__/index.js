@@ -49,6 +49,18 @@ describe('HookManager', () => {
         expect(await manager.install('push')).toBe(true);
     });
 
+    it('can gracefully fail to install a hook', async() => {
+        const files = {};
+
+        const hookLocation = path.normalize(path.join(path.dirname(__dirname),'../../../','src/lib/hook.js'));
+        files[hookLocation] = `#!/usr/bin/env node --harmony
+/* {"HOOK_VERSION": 2} */`;
+        fs.__setMockFiles(files);
+        fs.__failToRead(hookLocation);
+        const manager = new HookManager('.');
+        expect(await manager.install('push')).toBe(false);
+    });
+
     it('can update a hook', async () => {
         const files = {
             '.git/hooks/push': `#!/bin/bash`,
@@ -84,5 +96,5 @@ describe('HookManager', () => {
         fs.__setMockFiles(files);
         const manager = new HookManager('.');
         expect(await manager.install('pre-commit')).toBe(false);
-    })
+    });
 });
