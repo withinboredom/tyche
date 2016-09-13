@@ -1,5 +1,6 @@
 [![API Doc](https://doclets.io/withinboredom/tyche/master.svg)](https://doclets.io/withinboredom/tyche/master) [![Build status](https://ci.appveyor.com/api/projects/status/g6g599g61onplq17/branch/master?svg=true)](https://ci.appveyor.com/project/withinboredom/tyche/branch/master) [![Build Status](https://travis-ci.org/withinboredom/tyche.svg?branch=master)](https://travis-ci.org/withinboredom/tyche) [![codecov](https://codecov.io/gh/withinboredom/tyche/branch/master/graph/badge.svg)](https://codecov.io/gh/withinboredom/tyche)
 [![npm](https://img.shields.io/npm/l/tyche.svg?maxAge=2592000)]() [![David](https://img.shields.io/david/withinboredom/tyche.svg?maxAge=2592000)]() [![David](https://img.shields.io/david/dev/withinboredom/tyche.svg?maxAge=2592000)]()
+[![Codacy grade](https://img.shields.io/codacy/grade/6abf4672109149318cbef759d466ba76.svg?maxAge=2592000)]()
 
 # May the god of fortune bring your project fortune
 
