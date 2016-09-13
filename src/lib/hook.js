@@ -57,7 +57,7 @@ async function runOtherHook(hook) {
         process.exitCode = await Tool.execTool();
     }
     catch(err) {
-        console.log(err);
+        // yeah, couldn't find anything so lets continue
     }
 }
 
