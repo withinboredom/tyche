@@ -93,10 +93,10 @@ async function tyche() {
         .description('Initialize the tool in this repository')
         .action(async () => {
             const hook = new Hooks(await configPath());
-            hook.install('pre-commit');
-            hook.install('pre-push');
-            hook.install('post-checkout');
-            hook.install('post-merge');
+            await hook.install('pre-commit');
+            await hook.install('pre-push');
+            await hook.install('post-checkout');
+            await hook.install('post-merge');
         });
 
     program.command('bump')
