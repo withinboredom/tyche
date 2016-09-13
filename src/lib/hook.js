@@ -4,6 +4,7 @@ import path from 'path';
 import TycheDb from 'lib/database';
 import Config from 'lib/config';
 import {dbFile, configPath} from 'lib/config/paths';
+import ToolMachine from 'lib/tool';
 
 async function getAppDb(dbFile) {
     const database = new TycheDb(dbFile);
@@ -36,6 +37,24 @@ async function runStudies() {
             }
         }
     })
+}
+
+async function runOtherHook(hook) {
+    try {
+        fs.accessSync(`.git/hooks/${hook}-orig`);
+        const task = {
+            name: 'run-hook',
+            exec: {
+                native: {
+                    command: `.git/hooks/${hook}-orig`
+                }
+            }
+        };
+
+        const Tool = new (ToolMachine('native'));
+        Tool.buildFromStep(task);
+        Tool.execute();
+    }
 }
 
 runStudies();
