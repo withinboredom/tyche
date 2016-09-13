@@ -6,6 +6,7 @@ import Config from 'lib/config';
 import {dbFile, configPath} from 'lib/config/paths';
 import TycheDb from 'lib/database';
 import ToolMachine from 'lib/tool';
+import Hooks from 'lib/hooks';
 import Logger from 'lib/logger';
 import semver from 'semver';
 
@@ -90,8 +91,12 @@ async function tyche() {
 
     program.command('init')
         .description('Initialize the tool in this repository')
-        .action(() => {
-            // broken
+        .action(async () => {
+            const hook = new Hooks(await configPath());
+            hook.install('pre-commit');
+            hook.install('pre-push');
+            hook.install('post-checkout');
+            hook.install('post-merge');
         });
 
     program.command('bump')

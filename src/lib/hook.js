@@ -1,4 +1,5 @@
 #!/usr/bin/env node --harmony
+/* {"HOOK_VERSION": 1} */
 
 import path from 'path';
 import fs from 'fs';
