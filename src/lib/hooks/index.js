@@ -154,18 +154,15 @@ class HookManager {
         }
         catch(e) {
             Log.trace(`failed to copy ${target} to ${target}-original`);
-
-            try {
-                await this._copyFile(source, target);
-                return true;
-            }
-            catch(e) {
-                Log.error(`failed to copy ${source} to ${target}`);
-                return false;
-            }
         }
-
-        return true;
+        try {
+            await this._copyFile(source, target);
+            return true;
+        }
+        catch(e) {
+            Log.error(`failed to copy ${source} to ${target}`);
+            return false;
+        }
     }
 }
 

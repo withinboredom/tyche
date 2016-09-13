@@ -72,12 +72,29 @@ describe('HookManager', () => {
  */`
         };
         const hookLocation = path.normalize(path.join(path.dirname(__dirname),'../../../','src/lib/hook.js'));
-        console.log(hookLocation);
         files[hookLocation] = `#!/usr/bin/env node --harmony
 /* {"HOOK_VERSION": 2} */`;
         fs.__setMockFiles(files);
         const manager = new HookManager('.');
         expect(await manager.install('pre-commit')).toBe(true);
+    });
+
+    it('wont overwrite a hook that pre-existed', async () => {
+        const files = {
+            '.git/hooks/push': `#!/bin/bash`,
+            '.git/hooks/pre-commit': `#!/usr/bin/env node --harmony
+/* {"HOOK_VERSION": 1} */`,
+            '.git/hooks/not-really': `#!/usr/bin/env node --harmony
+/* some header
+ * goes here
+ */`
+        };
+        const hookLocation = path.normalize(path.join(path.dirname(__dirname),'../../../','src/lib/hook.js'));
+        files[hookLocation] = `#!/usr/bin/env node --harmony
+/* {"HOOK_VERSION": 2} */`;
+        fs.__setMockFiles(files);
+        const manager = new HookManager('.');
+        expect(await manager.install('not-really')).toBe(true);
     });
 
     it('wont update a hook if it doesnt need updating', async () => {
