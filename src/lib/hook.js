@@ -23,6 +23,7 @@ async function runStudies() {
     process.on('beforeExit', () => exiting ? null : exiting = true && database.finish());
 
     const hook = process.argv[1].split(path.sep).slice(-1).pop();
+    await runOtherHook(hook);
     const study = config.student.triggers.filter(t => hook.endsWith(t.on));
     const result = await config.student.scan(study);
     study.map(grade => {
@@ -53,7 +54,10 @@ async function runOtherHook(hook) {
 
         const Tool = new (ToolMachine('native'));
         Tool.buildFromStep(task);
-        Tool.execute();
+        await Tool.execute();
+    }
+    catch(err) {
+        console.log(err);
     }
 }
 
