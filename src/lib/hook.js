@@ -31,7 +31,6 @@ async function runStudies() {
         if(result.changes > 0) {
             if (grade.message.warn) {
                 console.log('WARNING:', grade.message.warn);
-                process.exitCode = 0;
             }
             if (grade.message.error) {
                 console.error('ERROR:', grade.message.error);
@@ -55,7 +54,7 @@ async function runOtherHook(hook) {
 
         const Tool = new (ToolMachine('native'));
         Tool.buildFromStep(task);
-        await Tool.execTool();
+        process.exitCode = await Tool.execTool();
     }
     catch(err) {
         console.log(err);
