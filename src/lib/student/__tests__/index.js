@@ -45,6 +45,15 @@ describe('studies', () => {
         });
     });
 
+    it('can scan a specific trigger for changes', async () => {
+        const student = new Student(database, commit);
+        database.fileChanged = jest.fn(async () => false);
+        expect(await student.scan([student.triggers[0]])).toEqual({
+            changes: 0,
+            totalFilesScanned: await student.countFiles()
+        });
+    });
+
     it('responds to task completions', async () => {
         const bus = require('lib/bus').default;
         commit[0].reset.push('test');

@@ -43,8 +43,8 @@
     "tyche": "./bin/index.js"
   },
   "scripts": {
-    "build-cli": "babel --out-dir bin ./src",
-    "watch": "babel --watch --out-dir bin ./src",
+    "build-cli": "babel --out-dir bin ./src --ignore __tests__,__mocks__",
+    "watch": "babel --watch --out-dir bin ./src --ignore __tests__,__mocks__",
     "test": "jest"
   },
   "jest": {
