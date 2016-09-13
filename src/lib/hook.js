@@ -28,11 +28,11 @@ async function runStudies() {
         if(result.changes > 0) {
             if (grade.message.warn) {
                 console.log('WARNING:', grade.message.warn);
-                process.exit(0);
+                process.exitCode = 0;
             }
             if (grade.message.error) {
                 console.error('ERROR:', grade.message.error);
-                process.exit(1);
+                process.exitCode = 1;
             }
         }
     })
