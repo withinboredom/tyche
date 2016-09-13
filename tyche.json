@@ -110,7 +110,7 @@
           "description": "delete any existing release branch",
           "exec": {
             "native": {
-              "command": ["git","branch","-D","release"]
+              "command": ["git","branch","-D","release","||","true"]
             }
           }
         },
