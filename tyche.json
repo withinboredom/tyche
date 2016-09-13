@@ -124,6 +124,14 @@
           }
         },
         {
+          "name": "build",
+          "exec": {
+            "native": {
+              "command": ["tyche","build"]
+            }
+          }
+        },
+        {
           "name": "push-release-branch",
           "exec": {
             "native": {
