@@ -25,6 +25,8 @@ async function runStudies() {
     const study = config.student.triggers.filter(t => hook.endsWith(t.on));
     const result = await config.student.scan(study);
     study.map(grade => {
+        console.log(result);
+        console.log(grade);
         if(result.changes > 0) {
             if (grade.message.warn) {
                 console.log('WARNING:', grade.message.warn);
