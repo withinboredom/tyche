@@ -175,7 +175,7 @@
           "name": "push-master-release",
           "exec": {
             "native": {
-              "command": ["sleep","10;","git","push","origin","master"]
+              "command": ["echo","waiting","to","push","master","&&","sleep","60;","git","push","origin","master"]
             }
           }
         },
