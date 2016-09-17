@@ -1,0 +1,35 @@
+defaultTool: native
+
+clean {
+	"Cleans and removes all build dependencies"
+	node_modules {
+		"Clean node_modules directory"
+		exec native-nix: "rm -rf node_modules"
+		exec docker-compose: "down -v"
+	}
+}
+
+build {
+	"Build this tool"
+	ref doc-build
+	dependencies-install {
+		"Install build dependencies"
+		exec native: "npm install"
+		exec docker-compose: "up tyche-prep"
+		and skip if not changed {
+			"package.json"
+		}
+		and skip if exists: "node_modules"
+		and skip all: true
+	}
+	exec native: "npm run build-cli"
+	exec docker-compose: "up tyche-builder"
+}
+
+watch {
+	"Build as you write code"
+	ref dependencies-install
+	exec native: "npm run watch"
+	and always use native
+	and ignore preferred tool
+}
