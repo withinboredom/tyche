@@ -19,9 +19,6 @@ build_script:
 test_script:
 - cmd: >-
     tyche test
-    bash <(curl -s https://codecov.io/bash)
-test_prod:
-- cmd: >-
     npm unlink
     npm install -g rimraf
     rimraf node_modules
