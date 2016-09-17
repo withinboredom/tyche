@@ -1,3 +1,9 @@
+import Logger from 'lib/logger';
+
+const Log = Logger.child({
+    component: 'TokenStream'
+});
+
 const keywords = [
     'ref',
     'and',
@@ -7,7 +13,8 @@ const keywords = [
     'true',
     'false',
     'exec',
-    'wait'
+    'wait',
+    'study'
 ];
 
 class TokenStream {
@@ -132,6 +139,7 @@ class TokenStream {
             }
             return this._isDigit(ch);
         });
+        Log.trace(`Read number: ${number}`);
         return { type: 'num', value: parseFloat(number)};
     }
 
@@ -152,6 +160,7 @@ class TokenStream {
         else {
             type = 'var';
         }
+        Log.trace(`Read ${type}: ${value}`);
         return {type, value};
     }
 
@@ -177,6 +186,8 @@ class TokenStream {
             else str += ch;
         }
 
+        Log.trace(`Read escaped string: ${str}`)
+
         return str;
     }
 
@@ -194,6 +205,7 @@ class TokenStream {
      * @private
      */
     _skipComments() {
+        Log.trace(`Skipped comment`);
         this._readWhile((ch) => {
             return ch != "\n";
         });

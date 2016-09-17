@@ -2,6 +2,12 @@
  * @module lib/parser/parser
  */
 
+import Logger from 'lib/logger';
+
+const Log = Logger.child({
+    component: 'Parser'
+});
+
 class Parser {
     /**
      * Creates a parser
@@ -30,6 +36,7 @@ class Parser {
      * @private
      */
     _skip(type, ch) {
+        Log.trace(`Expecting ${type}, with value: ${ch}`);
         if(this._is(type, ch)) this._input.next();
         else this._input.die(`Expecting ${type}: ${ch}`);
     }
@@ -51,16 +58,14 @@ class Parser {
      */
     _parse(type) {
         let name;
+        Log.trace(`Parsing ${type}`);
         switch(type) {
             default:
                 name = this._input.next();
                 if (name.type != type) this._input.die(`Expecting ${type}, but found ${name.type} (${name.value})`);
                 return name.value;
             case 'bool':
-                return {
-                    type: 'bool',
-                    value: this._input.next() == "true"
-                };
+                return this._input.next() == "true"
         }
     }
 
@@ -70,6 +75,7 @@ class Parser {
      * @private
      */
     _parseDefaultTool() {
+        Log.trace(`Parsing defaultTool block`);
         this._skip('kw', 'defaultTool');
         this._skip('punc', ':');
         return {
@@ -86,10 +92,13 @@ class Parser {
      * @private
      */
     _maybeParse(type, input) {
+        Log.trace(`Attempting to parse ${type}`);
         if(!input.peek) return input;
         if(this._is(type)) {
+            Log.trace(`Discovered type ${type}`);
             return this._parse(type);
         }
+        Log.trace(`Couldn't parse ${type}`);
         return input;
     }
 
@@ -100,6 +109,7 @@ class Parser {
      * @private
      */
     _parseExec(kind) {
+        Log.trace(`Attempting to parse exec block`);
         const type = kind;
         this._skip('kw',type);
         const value = this._parse('var');
@@ -141,6 +151,7 @@ class Parser {
      * @private
      */
     _parseRef() {
+        Log.trace(`Attempting to parse ref block`);
         this._skip('kw', 'ref');
         const value = this._parse('var');
         return {
@@ -155,6 +166,7 @@ class Parser {
      * @private
      */
     _parseList() {
+        Log.trace(`Attempting to parse List block`);
         const result = [];
         if(this._is('punc', ':')) {
             this._skip('punc', ':');
@@ -176,6 +188,7 @@ class Parser {
      * @private
      */
     _parseAndOr() {
+        Log.trace(`Attempting to parse conditional branch`);
         let type = 'or';
         let action = 'skip';
         let what = 'all';
@@ -248,11 +261,55 @@ class Parser {
     }
 
     /**
+     * Parses a study block
+     * @return {{type: string, value: *, body: Array}}
+     * @private
+     */
+    _parseStudy() {
+        Log.trace(`Attempting to parse study block`);
+        this._skip('kw', 'study');
+        const value = this._parse('var');
+        const body = [];
+        this._skip('punc', '{');
+        while(!this._is('punc', '}')) {
+            if (this._is('var', 'watch')) {
+                this._skip('var', 'watch');
+                body.push({type: 'watch', value: this._parseList()});
+                continue;
+            }
+            if (this._is('var', 'warn')) {
+                this._skip('var', 'warn');
+                this._skip('punc', ':');
+                body.push({type: 'warn', value: this._parse('string')});
+                continue;
+            }
+            if (this._is('var', 'error')) {
+                this._skip('var', 'error');
+                this._skip('punc', ':');
+                body.push({type: 'error', value: this._parse('string')});
+                continue;
+            }
+            if (this._is('kw','ref')) {
+                body.push(this._parseRef());
+                continue;
+            }
+            this._unexpected();
+        }
+        this._skip('punc', '}');
+        return {
+            type: 'study',
+            value,
+            body
+        }
+    }
+
+    /**
      * Break everything up into its smallest components
      * @return {*}
      * @private
      */
     _parseAtom() {
+        Log.trace(`Parsing atom`);
         if (this._is('kw','defaultTool')) return this._parseDefaultTool();
         if (this._is('var')) {
             const value = this._parse('var');
@@ -274,6 +331,7 @@ class Parser {
         if (this._is('kw', 'wait')) return this._parseExec('wait');
         if (this._is('kw', 'ref')) return this._parseRef();
         if (this._is('kw', 'and') || this._is('kw', 'or')) return this._parseAndOr();
+        if (this._is('kw', 'study')) return this._parseStudy();
         this._unexpected();
     }
 
@@ -283,6 +341,7 @@ class Parser {
      * @private
      */
     _parseTask() {
+        Log.trace(`Parsing task`);
         const body = [];
         while(!this._input.eof() && !this._is('punc', '}')) {
             body.push(this._parseAtom());
