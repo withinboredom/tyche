@@ -33,3 +33,124 @@ watch {
 	and always use native
 	and ignore preferred tool
 }
+
+test {
+	"Run unit tests and collect code coverage"
+	ref build
+	exec native: "npm run test -- --coverage"
+	exec docker-compose: "up tyche-tests"
+}
+
+bump {
+	"Bumps the current version"
+	bump-package-version {
+		"bumps the version number in package.json"
+		exec native: "npm version ${BUILD_NUMBER}"
+		revert native: "npm version ${BUILD_NUMBER}"
+	}
+	delete-existing-release-branch {
+		"delete any existing release branch"
+		exec native: "git branch -D release || true"
+	}
+	create-release-branch {
+		"create the release branch"
+		exec native: "git checkout -b release"
+		revert native: "git checkout -f master"
+	}
+	build-during-bump {
+		"builds before push"
+		exec native: "tyche build"
+	}
+	push-release-branch {
+		"push the release branch to github"
+		exec native: "git push origin release --force"
+		revert native: "git push origin :release"
+	}
+	push-release-tags {
+		exec native: "git push origin --tags"
+		revert native: "git push origin :${BUILD_NUMBER}"
+	}
+	open-release-pr {
+		exec native: "printf ${BUILD_NUMBER} Automated Release | hub pull-request -F -"
+	}
+	wait-for-green-status {
+		"waiting for status checks -- don't forget review"
+		wait native {
+			"hub ci-status HEAD && sleep 10"
+			success: "success"
+			max-time: "30m"
+			revert-on-fail: true
+		}
+	}
+	open-release-draft {
+		exec native: "hub release create -d ${BUILD_NUMBER}"
+	}
+	push-master-release {
+		exec native: "sleep 60 && git push origin master"
+	}
+	checkout-master {
+		exec native: "git checkout master"
+	}
+	final-master-build {
+		exec native: "tyche build"
+	}
+	publish {
+		exec native: "npm publish"
+	}
+}
+
+docs {
+	"operate on the documentation"
+	dev {
+		"Watch and build the docs in realtime"
+		exec native {
+			"hugo serve"
+			working: "./docs"
+		}
+	}
+	doc-build {
+		"Turn the docs into static pages"
+		exec native {
+			"hugo -d ."
+			working: "./docs"
+		}
+	}
+	new-chapter {
+		"Create a new page for the docs"
+		exec native {
+			"hugo new --kind chapter"
+			acceptsArgs: true
+			working: "./docs"
+		}
+	}
+	new-page {
+		"Create a new page for the docs"
+		exec native {
+			"hugo new"
+			acceptsArgs: true
+			working: "./docs"
+		}
+	}
+}
+
+study commit {
+	watch {
+		"tyche.json"
+		"package.json"
+		"src/**/*"
+	}
+	warn: "It looks like you forgot to build this commit"
+	ref build
+	ref watch
+}
+
+study push {
+	watch {
+		"tyche.json"
+		"package.json"
+		"src/**/*"
+	}
+	error: "It looks like you forgot to build before pushing"
+	ref build
+	ref watch
+}

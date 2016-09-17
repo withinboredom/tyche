@@ -6,7 +6,8 @@ const keywords = [
     'revert',
     'true',
     'false',
-    'exec'
+    'exec',
+    'wait'
 ];
 
 class TokenStream {
@@ -46,6 +47,10 @@ class TokenStream {
      */
     _isKeyword(word) {
         return keywords.indexOf(word) >= 0;
+    }
+
+    _isBool(word) {
+        return this._isKeyword(word) ? word == 'true' || word == 'false' : false;
     }
 
     /**
@@ -136,8 +141,18 @@ class TokenStream {
      * @private
      */
     _readIdentifier() {
-        const id = this._readWhile((ch) => this._isIdentifier(ch));
-        return {type: this._isKeyword(id) ? 'kw' : 'var', value: id};
+        const value = this._readWhile((ch) => this._isIdentifier(ch));
+        let type;
+        if (this._isBool(value)) {
+            type = 'bool'
+        }
+        else if (this._isKeyword(value)) {
+            type = 'kw'
+        }
+        else {
+            type = 'var';
+        }
+        return {type, value};
     }
 
     /**

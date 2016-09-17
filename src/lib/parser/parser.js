@@ -1,14 +1,5 @@
 /**
  * @module lib/parser/parser
- * Converts a token stream into an AST
- *
- * The AST is defined as follows:
- * task: { type: "task", value: NAME, body: AST }
- * description: { type: "description", value: STRING }
- * and: { type: "and_condition", value: CONDITIONAL }
- * or: { type: "or_condition", value: CONDITIONAL }
- * ref: { type: "ref", value: TASK_NAME }
- * exec: { type: "exec", value: EXECUTORS }
  */
 
 class Parser {
@@ -63,7 +54,7 @@ class Parser {
         switch(type) {
             default:
                 name = this._input.next();
-                if (name.type != type) this._input.die(`Expecting ${type}, but found ${name.type}`);
+                if (name.type != type) this._input.die(`Expecting ${type}, but found ${name.type} (${name.value})`);
                 return name.value;
             case 'bool':
                 return {
@@ -108,8 +99,8 @@ class Parser {
      * @return {{Type: string, value: string, body: []}}
      * @private
      */
-    _parseExec(revert = false) {
-        const type = revert ? 'revert' : 'exec';
+    _parseExec(kind) {
+        const type = kind;
         this._skip('kw',type);
         const value = this._parse('var');
         if (this._is('punc', ':')) {
@@ -278,8 +269,9 @@ class Parser {
             type: 'description',
             value: this._parse('string')
         };
-        if (this._is('kw', 'exec')) return this._parseExec();
-        if (this._is('kw', 'revert')) return this._parseExec(true);
+        if (this._is('kw', 'exec')) return this._parseExec('exec');
+        if (this._is('kw', 'revert')) return this._parseExec('revert');
+        if (this._is('kw', 'wait')) return this._parseExec('wait');
         if (this._is('kw', 'ref')) return this._parseRef();
         if (this._is('kw', 'and') || this._is('kw', 'or')) return this._parseAndOr();
         this._unexpected();
