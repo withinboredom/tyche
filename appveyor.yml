@@ -13,15 +13,19 @@ install:
 build_script:
 - cmd: >-
     npm install
-
     npm run build-cli
-
     npm link
-
     tyche build
 test_script:
 - cmd: >-
     tyche test
-
     bash <(curl -s https://codecov.io/bash)
+test_prod:
+- cmd: >-
+    npm unlink
+    npm install -g rimraf
+    rimraf node_modules
+    npm install --production
+    npm link --production
+    tyche --help
 deploy: off
