@@ -41,7 +41,7 @@ class InputStream {
      * @return {boolean}
      */
     eof() {
-        return this.peek() == "";
+        return this.peek() == '';
     }
 
     /**

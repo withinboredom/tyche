@@ -1,6 +1,6 @@
-import InputStream from '../inputStream';
-import TokenStream from '../tokenStream';
-import Parser from '../parser';
+import InputStream from 'lib/parser/inputStream';
+import TokenStream from 'lib/parser/tokenStream';
+import Parser from 'lib/parser/parser';
 
 const file = `
 # This is an example file with every possible feature and every possible way

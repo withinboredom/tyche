@@ -1,4 +1,4 @@
-import stream from '../inputStream';
+import stream from 'lib/parser/inputStream';
 
 const file = `abcd
 

@@ -1,5 +1,5 @@
-import InputStream from '../inputStream';
-import TokenStream from '../tokenStream';
+import InputStream from 'lib/parser/inputStream';
+import TokenStream from 'lib/parser/tokenStream';
 
 const file = `
 # This is an example file
@@ -34,7 +34,7 @@ describe('a token stream', () => {
 
     it('can read a string', () => {
         const t = new TokenStream(new InputStream(`"does \\\"nothing\\\""`));
-        expect(t.next()).toEqual({type: "string", value: "does \"nothing\""});
+        expect(t.next()).toEqual({type: 'string', value: "does \"nothing\""});
     });
 
     it('can peek at a token', () => {
