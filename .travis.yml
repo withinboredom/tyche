@@ -5,6 +5,7 @@ node_js:
   - "node"
 os:
   - linux
+  - osx
 install:
   - npm install
   - npm run build-cli
