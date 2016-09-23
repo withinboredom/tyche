@@ -273,36 +273,6 @@
         "build",
         "watch"
       ]
-    },
-    {
-      "on": "push",
-      "watch": [
-        "tyche.json",
-        "package.json",
-        "src/**/*"
-      ],
-      "message": {
-        "error": "It looks like you forgot to build this commit, please do that"
-      },
-      "reset": [
-        "build",
-        "watch"
-      ],
-      "branch": ["master"]
-    },
-    {
-      "on": "push",
-      "watch": [
-        "tyche.json",
-        "package.json",
-        "src/**/*"
-      ],
-      "message": {
-        "error": "It looks like you forgot to test this commit, please do that"
-      },
-      "reset": [
-        "test"
-      ]
     }
   ]
 }

@@ -1,0 +1,8 @@
+
+class Environment {
+
+}
+
+class Interpreter {
+
+}

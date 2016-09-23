@@ -154,9 +154,18 @@ class Parser {
         Log.trace(`Attempting to parse ref block`);
         this._skip('kw', 'ref');
         const value = this._parse('var');
+        let body = [];
+        if (this._is('punc', '{')) {
+            this._skip('punc', '{');
+            while(!this._input.eof() && !this._is('punc', '}')) {
+                body.push(this._parseAtom());
+            }
+            this._skip('punc', '}');
+        }
         return {
             type: 'ref',
-            value
+            value,
+            body
         };
     }
 
@@ -358,7 +367,11 @@ class Parser {
         while(!this._input.eof()) {
             tasks.push(this._parseAtom());
         }
-        return tasks;
+        return {
+            type: 'task',
+            value: null,
+            body: tasks
+        };
     }
 }
 

@@ -28,7 +28,9 @@ build {
 
 watch {
 	"Build as you write code"
-	ref dependencies-install
+	ref dependencies-install {
+	    "Install deps before watching"
+	}
 	exec native: "npm run watch"
 	and always use native
 	and ignore preferred tool
