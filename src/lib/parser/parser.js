@@ -2,6 +2,16 @@
  * @module lib/parser/parser
  */
 
+
+/**
+ *
+ * In the perfect world, everything in an AST is based on the
+ *
+ * Let's talk about what this AST should look like:
+ *
+ *
+ */
+
 import Logger from 'lib/logger';
 
 const Log = Logger.child({
@@ -35,7 +45,7 @@ class Parser {
      * @param {string} [ch]
      * @private
      */
-    _skip(type, ch) {
+    _expect(type, ch) {
         Log.trace(`Expecting ${type}, with value: ${ch}`);
         if(this._is(type, ch)) this._input.next();
         else this._input.die(`Expecting ${type}: ${ch}`);
@@ -47,7 +57,7 @@ class Parser {
      * @private
      */
     _unexpected(reason) {
-        this._input.die(`Unexpected token: ${JSON.stringify(this._input.peek())}, ${reason ? reason : ''}`);
+        this._input.die(`Unexpected token: ${JSON.stringify(this._input.peek())} -- ${reason ? reason : ''}`);
     }
 
     /**
@@ -76,8 +86,8 @@ class Parser {
      */
     _parseDefaultTool() {
         Log.trace(`Parsing defaultTool block`);
-        this._skip('kw', 'defaultTool');
-        this._skip('punc', ':');
+        this._expect('kw', 'defaultTool');
+        this._expect('punc', ':');
         return {
             type: 'DefaultTool',
             value: this._parse('var')
@@ -111,10 +121,10 @@ class Parser {
     _parseExec(kind) {
         Log.trace(`Attempting to parse exec block`);
         const type = kind;
-        this._skip('kw',type);
+        this._expect('kw',type);
         const value = this._parse('var');
         if (this._is('punc', ':')) {
-            this._skip('punc',':');
+            this._expect('punc',':');
             const body = [{type: 'command', value: this._parse('string')}];
             return {
                 type,
@@ -122,13 +132,13 @@ class Parser {
                 body
             }
         }
-        this._skip('punc', '{');
+        this._expect('punc', '{');
         const body = [];
         while(!this._is('punc', '}')) {
             if (this._is('string')) body.push({type:'command', value: this._parse('string')});
             else {
                 const value = this._parse('var');
-                this._skip('punc', ':');
+                this._expect('punc', ':');
                 const b = this._maybeParse('bool', this._maybeParse('num', this._maybeParse('string', this._input)));
                 body.push({
                     type: 'option',
@@ -137,7 +147,7 @@ class Parser {
                 });
             }
         }
-        this._skip('punc', '}');
+        this._expect('punc', '}');
         return {
             type,
             value,
@@ -152,15 +162,15 @@ class Parser {
      */
     _parseRef() {
         Log.trace(`Attempting to parse ref block`);
-        this._skip('kw', 'ref');
+        this._expect('kw', 'ref');
         const value = this._parse('var');
-        let body = [];
+        let body = {};
         if (this._is('punc', '{')) {
-            this._skip('punc', '{');
+            this._expect('punc', '{');
             while(!this._input.eof() && !this._is('punc', '}')) {
-                body.push(this._parseAtom());
+                body = this._parseAtom();
             }
-            this._skip('punc', '}');
+            this._expect('punc', '}');
         }
         return {
             type: 'ref',
@@ -178,17 +188,20 @@ class Parser {
         Log.trace(`Attempting to parse List block`);
         const result = [];
         if(this._is('punc', ':')) {
-            this._skip('punc', ':');
+            this._expect('punc', ':');
             result.push(this._parse('string'));
         }
         if (this._is('punc', '{')) {
-            this._skip('punc', '{');
+            this._expect('punc', '{');
             while(!this._is('punc', '}')) {
                 result.push(this._parse('string'));
             }
-            this._skip('punc', '}');
+            this._expect('punc', '}');
         }
-        return result;
+        return {
+            type: 'list',
+            value: result
+        };
     }
 
     /**
@@ -202,7 +215,7 @@ class Parser {
         let action = 'skip';
         let what = 'all';
         let negative = false;
-        let body = [];
+        let body = {};
 
         function done() {
             return {
@@ -216,43 +229,43 @@ class Parser {
 
         if (this._is('kw', 'and')) {
             type = 'and';
-            this._skip('kw', 'and');
+            this._expect('kw', 'and');
         }
-        else this._skip('kw', 'or');
+        else this._expect('kw', 'or');
 
         if(this._is('var', 'skip')) {
-            this._skip('var', 'skip');
+            this._expect('var', 'skip');
             action = 'skip';
             if(this._is('var', 'all')) {
-                this._skip('var', 'all');
+                this._expect('var', 'all');
                 what = 'all';
-                this._skip('punc', ':');
+                this._expect('punc', ':');
                 body = this._parse('bool');
                 return done();
             }
-            this._skip('var', 'if');
+            this._expect('var', 'if');
             if(this._is('var', 'not')) {
                 negative = true;
-                this._skip('var', 'not');
+                this._expect('var', 'not');
             }
 
             switch(this._input.peek().value) {
                 case 'changed':
                     what = 'changed';
-                    this._skip('var', 'changed');
+                    this._expect('var', 'changed');
                     body = this._parseList();
                     return done();
                 case 'exists':
                     what = 'exists';
-                    this._skip('var', 'exists');
+                    this._expect('var', 'exists');
                     body = this._parseList();
                     return done();
             }
         }
 
         if (this._is('var', 'always')) {
-            this._skip('var','always');
-            this._skip('var', 'use');
+            this._expect('var','always');
+            this._expect('var', 'use');
             action = 'constrain';
             what = 'always_tool';
             body = this._parse('var');
@@ -260,9 +273,9 @@ class Parser {
         }
 
         if (this._is('var', 'ignore')) {
-            this._skip('var', 'ignore');
-            this._skip('var', 'preferred');
-            this._skip('var', 'tool');
+            this._expect('var', 'ignore');
+            this._expect('var', 'preferred');
+            this._expect('var', 'tool');
             action = 'constrain';
             what = 'preferred_tool';
             return done();
@@ -276,25 +289,25 @@ class Parser {
      */
     _parseStudy() {
         Log.trace(`Attempting to parse study block`);
-        this._skip('kw', 'study');
+        this._expect('kw', 'study');
         const value = this._parse('var');
         const body = [];
-        this._skip('punc', '{');
+        this._expect('punc', '{');
         while(!this._is('punc', '}')) {
             if (this._is('var', 'watch')) {
-                this._skip('var', 'watch');
+                this._expect('var', 'watch');
                 body.push({type: 'watch', value: this._parseList()});
                 continue;
             }
             if (this._is('var', 'warn')) {
-                this._skip('var', 'warn');
-                this._skip('punc', ':');
+                this._expect('var', 'warn');
+                this._expect('punc', ':');
                 body.push({type: 'warn', value: this._parse('string')});
                 continue;
             }
             if (this._is('var', 'error')) {
-                this._skip('var', 'error');
-                this._skip('punc', ':');
+                this._expect('var', 'error');
+                this._expect('punc', ':');
                 body.push({type: 'error', value: this._parse('string')});
                 continue;
             }
@@ -304,7 +317,7 @@ class Parser {
             }
             this._unexpected();
         }
-        this._skip('punc', '}');
+        this._expect('punc', '}');
         return {
             type: 'study',
             value,
@@ -322,9 +335,9 @@ class Parser {
         if (this._is('kw','defaultTool')) return this._parseDefaultTool();
         if (this._is('var')) {
             const value = this._parse('var');
-            this._skip('punc', '{');
+            this._expect('punc', '{');
             const body = this._parseTask();
-            this._skip('punc', '}');
+            this._expect('punc', '}');
             return {
                 type: 'task',
                 value,

@@ -26,7 +26,7 @@ build {
 	exec docker-compose: "up tyche-builder"
 }
 
-watch {
+watch-build {
 	"Build as you write code"
 	ref dependencies-install {
 	    "Install deps before watching"
@@ -143,7 +143,7 @@ study commit {
 	}
 	warn: "It looks like you forgot to build this commit"
 	ref build
-	ref watch
+	ref watch-build
 }
 
 study push {
@@ -154,5 +154,5 @@ study push {
 	}
 	error: "It looks like you forgot to build before pushing"
 	ref build
-	ref watch
+	ref watch-build
 }
