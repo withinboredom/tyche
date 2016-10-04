@@ -5,16 +5,16 @@ const Log = Logger.child({
 });
 
 const keywords = [
-    'ref',
-    'and',
-    'or',
-    'defaultTool',
-    'revert',
-    'true',
-    'false',
+    'prefer',
+    'template',
+    'set',
+    'task',
     'exec',
-    'wait',
-    'study'
+    'invoke',
+    'if',
+    'chdir',
+    'true',
+    'false'
 ];
 
 class TokenStream {
@@ -24,17 +24,25 @@ class TokenStream {
      */
     constructor(input) {
         this._input = input;
-        this._current = null;
+        this._current = [];
     }
 
-    peek() {
-        if (!this._current) this._current = this._readNext(this._input);
-        return this._current;
+    /**
+     * Peeks ahead an arbitrary number of tokens
+     * @param {number} x The number of tokens to look ahead
+     * @returns {*}
+     */
+    peek(x = 1) {
+        if (this._current.length < x) {
+            while(this._current.length < x && !this._input.eof()) {
+                this._current.push(this._readNext(this._input));
+            }
+        }
+        return this._current[x - 1];
     }
 
     next() {
-        const token = this._current;
-        this._current = null;
+        const token = this._current.shift();
         return token || this._readNext(this._input);
     }
 
@@ -53,9 +61,15 @@ class TokenStream {
      * @private
      */
     _isKeyword(word) {
-        return keywords.indexOf(word) >= 0;
+        return keywords.includes(word);
     }
 
+    /**
+     * Detects whether the given word is true or false
+     * @param {string} word
+     * @returns {boolean}
+     * @private
+     */
     _isBool(word) {
         return this._isKeyword(word) ? word == 'true' || word == 'false' : false;
     }
@@ -77,7 +91,7 @@ class TokenStream {
      * @private
      */
     _isStartOfIdentifier(ch) {
-        return /[a-z|-]/i.test(ch);
+        return /[a-z\-$]/i.test(ch);
     }
 
     /**
@@ -87,7 +101,7 @@ class TokenStream {
      * @private
      */
     _isIdentifier(ch) {
-        return this._isStartOfIdentifier(ch) || "?!<>=0123456789-_".indexOf(ch) >= 0;
+        return this._isStartOfIdentifier(ch) || "$<>=0123456789-_".indexOf(ch) >= 0;
     }
 
     /**
@@ -157,6 +171,12 @@ class TokenStream {
         else if (this._isKeyword(value)) {
             type = 'kw'
         }
+        else if (value[0] == '$') {
+            type = 'ident';
+        }
+        else if (value[0] == '-') {
+            type = 'switch';
+        }
         else {
             type = 'var';
         }
@@ -216,7 +236,7 @@ class TokenStream {
         this._readWhile((ch) => this._isWhiteSpace(ch));
         if (this._input.eof()) return null;
         let ch = this._input.peek();
-        if (ch == "#") {
+        if (ch == "#" || (ch == '/' && this._input.peek(2) == '/')) {
             this._skipComments();
             return this._readNext();
         }

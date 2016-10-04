@@ -32,8 +32,8 @@ class InputStream {
      * Peek at the next character in the stream
      * @return {string}
      */
-    peek() {
-        return this._file.charAt(this._pos);
+    peek(x = 1) {
+        return this._file.charAt(this._pos + (x - 1));
     }
 
     /**
