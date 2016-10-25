@@ -5,6 +5,7 @@ node_js:
   - "node"
 os:
   - linux
+  - osx
 install:
   - npm install
   - npm run build-cli
@@ -12,5 +13,11 @@ install:
 script:
   - node --harmony bin/index.js build
   - node --harmony bin/index.js test
+test-production:
+  - npm unlink
+  - npm install -g rimraf
+  - rimraf node_modules
+  - npm install --production
+  - node --harmony bin/index.js --help
 after_success:
   - bash <(curl -s https://codecov.io/bash)
