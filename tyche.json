@@ -159,7 +159,7 @@
           "name": "wait-for-status-green",
           "exec": {
             "native": {
-              "command": ["while","[","\"$(hub ci-status HEAD)\"","!=","'success'","];","do","echo","'waiting for status checks -- dont forget lgtm!'",";","sleep","5",";","if","[","$(","echo","hub","ci-status","HEAD",")","==","'failure'","];","then","echo","'oh snap, we cannot release this';","exit","1;","fi;","done;"]
+              "command": ["while","[","\"$(echo hub ci-status HEAD)\"","!=","'success'","];","do","echo","'waiting for status checks -- dont forget lgtm!'",";","sleep","5",";","if","[","\"$(echo hub ci-status HEAD)\"","==","'failure'","];","then","echo","'oh snap, we cannot release this';","exit","1;","fi;","done;"]
             }
           }
         },
@@ -167,7 +167,7 @@
           "name": "open-release-draft",
           "exec": {
             "native":{
-              "command": ["printf","$BUILD_NUMBER","|","hub","release","create","-d","-f","-","$BUILD_NUMBER"]
+              "command": ["printf","$BUILD_NUMBER","|","hub","release","create","-d","-F","-","$BUILD_NUMBER"]
             }
           }
         },
