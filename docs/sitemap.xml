@@ -2,21 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://withinboredom.github.io/tyche/</loc>
-    <lastmod>2016-09-09T22:22:09-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://withinboredom.github.io/tyche/reference/</loc>
-    <lastmod>2016-09-09T22:22:09-04:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://withinboredom.github.io/tyche/basics/</loc>
-    <lastmod>2016-09-08T08:44:32-04:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://withinboredom.github.io/tyche/reference/tyche-json/</loc>
     <lastmod>2016-09-09T22:41:23-04:00</lastmod>
   </url>
@@ -54,6 +39,34 @@
   <url>
     <loc>https://withinboredom.github.io/tyche/reference/version-bump/</loc>
     <lastmod>2016-09-09T22:42:05-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://withinboredom.github.io/tyche/reference/</loc>
+    <lastmod>2016-09-09T22:22:09-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://withinboredom.github.io/tyche/basics/</loc>
+    <lastmod>2016-09-08T08:44:32-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://withinboredom.github.io/tyche/basics/</loc>
+    <lastmod>2016-09-08T08:44:32-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://withinboredom.github.io/tyche/reference/</loc>
+    <lastmod>2016-09-09T22:22:09-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://withinboredom.github.io/tyche/</loc>
+    <lastmod>2016-09-09T22:41:23-04:00</lastmod>
+    <priority>0</priority>
   </url>
   
 </urlset>

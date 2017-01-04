@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/env node
 import path from 'path';
 import program from 'commander';
 import { Spinner } from 'cli-spinner';
