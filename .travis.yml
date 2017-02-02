@@ -10,7 +10,7 @@ install:
   - npm run build-cli
   - npm link
 script:
-  - node --harmony bin/index.js build
+  - node --harmony bin/index.js build build-cli
   - node --harmony bin/index.js test
 after_success:
   - bash <(curl -s https://codecov.io/bash)

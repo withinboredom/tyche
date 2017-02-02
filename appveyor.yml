@@ -18,7 +18,9 @@ build_script:
 
     npm link
 
-    tyche build
+    tyche build dependencies
+
+    tyche build build-cli
 test_script:
 - cmd: >-
     tyche test
