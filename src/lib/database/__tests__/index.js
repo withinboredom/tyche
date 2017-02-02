@@ -85,5 +85,12 @@ describe('database interface', () => {
         const second = new db(testDbFile);
         await second.initializeDb();
         expect(await second.fileChanged(testDbFile)).toBe(true);
-    })
+    });
+
+    it('never thinks directories are changed', async () => {
+        const first = new db(testDbFile);
+        await first.initializeDb();
+        expect(await first.fileChanged(__dirname)).toBe(false);
+        await first.finish();
+    });
 });
