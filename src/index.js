@@ -14,7 +14,7 @@ const Log = Logger.child({
     component: 'Main'
 });
 
-process.on("unhandledRejection", function (err) { process.exit(1) });
+process.on("unhandledRejection", function (err) { throw err });
 
 program.version(require(path.normalize(`${__dirname}/../package.json`)).version);
 
