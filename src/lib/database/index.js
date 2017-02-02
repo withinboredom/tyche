@@ -194,24 +194,30 @@ class TycheDb {
 
         Log.trace(`Looking up ${filename} in db`);
 
-        const {hash, files} = await this._getHashAndCollectionFor(filename);
-        const results = files.find({path: hash.file});
+        try {
+            const {hash, files} = await this._getHashAndCollectionFor(filename);
+            const results = files.find({path: hash.file});
 
-        if (results.length === 0) {
-            Log.trace(`Didn't find ${filename} in the db, so ${filename} must have changed?`);
-            this._fileCache[filename] = true;
-            return true;
+            if (results.length === 0) {
+                Log.trace(`Didn't find ${filename} in the db, so ${filename} must have changed?`);
+                this._fileCache[filename] = true;
+                return true;
+            }
+
+            if (results[0].digest != hash.digest) {
+                Log.trace(`${results[0].digest} doesn't match ${hash.digest} so ${filename} changed.`);
+                this._fileCache[filename] = true;
+                return true;
+            }
+
+            Log.trace(`${filename} hasn't changed`);
+            this._fileCache[filename] = false;
+            return false;
         }
-
-        if (results[0].digest != hash.digest) {
-            Log.trace(`${results[0].digest} doesn't match ${hash.digest} so ${filename} changed.`);
-            this._fileCache[filename] = true;
-            return true;
+        catch (err) {
+            Log.trace('Tried to read a dir, but could not');
+            return false;
         }
-
-        Log.trace(`${filename} hasn't changed`);
-        this._fileCache[filename] = false;
-        return false;
     }
 
     /**

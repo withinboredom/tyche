@@ -14,6 +14,8 @@ const Log = Logger.child({
     component: 'Main'
 });
 
+process.on("unhandledRejection", function (err) { throw err });
+
 program.version(require(path.normalize(`${__dirname}/../package.json`)).version);
 
 Spinner.setDefaultSpinnerString(21);
